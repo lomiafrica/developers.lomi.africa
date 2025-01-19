@@ -10,9 +10,9 @@ const config: DocsThemeConfig = {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta property="og:title" content="lomi. | Developers docs" />
         <meta property="og:description" content="The open-source payment orchestration platform powering West-African businesses" />
-        <title>lomi. | Developer docs</title>
+        <title>lomi. | Developers docs</title>
         <link rel="canonical" href="https://developers.lomi.africa" />
-        <link rel="icon" href="/lomi.png" />
+        <link rel="icon" href="/fav.png" />
         <link rel="apple-touch-icon" href="/lomi.png" />
         <script
           type="application/ld+json"

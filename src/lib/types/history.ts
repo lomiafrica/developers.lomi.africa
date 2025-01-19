@@ -1,7 +1,7 @@
-export type HistoryItem = {
-  name: string;
+export interface HistoryItem {
+  title: string;
   path: string;
-  timestamp: number;
-};
+  timestamp: string;
+}
 
 export type HistoryType = Record<string, HistoryItem>;

@@ -60,17 +60,17 @@ const product = await lomi.products.create({
 ```
 
 #### Request Body
-\`\`\`yaml
+```json
 {
-  name: string
-  price: number
-  currency_code: "XOF" | "USD" | "EUR"
-  description?: string
-  image_url?: string
-  is_active?: boolean
-  display_on_storefront?: boolean
+  "name": "string",
+  "price": "number",
+  "currency_code": "XOF | USD | EUR",
+  "description": "string?",
+  "image_url": "string?", 
+  "is_active": "boolean?",
+  "display_on_storefront": "boolean?"
 }
-\`\`\`
+```
 
 ### List Products
 `GET /products?merchant_id={merchant_id}`

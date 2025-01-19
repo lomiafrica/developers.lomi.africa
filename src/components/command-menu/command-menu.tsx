@@ -14,6 +14,34 @@ import { ResultGroup } from "@/components/command-menu/results/result-group";
 import { History } from "@/components/command-menu/history/history";
 import { HistoryType } from "@/lib/types/history";
 
+const defaultSuggestions = [
+  {
+    title: "Get Started",
+    items: [
+      { name: "Introduction", path: "/introduction" },
+      { name: "Get Started", path: "/get-started" },
+      { name: "Git Integration", path: "/git-integration" },
+    ]
+  },
+  {
+    title: "API Reference",
+    items: [
+      { name: "API Overview", path: "/api-reference/overview" },
+      { name: "Authentication", path: "/api-reference/authentication" },
+      { name: "Data Models", path: "/api-reference/data-models" },
+      { name: "Webhooks", path: "/api-reference/webhooks" },
+    ]
+  },
+  {
+    title: "Advanced Topics",
+    items: [
+      { name: "Advanced Guides", path: "/advanced-guides" },
+      { name: "License Management", path: "/license-management" },
+      { name: "Lomi CLI", path: "/lomi-cli" },
+    ]
+  }
+];
+
 export const CommandMenu = ({
   open,
   setOpen,
@@ -23,70 +51,100 @@ export const CommandMenu = ({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   fileCache: FileCache;
 }) => {
-  // const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [results, setResults] = useState<Record<string, FileData[]>>({});
   const [history, setHistory] = useState<HistoryType>({});
-  useEffect(() => {
-    // Filter fileCache based on the searchValue
-    const filteredFiles = Object.values(fileCache).filter(
-      (file) =>
-        file.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        file.content.toLowerCase().includes(searchValue.toLowerCase()),
-    );
+  const [expanded, setExpanded] = useState(false);
 
-    const groupedFiles = filteredFiles.reduce(
-      (acc, file) => {
-        const { parentName, ...rest } = file;
-        if (!acc[parentName ?? ""]) {
-          acc[parentName ?? ""] = [{ ...rest, parentName }];
-        } else {
-          acc[parentName ?? ""].push({ ...rest, parentName });
-        }
-        return acc;
-      },
-      {} as Record<string, FileData[]>,
-    );
+  useEffect(() => {
+    const filteredFiles = Object.values(fileCache).filter((file) => {
+      const searchLower = searchValue.toLowerCase();
+      const isPage = file.path.startsWith('src/pages/');
+      const isMarkdown = file.path.endsWith('.mdx') || file.path.endsWith('.md');
+
+      if (!isPage || !isMarkdown) return false;
+
+      return (
+        file.name.toLowerCase().includes(searchLower) ||
+        file.content.toLowerCase().includes(searchLower) ||
+        file.path.toLowerCase().includes(searchLower)
+      );
+    });
+
+    const groupedFiles = filteredFiles.reduce((acc, file) => {
+      // Extract section from path, e.g., "api-reference" from "src/pages/api-reference/overview.mdx"
+      const pathParts = file.path.split('/');
+      const sectionIndex = pathParts.indexOf('pages') + 1;
+      const section = pathParts[sectionIndex] || 'Other';
+
+      // Format section name
+      const formattedSection = section
+        .split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
+      if (!acc[formattedSection]) {
+        acc[formattedSection] = [file];
+      } else {
+        acc[formattedSection].push(file);
+      }
+      return acc;
+    }, {} as Record<string, FileData[]>);
+
     setResults(groupedFiles);
   }, [searchValue, fileCache]);
+
   useEffect(() => {
     const localHistory = JSON.parse(localStorage.getItem("history") || "{}");
     setHistory(localHistory);
   }, []);
-  const [expanded, setExpanded] = useState(false);
+
+  const handleSuggestionClick = (suggestion: { name: string; path: string }) => {
+    // Add to history
+    const newHistory = {
+      ...history,
+      [suggestion.name]: {
+        title: suggestion.name,
+        path: suggestion.path,
+        timestamp: new Date().toISOString(),
+      },
+    };
+    localStorage.setItem("history", JSON.stringify(newHistory));
+    setHistory(newHistory);
+
+    // Navigate to the path
+    window.location.href = suggestion.path;
+    setOpen(false);
+  };
+
   return (
     <CommandDialog open={open} onOpenChange={setOpen} expanded={expanded}>
-      <div className="flex items-center border-b-2 pl-3">
-        <Search height={16} width={16} />
+      <div className="flex items-center border-b px-3">
+        <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
         <Input
-          placeholder="Search in the documentation..."
-          className="ml-1 py-6 border-0 rounded-none !shadow-none focus-visible:!shadow-none !ring-offset-0 !ring-0"
+          placeholder="Search documentation..."
+          className="h-11 flex-1 border-0 bg-transparent px-3 py-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-0"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
         <Button
           variant="ghost"
-          className="mr-12 px-2"
           size="icon"
+          className="h-8 w-8 shrink-0"
           onClick={() => setExpanded((expanded) => !expanded)}
         >
           {expanded ? (
-            <Shrink height={16} width={16} />
+            <Shrink className="h-4 w-4" />
           ) : (
-            <Expand height={16} width={16} />
+            <Expand className="h-4 w-4" />
           )}
         </Button>
       </div>
 
-      <CommandList className={cn("p-2 h-full", expanded ? "" : "h-full")}>
+      <CommandList className={cn("h-[min(400px,60vh)] overflow-y-auto p-4", expanded && "h-[80vh]")}>
         {searchValue.length === 0 ? (
           Object.keys(history || {}).length > 0 ? (
-            <div
-              className={cn(
-                "flex flex-col w-full px-2 sm:px-3",
-                expanded && "px-2 sm:px-10",
-              )}
-            >
+            <div className={cn("space-y-4", expanded && "px-4")}>
               <History
                 history={history}
                 setOpen={setOpen}
@@ -94,33 +152,43 @@ export const CommandMenu = ({
               />
             </div>
           ) : (
-            <div className="flex flex-col w-full justify-center py-6 text-center">
-              <Typography variant="muted">
-                No recent searches. <br />
-              </Typography>
-              <Typography variant="small" className="mt-4">
-                We will add suggestions here in the future !
-              </Typography>
+            <div className="space-y-6">
+              {defaultSuggestions.map((section) => (
+                <div key={section.title} className="px-2">
+                  <h2 className="mb-2 text-sm font-semibold text-muted-foreground">{section.title}</h2>
+                  <div className="space-y-2">
+                    {section.items.map((item) => (
+                      <button
+                        key={item.path}
+                        className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                        onClick={() => handleSuggestionClick(item)}
+                      >
+                        {item.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           )
         ) : Object.keys(results || {}).length === 0 ? (
-          Object.keys(results || {}).length === 0 && (
-            <div className="flex items-center justify-center w-full h-20">
-              <Typography variant="muted">
-                No results for &quot;<strong>{searchValue}</strong>&quot;
-              </Typography>
-            </div>
-          )
+          <div className="flex items-center justify-center py-16">
+            <Typography variant="muted">
+              No results for &quot;<strong>{searchValue}</strong>&quot;
+            </Typography>
+          </div>
         ) : (
-          Object.entries(results || {}).map(([key, fileGroup]) => (
-            <ResultGroup
-              results={fileGroup}
-              key={`result_group_${key}_${searchValue}`}
-              className={cn("mt-2 sm:mt-4", expanded && "px-2 sm:px-10")}
-              keyword={searchValue}
-              setOpen={setOpen}
-            />
-          ))
+          <div className="space-y-4">
+            {Object.entries(results || {}).map(([key, fileGroup]) => (
+              <ResultGroup
+                results={fileGroup}
+                key={`result_group_${key}_${searchValue}`}
+                className={cn(expanded && "px-4")}
+                keyword={searchValue}
+                setOpen={setOpen}
+              />
+            ))}
+          </div>
         )}
       </CommandList>
     </CommandDialog>
@@ -133,6 +201,7 @@ export const CommandMenuTrigger = ({
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -143,6 +212,7 @@ export const CommandMenuTrigger = ({
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, []);
+
   return (
     <>
       <CommandMenu
@@ -153,20 +223,17 @@ export const CommandMenuTrigger = ({
       />
       <Button
         className={cn(
-          className,
-          "pr-1.5 h-8 sm:h-10 py-1 sm:py-2 px-2 sm:px-4",
+          "flex items-center gap-2 h-9 px-3 rounded-none border border-input bg-transparent",
+          className
         )}
         variant="outline"
         onClick={() => setOpen((open) => !open)}
       >
-        <div className="flex items-center">
-          <Typography variant="small" className="text-xs sm:text-sm">
-            Search <span className="hidden sm:inline-flex">documentation</span>
-          </Typography>
-          <Badge className="ml-3 sm:ml-6 rounded px-1" variant="secondary">
-            <CommandIcon className="mr-0.5 h-3 w-3" />K
-          </Badge>
-        </div>
+        <Search className="h-4 w-4 text-muted-foreground" />
+        <span className="text-sm text-muted-foreground hidden sm:inline-flex">Search docs</span>
+        <Badge variant="secondary" className="ml-auto rounded-sm px-1">
+          <span className="text-xs">⌘K</span>
+        </Badge>
       </Button>
     </>
   );
