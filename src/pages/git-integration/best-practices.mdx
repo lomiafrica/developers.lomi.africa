@@ -1,15 +1,216 @@
-# Best Practices for Git Integration
+# Best Practices
 
-When integrating lomi. with your application, follow these best practices to ensure a smooth and secure development process:
+## Code Organization
 
-1. **Use a version control system**: Always store your integration code and configuration files in a version control system like Git. This allows you to track changes, collaborate with your team, and maintain a history of your integration setup.
+### 1. Project Structure
+```bash
+api.lomi.africa/
+├── src/
+│   ├── controllers/   # Request handlers
+│   ├── services/      # Business logic
+│   ├── models/        # Data models
+│   ├── middleware/    # Express middleware
+│   └── utils/         # Helper functions
+├── tests/
+│   ├── unit/         # Unit tests
+│   └── integration/  # Integration tests
+└── scripts/          # Build and utility scripts
+```
 
-2. **Keep sensitive information separate**: Never store sensitive information like API keys, secrets, and credentials in version control. Instead, use environment variables or secure key management systems to handle sensitive data.
+### 2. File Naming
+```bash
+# TypeScript files
+user.controller.ts
+payment.service.ts
+webhook.middleware.ts
 
-3. **Ignore generated files**: Add generated files and directories (e.g., `node_modules`, `.next`, `.env`) to your `.gitignore` file to prevent them from being committed to your repository.
+# Test files
+user.test.ts
+payment.integration.test.ts
+```
 
-4. **Commit frequently**: Make small, focused commits that cover a single logical change. This makes it easier to understand the history of your codebase and revert changes if needed.
+## Code Style
 
-5. **Write descriptive commit messages**: Use clear and concise commit messages that explain the purpose of each change. This helps other team members (and your future self) understand the history of your codebase.
+### 1. TypeScript Usage
+```typescript
+// Use interfaces for type definitions
+interface PaymentRequest {
+  amount: number;
+  currency: string;
+  provider_code: string;
+}
 
-By following these best practices, you can maintain a clean and organized codebase while effectively collaborating with your team. 
+// Use type guards
+function isPaymentRequest(obj: unknown): obj is PaymentRequest {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    'amount' in obj &&
+    'currency' in obj &&
+    'provider_code' in obj
+  );
+}
+```
+
+### 2. Error Handling
+```typescript
+// Custom error classes
+class ValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
+// Error handling middleware
+app.use((error: Error, req: Request, res: Response) => {
+  if (error instanceof ValidationError) {
+    res.status(400).json({ error: error.message });
+  } else {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+```
+
+## Security
+
+### 1. Environment Variables
+```bash
+# .env.example
+LOMI_API_KEY=
+LOMI_WEBHOOK_SECRET=
+NODE_ENV=development
+
+# .gitignore
+.env
+.env.local
+*.log
+```
+
+### 2. Sensitive Data
+```typescript
+// Redact sensitive information in logs
+const sanitizeData = (data: any) => {
+  const masked = { ...data };
+  if (masked.apiKey) masked.apiKey = '[REDACTED]';
+  if (masked.phoneNumber) masked.phoneNumber = '[REDACTED]';
+  return masked;
+};
+```
+
+## Testing
+
+### 1. Test Organization
+```typescript
+describe('PaymentService', () => {
+  describe('createPayment', () => {
+    it('should create payment with valid data', async () => {
+      // Test implementation
+    });
+
+    it('should handle validation errors', async () => {
+      // Test implementation
+    });
+  });
+});
+```
+
+### 2. Test Coverage
+```bash
+# Run coverage report
+npm run test:coverage
+
+# Coverage thresholds in jest.config.ts
+coverageThreshold: {
+  global: {
+    branches: 80,
+    functions: 80,
+    lines: 80
+  }
+}
+```
+
+## Git Workflow
+
+### 1. Branch Management
+```bash
+# Keep branches focused and short-lived
+git checkout -b feature/add-wave-provider
+git commit -m "feat(payments): implement Wave provider"
+git push origin feature/add-wave-provider
+```
+
+### 2. Commit Messages
+```bash
+# Format: <type>(<scope>): <description>
+feat(auth): add API key rotation
+fix(webhook): handle timeout errors
+docs(api): update authentication guide
+```
+
+## Documentation
+
+### 1. Code Comments
+```typescript
+/**
+ * Process a payment request
+ * @param request - Payment request details
+ * @returns Promise resolving to payment result
+ * @throws {ValidationError} If request is invalid
+ */
+async function processPayment(
+  request: PaymentRequest
+): Promise<PaymentResult> {
+  // Implementation
+}
+```
+
+### 2. README Files
+```markdown
+# Component Name
+
+## Overview
+Brief description of the component's purpose
+
+## Usage
+Code examples and usage instructions
+
+## Configuration
+Available configuration options
+
+## Testing
+How to run and write tests
+```
+
+## Deployment
+
+### 1. CI/CD
+```yaml
+# .github/workflows/ci.yml
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm ci
+      - run: npm test
+```
+
+### 2. Version Control
+```json
+{
+  "name": "@lomi/api",
+  "version": "1.2.3",
+  "engines": {
+    "node": ">=14"
+  }
+}
+```
+
+## Next Steps
+
+- [Code Reviews](./code-reviews)
+- [Contributing Guidelines](./contributing-guidelines)
+- [Security Best Practices](/advanced-guides/security-best-practices) 

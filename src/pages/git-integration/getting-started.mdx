@@ -1,27 +1,187 @@
 # Getting Started
 
-To start contributing to lomi., follow these steps:
+This guide will help you set up your development environment and make your first contribution to lomi.
 
-1. Fork the lomi. repository on GitHub.
+## Prerequisites
 
-2. Clone your forked repository to your local machine.
-   ```bash
-   git clone https://github.com/lomiafrica/lomi.
-   ```
-3. Create a new branch for your feature, bug fix, or improvement.
-   ```bash
-   git checkout -b my-feature-branch
-   ```
-4. Make your changes and commit them with descriptive messages.
-   ```bash
-   git commit -m "Add new feature: my-feature-update"
-   ```
-5. Push your changes to your forked repository.
-   ```bash
-   git push origin my-feature-branch
-   ```
-6. Open a pull request on the main lomi. repository, describing your changes and referencing any relevant issues.
+- Node.js (v14 or higher)
+- npm or yarn
+- Git
+- A GitHub account
 
-Before submitting a pull request, please ensure that your code follows our contributing guidelines and passes all tests.
+## Development Setup
 
-If you have any questions or need assistance, feel free to reach out to our team at [hello@lomi.africa](mailto:hello@lomi.africa) or open an issue on GitHub. We plan to launch a Discord server soon for more interactive discussions!
+### 1. Fork and Clone
+```bash
+# Fork via GitHub UI first, then:
+git clone https://github.com/YOUR_USERNAME/api.lomi.africa
+cd api.lomi.africa
+
+# Add upstream remote
+git remote add upstream https://github.com/lomi/api.lomi.africa
+```
+
+### 2. Install Dependencies
+```bash
+# Install packages
+npm install
+
+# Set up environment
+cp .env.example .env
+```
+
+### 3. Configure Environment
+```bash
+# .env
+LOMI_API_KEY=test_key_xxx
+LOMI_WEBHOOK_SECRET=whsec_xxx
+NODE_ENV=development
+```
+
+## Running the Project
+
+### 1. Development Server
+```bash
+# Start server
+npm run dev
+
+# Server runs on http://localhost:3000
+```
+
+### 2. Run Tests
+```bash
+# Run all tests
+npm test
+
+# Run specific tests
+npm test -- --grep "payments"
+
+# Run with coverage
+npm run test:coverage
+```
+
+### 3. Build Documentation
+```bash
+# Start docs server
+npm run docs:dev
+
+# Build docs
+npm run docs:build
+```
+
+## Making Changes
+
+### 1. Create Branch
+```bash
+# Update main branch
+git checkout main
+git pull upstream main
+
+# Create feature branch
+git checkout -b feature/my-feature
+```
+
+### 2. Development Workflow
+```bash
+# Make changes
+# Run tests
+npm test
+
+# Run linting
+npm run lint
+
+# Format code
+npm run format
+```
+
+### 3. Commit Changes
+```bash
+# Stage changes
+git add .
+
+# Commit with conventional message
+git commit -m "feat(payments): add Wave provider support"
+```
+
+## Submitting Changes
+
+### 1. Push Changes
+```bash
+# Push to your fork
+git push origin feature/my-feature
+```
+
+### 2. Create Pull Request
+- Go to GitHub
+- Create new pull request
+- Fill out PR template
+- Request review
+
+### 3. Update PR
+```bash
+# Update with upstream changes
+git fetch upstream
+git rebase upstream/main
+
+# Force push if needed
+git push --force-with-lease
+```
+
+## Project Structure
+
+```bash
+api.lomi.africa/
+├── src/
+│   ├── controllers/   # Request handlers
+│   ├── services/      # Business logic
+│   ├── models/        # Data models
+│   ├── middleware/    # Express middleware
+│   └── utils/         # Helper functions
+├── tests/
+│   ├── unit/         # Unit tests
+│   └── integration/  # Integration tests
+├── scripts/          # Build scripts
+├── docs/            # Documentation
+└── package.json     # Dependencies
+```
+
+## Common Tasks
+
+### Running Tests
+```bash
+# Unit tests
+npm run test:unit
+
+# Integration tests
+npm run test:integration
+
+# Coverage report
+npm run test:coverage
+```
+
+### Code Quality
+```bash
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
+# Type check
+npm run typecheck
+```
+
+### Documentation
+```bash
+# Generate API docs
+npm run docs:generate
+
+# Serve docs locally
+npm run docs:dev
+```
+
+## Next Steps
+
+- [Contributing Guidelines](./contributing-guidelines)
+- [Code of Conduct](./code-of-conduct)
+- [Best Practices](./best-practices)

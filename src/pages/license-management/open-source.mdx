@@ -1,6 +1,6 @@
 # Open Source Licensing
 
-lomi. is committed to providing a powerful and accessible payment orchestration platform for everyone. As part of this commitment, we offer an open-source version of our platform under the an Apache License on our Github.
+lomi. is committed to providing a powerful and accessible payment orchestration platform for everyone. As part of this commitment, our solution is entirely open-source and available on Github.
 
 ## We are here to help you make money
 
@@ -16,6 +16,43 @@ For a detailed comparison of the features available in each version, please refe
 
 If you would like to host the platform yourself, you can easily get started by cloning our main repo. However you'll have to get providers API keys by contacting them yourself.
 
-If you find that your business do not need to host it manually andrequires more advanced features, dedicated support, or enterprise-grade capabilities, you can just get started on the [main platform](https://lomi.africa).
+### Technical Requirements
+- Node.js 18 or higher
+- PostgreSQL 13 or higher
+- Redis (optional, for caching)
 
-To learn more about our vision and why lomi. is open-source, please visit our [About page](https://lomi.africa/pricing) or [contact our founder](mailto:babacar@lomi.africa). 
+### Quick Start Guide
+```bash copy
+# Clone the repository
+git clone https://github.com/lomi-africa/lomi.
+cd lomi.
+
+# Install dependencies
+npm install
+
+# Set up environment
+cp .env.example .env
+
+# Start development server
+npm run dev
+```
+
+### Supported Payment Providers
+- Orange Money
+- Wave
+- MTN Mobile Money
+- VISA and Mastercard
+- More integrations coming soon
+
+## Enterprise Needs
+
+If you find that your business does not need to host it manually and requires more advanced features, dedicated support, or enterprise-grade capabilities, you can just get started on the [main platform](https://lomi.africa).
+
+## Learn More
+
+To learn more about our vision and why lomi. is open-source, please visit our [About page](https://lomi.africa/pricing) or [contact our founder](mailto:babacar@lomi.africa).
+
+### Community Resources
+- [GitHub Repository](https://github.com/lomi-africa/lomi)
+- [Documentation](https://developers.lomi.africa)
+- [Community Forum](#) 

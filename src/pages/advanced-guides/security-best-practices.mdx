@@ -1,41 +1,255 @@
 # Security Best Practices
 
-Security is of utmost importance when dealing with payment transactions. lomi. provides a secure payment orchestration platform, but it's also crucial to follow security best practices in your own integration to protect your customers' sensitive information.
+Implementing robust security measures is crucial when handling payments. Follow these best practices to ensure secure integration with lomi.
 
-## Secure Communication
+## API Authentication
 
-Always use HTTPS for all communication between your server and the lomi. API. This ensures that all data transmitted is encrypted and protected from eavesdropping.
+### API Key Security
 
-## Protect Your API Keys
+1. **Environment Variables**
+   ```typescript
+   // Don't hardcode API keys
+   const lomi = new LomiSDK({
+     apiKey: process.env.LOMI_API_KEY
+   });
+   ```
 
-Keep your lomi. API keys secure and never expose them in client-side code or publicly accessible repositories. Store them securely on your server and use environment variables to load them into your application.
+2. **Key Rotation**
+   - Rotate API keys periodically
+   - Use different keys for development and production
+   - Revoke compromised keys immediately
 
-## Validate and Sanitize User Input
+3. **Access Control**
+   - Limit API key access to necessary services
+   - Use test keys for development and testing
+   - Monitor API key usage for suspicious activity
 
-Validate and sanitize all user input before sending it to the lomi. API. This helps prevent injection attacks and ensures that the data sent to lomi. is in the expected format.
+## Request Security
 
-## Use Secure Authentication Methods
+### TLS Requirements
 
-When authenticating your customers, use secure methods such as OAuth 2.0 or JWT tokens. Avoid sending sensitive information, such as passwords, in plain text.
+All API requests must use HTTPS/TLS:
 
-## Implement Secure Webhook Endpoints
+```typescript
+const api = axios.create({
+  baseURL: 'https://api.lomi.africa',
+  headers: {
+    'x-api-key': process.env.LOMI_API_KEY
+  }
+});
+```
 
-When configuring webhook endpoints to receive notifications from lomi., ensure that they are secure and accessible only to lomi.. Validate the webhook signatures to verify the authenticity of the requests.
+### Request Validation
 
-## Regularly Update Your Integration
+1. **Input Sanitization**
+   ```typescript
+   function sanitizeAmount(amount: number): number {
+     return Math.floor(Math.abs(amount));
+   }
+   
+   function sanitizePhoneNumber(phone: string): string {
+     return phone.replace(/[^\d+]/g, '');
+   }
+   ```
 
-Keep your lomi. integration code up-to-date with the latest security patches and API updates. Regularly monitor the lomi. changelog and update your code accordingly.
+2. **Schema Validation**
+   ```typescript
+   import { z } from 'zod';
+   
+   const PaymentSchema = z.object({
+     amount: z.number().positive(),
+     currency: z.enum(['XOF']),
+     provider_codes: z.array(z.string()),
+     merchant_id: z.string()
+   });
+   
+   function validatePaymentRequest(data: unknown) {
+     return PaymentSchema.parse(data);
+   }
+   ```
 
-## Limit Access to Sensitive Data
+## Webhook Security
 
-Restrict access to sensitive customer and transaction data to only those who need it. Implement proper access controls and logging to detect and prevent unauthorized access.
+### Signature Verification
 
-## Educate Your Team
+Always verify webhook signatures:
 
-Educate your team about security best practices and ensure that everyone understands their role in keeping your integration secure. Regularly review and update your security policies and procedures.
+```typescript
+import crypto from 'crypto';
 
-## Monitor and Audit Your Systems
+function verifyWebhookSignature(
+  payload: string,
+  signature: string,
+  secret: string
+): boolean {
+  const hmac = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+  
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(hmac)
+  );
+}
 
-Implement monitoring and auditing mechanisms to detect and respond to security incidents promptly. Regularly review your logs and access records to identify any suspicious activities.
+// Express middleware
+app.post('/webhook', express.raw({type: 'application/json'}), (req, res) => {
+  const signature = req.headers['lomi-signature'];
+  
+  if (!signature || !verifyWebhookSignature(
+    req.body,
+    signature as string,
+    process.env.WEBHOOK_SECRET
+  )) {
+    return res.status(400).json({ error: 'Invalid signature' });
+  }
+  
+  // Process webhook
+});
+```
 
-By following these security best practices, you can ensure that your lomi. integration is secure and protect your customers' sensitive information. 
+### Webhook Endpoints
+
+1. **Access Control**
+   - Use HTTPS endpoints only
+   - Implement IP whitelisting
+   - Rate limit webhook endpoints
+
+2. **Error Handling**
+   ```typescript
+   app.post('/webhook', async (req, res) => {
+     try {
+       // Process webhook
+       res.status(200).send('OK');
+     } catch (error) {
+       // Log error details securely
+       console.error('Webhook processing error:', error);
+       
+       // Return generic error to caller
+       res.status(500).json({
+         error: 'Internal server error'
+       });
+     }
+   });
+   ```
+
+## Data Security
+
+### Sensitive Data Handling
+
+1. **Data Minimization**
+   ```typescript
+   // Only collect necessary data
+   const session = await lomi.checkoutSessions.create({
+     merchant_id: merchantId,
+     amount: amount,
+     currency: 'XOF',
+     provider_codes: ['ORANGE_MONEY'],
+     metadata: {
+       orderId: order.id
+       // Don't include sensitive customer data
+     }
+   });
+   ```
+
+2. **Secure Storage**
+   - Never store full payment details
+   - Encrypt sensitive data at rest
+   - Implement proper access controls
+
+### Error Logging
+
+```typescript
+// Avoid logging sensitive data
+function logError(error: Error, context: object) {
+  const sanitizedContext = {
+    ...context,
+    apiKey: '[REDACTED]',
+    customerPhone: '[REDACTED]'
+  };
+  
+  console.error('Error:', {
+    message: error.message,
+    stack: error.stack,
+    context: sanitizedContext
+  });
+}
+```
+
+## Network Security
+
+### Rate Limiting
+
+Implement rate limiting for your endpoints:
+
+```typescript
+import rateLimit from 'express-rate-limit';
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+
+app.use('/api/', limiter);
+```
+
+### Timeouts
+
+Set appropriate timeouts:
+
+```typescript
+const api = axios.create({
+  timeout: 10000, // 10 seconds
+  headers: {
+    'x-api-key': process.env.LOMI_API_KEY
+  }
+});
+```
+
+## Monitoring and Alerts
+
+1. **Activity Monitoring**
+   ```typescript
+   function monitorAPIUsage(event: APIEvent) {
+     if (event.amount > 1000000) { // Large transaction
+       alertTeam('Large transaction detected', event);
+     }
+     
+     if (event.errorCount > 10) { // Multiple failures
+       alertTeam('Multiple API errors detected', event);
+     }
+   }
+   ```
+
+2. **Suspicious Activity**
+   - Monitor for unusual patterns
+   - Track failed authentication attempts
+   - Alert on unexpected volume spikes
+
+## Development Practices
+
+1. **Code Security**
+   - Keep dependencies updated
+   - Use security linters
+   - Conduct regular security reviews
+
+2. **Environment Separation**
+   ```typescript
+   const config = {
+     development: {
+       apiUrl: 'https://sandbox.lomi.africa',
+       webhookSecret: process.env.DEV_WEBHOOK_SECRET
+     },
+     production: {
+       apiUrl: 'https://api.lomi.africa',
+       webhookSecret: process.env.PROD_WEBHOOK_SECRET
+     }
+   }[process.env.NODE_ENV || 'development'];
+   ```
+
+## Next Steps
+
+- [Error Handling](./error-handling)
+- [Idempotency Keys](./idempotency-keys)
+- [API Reference](/api-reference) 

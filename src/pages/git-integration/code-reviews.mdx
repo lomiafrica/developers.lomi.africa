@@ -1,13 +1,193 @@
 # Code Reviews
 
-Code reviews are an essential part of maintaining a high-quality codebase. When working on your lomi. integration, make sure to:
+Our code review process ensures code quality, knowledge sharing, and maintainability.
 
-1. **Create pull requests**: When a feature or bug fix is complete, create a pull request to merge the changes into the `develop` branch.
+## Pull Request Guidelines
 
-2. **Review code changes**: Have at least one other team member review the code changes in the pull request. Look for potential bugs, security issues, and opportunities for improvement.
+### 1. Title Format
+```bash
+# Format
+<type>(<scope>): <description>
 
-3. **Discuss and address feedback**: Use the pull request comments to discuss any issues or suggestions for improvement. Make sure to address all feedback before merging the changes.
+# Examples
+feat(payments): implement Wave payment provider
+fix(webhooks): handle timeout errors
+docs(api): update authentication guide
+```
 
-4. **Test thoroughly**: Before merging a pull request, make sure to thoroughly test the changes to ensure that they work as expected and do not introduce any new bugs.
+### 2. Description Template
+```markdown
+## Changes
+- Added Wave payment provider integration
+- Implemented webhook signature verification
+- Updated API documentation
 
-By incorporating code reviews into your development process, you can catch potential issues early and ensure that your codebase remains maintainable and secure. 
+## Testing
+- Unit tests added for payment processing
+- Integration tests for webhook handling
+- Manual testing with test credentials
+
+## Screenshots
+[If applicable]
+
+## Related Issues
+Closes #123
+```
+
+## Review Process
+
+### 1. Self Review
+```bash
+# Run tests
+npm test
+
+# Check linting
+npm run lint
+
+# Build documentation
+npm run docs:build
+```
+
+### 2. Code Review
+- Request reviews from relevant team members
+- Address feedback promptly
+- Re-request review after changes
+
+### 3. CI Checks
+- All tests must pass
+- Code coverage requirements met
+- No security vulnerabilities
+- Documentation updated
+
+## Review Checklist
+
+### 1. Code Quality
+- [ ] Follows coding standards
+- [ ] No duplicate code
+- [ ] Proper error handling
+- [ ] Efficient implementation
+
+### 2. Testing
+- [ ] Unit tests added/updated
+- [ ] Integration tests if needed
+- [ ] Edge cases covered
+- [ ] Test coverage maintained
+
+### 3. Security
+- [ ] Input validation
+- [ ] Authentication/Authorization
+- [ ] Sensitive data handling
+- [ ] Security best practices
+
+### 4. Documentation
+- [ ] Code comments
+- [ ] API documentation
+- [ ] README updates
+- [ ] Changelog entry
+
+## Best Practices
+
+### 1. As a Submitter
+```typescript
+// DO: Small, focused changes
+function validatePayment(amount: number): boolean {
+  return amount > 0 && amount <= 1000000;
+}
+
+// DON'T: Multiple unrelated changes
+function validateAndProcessPayment() {
+  // Mixed concerns
+}
+```
+
+### 2. As a Reviewer
+```typescript
+// Good feedback
+// Consider using a type guard for better type safety
+function isValidAmount(amount: unknown): amount is number {
+  return typeof amount === 'number' && amount > 0;
+}
+
+// Unhelpful feedback
+// This is wrong
+```
+
+### 3. Code Examples
+```typescript
+// Before
+function process(data) {
+  if (data) {
+    return data.value;
+  }
+}
+
+// After
+function process(data: InputData): OutputData {
+  if (!data) {
+    throw new Error('Data is required');
+  }
+  return data.value;
+}
+```
+
+## Review Comments
+
+### 1. Constructive Feedback
+```typescript
+// Instead of:
+// This is messy
+
+// Better:
+// Consider extracting this logic into a separate function
+// for better reusability and testing:
+function validateWebhookSignature(
+  payload: string,
+  signature: string
+): boolean {
+  // Implementation
+}
+```
+
+### 2. Suggestions
+```typescript
+// Instead of:
+// Use better names
+
+// Better:
+// Consider more descriptive names:
+// - `processPayment` -> `validateAndProcessPayment`
+// - `data` -> `paymentData`
+```
+
+## After Review
+
+### 1. Addressing Feedback
+```bash
+# Update branch
+git fetch origin
+git rebase origin/develop
+
+# Make changes
+git add .
+git commit -m "fix: address review feedback"
+
+# Force push if needed
+git push --force-with-lease
+```
+
+### 2. Merging
+```bash
+# Squash and merge
+git checkout develop
+git merge --squash feature/payment-method
+
+# Or rebase and merge
+git checkout develop
+git rebase feature/payment-method
+```
+
+## Next Steps
+
+- [Contributing Guidelines](./contributing-guidelines)
+- [Branching Strategy](./branching-strategy)
+- [Best Practices](./best-practices) 

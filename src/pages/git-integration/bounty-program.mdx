@@ -1,33 +1,106 @@
 # Bounty Program
 
-To encourage and reward contributions to lomi., we have established a bounty program. Developers can earn rewards for completing specific tasks, such as:
+> Coming Soon! We're working on launching our bounty program to reward community contributions.
 
-- Developing new payment integrations
-- Implementing new features
-- Solving technical issues and bugs
-- Improving the platform's security
-- Enhancing documentation and tutorials
+## Overview
 
-## Available Bounties
+The lomi. bounty program will reward developers for:
+- Implementing new payment providers
+- Adding new features
+- Fixing critical bugs
+- Improving security
+- Enhancing documentation
 
-Check out our [Bounties Board](https://github.com/lomiafrica/lomi/issues?q=is%3Aissue+is%3Aopen+label%3Abounty) on GitHub to see the list of available bounties and their respective rewards.
+## Program Structure
 
-## Claiming a Bounty
+### 1. Reward Tiers
+```typescript
+interface BountyTier {
+  level: 'easy' | 'medium' | 'hard';
+  reward: number;  // USD
+  timeframe: string;
+}
 
-To claim a bounty, follow these steps:
+const tiers = {
+  easy: {
+    reward: 100,
+    timeframe: '1-2 weeks'
+  },
+  medium: {
+    reward: 250,
+    timeframe: '2-4 weeks'
+  },
+  hard: {
+    reward: 500,
+    timeframe: '4-8 weeks'
+  }
+};
+```
 
-1. Choose a bounty from the [Bounties Board](https://github.com/lomiafrica/lomi/issues?q=is%3Aissue+is%3Aopen+label%3Abounty) that you want to work on.
-2. Comment on the issue, expressing your interest in taking on the bounty.
-3. The lomi. team will review your request and assign the bounty to you if approved.
-4. Work on the bounty, following the contributing guidelines and any specific requirements mentioned in the issue.
-5. Submit a pull request with your solution, referencing the bounty issue.
-6. The lomi. team will review your pull request and merge it if it meets the requirements.
-7. Once your pull request is merged, you will receive the bounty reward.
+### 2. Focus Areas
+- Payment Integration
+- Security Improvements
+- Performance Optimization
+- Developer Experience
+- Documentation
 
-## Bounty Rewards
+## How It Will Work
 
-Bounty rewards are paid out in USD via PayPal or other agreed-upon payment methods. The reward amount for each bounty is specified on the [Bounties Board](https://github.com/lomiafrica/lomi/issues?q=is%3Aissue+is%3Aopen+label%3Abounty).
+### 1. Issue Selection
+```bash
+# Issues will be labeled
+good-first-issue
+bounty-easy
+bounty-medium
+bounty-hard
+```
 
-We reserve the right to modify the bounty program and reward amounts at any time.
+### 2. Claiming Process
+```typescript
+interface BountyClaim {
+  issue_id: string;
+  developer_id: string;
+  proposal: string;
+  timeline: string;
+}
+```
 
-Happy bounty hunting! 
+### 3. Submission Requirements
+- Clean, tested code
+- Documentation updates
+- Test coverage
+- Security considerations
+
+## Payment Process
+
+### 1. Review Criteria
+```typescript
+interface ReviewChecklist {
+  code_quality: boolean;
+  test_coverage: boolean;
+  documentation: boolean;
+  security: boolean;
+}
+```
+
+### 2. Payment Methods
+- PayPal
+- Bank Transfer
+- Crypto (selected currencies)
+
+## Stay Updated
+
+To be notified when the bounty program launches:
+
+1. Star our repository
+2. Watch for announcements
+3. Join our community:
+   - [GitHub Discussions](https://github.com/lomi/api/discussions)
+   - [Twitter](https://twitter.com/lomi_africa)
+   - [Discord](https://discord.gg/lomi) (Coming Soon)
+
+## Next Steps
+
+- [Contributing Guidelines](./contributing-guidelines)
+- [Code of Conduct](./code-of-conduct)
+- [Best Practices](./best-practices) 

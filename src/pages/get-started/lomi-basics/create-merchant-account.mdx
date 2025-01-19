@@ -1,10 +1,65 @@
-# Creating your merchant account
+# Merchant Account
 
-To start using lomi., you first need to create an account. 
+## Creating an Account
 
-1. Visit the [lomi. website](https://lomi.africa) and click on the "Sign Up" button.
-2. Get through the KYC process and fill in your business details, including your company name, contact information, and the payment methods you want to support.
-3. Agree to our terms of service.
-4. You will receive a confirmation email. Click the link in the email to verify your account.
+1. Visit [lomi.africa](https://lomi.africa/sign-up)
+2. Provide business details:
+   - Legal business name
+   - Tax ID
+   - Country of operation
+   - Contact information
 
-Congratulations! You have successfully created your lomi. merchant account. You can now log in to your dashboard and start configuring your payment integration.
+## Account Verification
+
+Required documents:
+- Business registration
+- Owner or legal signatory Government ID
+- Proof of address
+- Bank account details
+
+## API Access
+
+Once verified, access your API credentials:
+
+```typescript
+// Test Environment
+const testClient = new LomiSDK({
+  apiKey: 'lomi_sk_test_...',
+  baseUrl: 'https://sandbox.api.lomi.africa/v1'
+});
+
+// Production Environment
+const liveClient = new LomiSDK({
+  apiKey: 'lomi_sk_live_...',
+  baseUrl: 'https://api.lomi.africa/v1'
+});
+```
+
+## Merchant Information
+
+Retrieve merchant details:
+```typescript
+const merchant = await lomi.merchants.get('merchant_id');
+```
+
+Response example:
+```json
+{
+  "merchant_id": "mer_123",
+  "business_name": "Example Corp",
+  "country": "SN",
+  "currency": "XOF",
+  "status": "active",
+  "capabilities": {
+    "orange_money_payments": "active",
+    "wave_payments": "active",
+    "card_payments": "pending"
+  }
+}
+```
+
+## Next Steps
+
+- [Set Up Payment Methods](./setup-payment-methods)
+- [Process Transactions](./process-transactions)
+- [API Reference](/api-reference)

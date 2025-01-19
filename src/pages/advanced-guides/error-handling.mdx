@@ -1,67 +1,165 @@
 # Error Handling
 
-When integrating with lomi., it's essential to handle errors gracefully to provide a smooth payment experience for your customers. lomi. returns meaningful error codes and messages that you can use to troubleshoot issues and inform your customers about the status of their transactions.
+When integrating with lomi., it's essential to handle errors gracefully to provide a smooth payment experience for your customers. lomi. uses conventional HTTP response codes and returns meaningful error codes and messages that you can use to troubleshoot issues and inform your customers about the status of their transactions.
 
 ## Error Response Format
 
-When an error occurs, lomi. returns an HTTP status code in the 4xx or 5xx range, along with a JSON payload containing more details about the error. The error response format looks like this:
+All errors follow this format:
 
 ```json
 {
   "error": {
-    "code": "error_code",
-    "message": "Error message describing the issue",
-    "details": {
-      "field1": "Detailed error message for field1",
-      "field2": "Detailed error message for field2"
+    "message": "Error description",
+    "code": 400,
+    "details": [
+      {
+        "path": "amount",
+        "message": "Amount must be a positive number"
+      }
+    ]
+  }
+}
+```
+
+## HTTP Status Codes
+
+- `400` Bad Request - Invalid parameters or validation failed
+- `401` Unauthorized - Missing or invalid API key
+- `403` Forbidden - Valid API key but insufficient permissions
+- `404` Not Found - Resource doesn't exist
+- `429` Too Many Requests - Rate limit exceeded
+- `500` Internal Server Error - Something went wrong on our end
+
+## Validation Errors
+
+When request validation fails:
+
+```typescript
+try {
+  const session = await lomi.checkoutSessions.create({
+    amount: -100,  // Invalid: must be positive
+    currency: 'INVALID',  // Invalid: must be 3 letters
+    provider_codes: []  // Invalid: must not be empty
+  });
+} catch (error) {
+  if (error.validationErrors) {
+    // Validation failed with specific field errors
+    error.validationErrors.errors.forEach(err => {
+      console.error(`${err.path}: ${err.message}`);
+    });
+  }
+}
+```
+
+## Authentication Errors
+
+When API key validation fails:
+
+```typescript
+try {
+  const session = await lomi.checkoutSessions.create({
+    // ... parameters
+  });
+} catch (error) {
+  if (error.statusCode === 401) {
+    // Check common authentication issues
+    if (!process.env.LOMI_API_KEY) {
+      console.error('API key not configured');
+    } else if (process.env.LOMI_API_KEY.startsWith('test_')) {
+      console.error('Using test key in production');
+    } else {
+      console.error('Invalid API key');
     }
   }
 }
 ```
 
-## Common Error Codes
+## Rate Limit Errors
 
-Here are some common error codes you might encounter when working with lomi.:
+When you exceed the rate limit (100 requests per 15 minutes):
 
-- `authentication_error`: The API key or authentication token is invalid or missing.
-- `invalid_request_error`: The request is missing required parameters or has invalid values.
-- `payment_method_error`: The specified payment method is invalid or not supported.
-- `transaction_declined`: The payment transaction was declined by the payment provider.
-- `server_error`: An unexpected error occurred on the lomi. server.
-
-For a complete list of error codes and their meanings, refer to the [lomi. API documentation](https://developers.lomi.africa/api-reference/errors).
-
-## Handling Errors in Your Code
-
-When making requests to the lomi. API, check the response status code and handle errors accordingly. Here's an example of handling errors in JavaScript:
-
-```javascript
+```typescript
 try {
-  const response = await axios.post('https://api.lomi.africa/v1/payments', {
-    // Payment request payload
+  const response = await fetch('https://api.lomi.africa/v1/checkout/sessions', {
+    method: 'POST',
+    headers: {
+      'x-api-key': process.env.LOMI_API_KEY
+    }
   });
 
-  if (response.status === 200) {
-    // Payment successful
-  } else {
-    // Payment failed
-    const error = response.data.error;
-    console.error(`Payment failed with code: ${error.code}`);
-    console.error(`Error message: ${error.message}`);
-    // Handle the error based on the error code
-  }
+  // Check rate limit headers
+  console.log({
+    remaining: response.headers.get('X-RateLimit-Remaining'),
+    reset: response.headers.get('X-RateLimit-Reset')
+  });
 } catch (error) {
-  console.error('Request failed:', error);
-  // Handle network or other errors
+  if (error.statusCode === 429) {
+    // Implement exponential backoff
+    const retryAfter = parseInt(error.headers['retry-after'] || '60');
+    await new Promise(resolve => setTimeout(resolve, retryAfter * 1000));
+    // Retry request
+  }
+}
+```
+
+## Provider Errors
+
+When payment provider operations fail:
+
+```typescript
+try {
+  const session = await lomi.checkoutSessions.create({
+    // ... parameters
+  });
+} catch (error) {
+  switch (error.code) {
+    case 'provider_not_available':
+      console.error('Payment provider is temporarily unavailable');
+      break;
+    case 'provider_declined':
+      console.error('Payment declined by provider:', error.message);
+      break;
+    case 'invalid_phone':
+      console.error('Invalid phone number format');
+      break;
+  }
 }
 ```
 
 ## Best Practices
 
-- Handle errors gracefully and provide meaningful feedback to your customers
-- Log errors for debugging and monitoring purposes
-- Retry failed requests with exponential backoff to handle transient issues
-- Use idempotency keys to avoid duplicate transactions in case of retries
-- Keep your integration code up-to-date with the latest lomi. API version and error codes
+1. **Graceful Degradation**
+   - Always provide fallback options
+   - Show user-friendly error messages
+   - Log detailed errors for debugging
 
-By properly handling errors, you can ensure a smooth payment experience for your customers and quickly troubleshoot any issues that arise. 
+2. **Retry Strategy**
+   ```typescript
+   async function withRetry(fn, maxRetries = 3) {
+     for (let i = 0; i < maxRetries; i++) {
+       try {
+         return await fn();
+       } catch (error) {
+         if (error.statusCode === 429 || error.statusCode >= 500) {
+           // Wait longer between each retry
+           await new Promise(resolve => 
+             setTimeout(resolve, Math.pow(2, i) * 1000)
+           );
+           continue;
+         }
+         throw error;
+       }
+     }
+   }
+   ```
+
+3. **Error Monitoring**
+   - Log all errors with context
+   - Track error rates and patterns
+   - Set up alerts for critical errors
+
+## Next Steps
+
+- [Idempotency Keys](./idempotency-keys)
+- [Security Best Practices](./security-best-practices)
+- [API Reference](/api-reference/errors) 

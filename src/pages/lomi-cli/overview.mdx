@@ -1,70 +1,122 @@
 # lomi. CLI
 
-Leveraging lomi. CLI allows you to interact with your account and perform various tasks related to your payment integration setup using simple command-line commands.
+The lomi. CLI helps you integrate lomi.'s payment services into your applications. It provides tools for:
 
-This makes it easier to manage your payment integrations, test your setup in different environments, automate your testing process, and deploy the applicaiton more easily.
+- Project initialization and configuration
+- Payment operations management
+- Webhook endpoint configuration
+- API key management
+- Integration status monitoring
 
 ## Installation
 
-To install the lomi. CLI, use the package manager of your choice, such as NPM:
+Install the lomi. CLI using npm:
 
 ```bash copy
-npm install -g @lomi/cli
+npm install lomi.cli
 ```
 
 ## Authentication
 
-To use the lomi. CLI, you need to authenticate with your lomi. account. You can do this by setting the `LOMI_API_KEY` environment variable to your API key:
+The CLI requires authentication to interact with the lomi. API. You can authenticate using:
 
+1. **Environment Variable**:
 ```bash copy
 export LOMI_API_KEY=your_api_key_here
 ```
 
-Alternatively, you can pass the API key as a command-line argument using the `--api-key` flag:
-
+2. **Interactive Login**:
 ```bash copy
-lomi --api-key your_api_key_here command
+lomi login
 ```
 
-## Commands
+## Core Commands
 
-### `lomi setup`
+### `lomi init`
 
-The `setup` command helps you set up your lomi. integration by guiding you through the process of creating a merchant account, setting up payment methods, and configuring your integration settings.
-
-```bash copy
-lomi setup
-```
-
-### `lomi test`
-
-The `test` command allows you to test your payment integration by simulating transactions and verifying that your integration is working as expected.
+Initializes a new lomi. project in your current directory:
 
 ```bash copy
-lomi test
+lomi init
 ```
 
-### `lomi transactions`
+This command:
+- Creates a `lib/lomi.ts` file with client configuration
+- Sets up environment variables in `.env`
+- Installs the lomi. client package
+- Configures your API key
 
-The `transactions` command allows you to view and manage your transactions. You can list recent transactions, view transaction details, and perform actions such as refunds or captures.
+### `lomi dev`
+
+Starts the development environment:
 
 ```bash copy
-lomi transactions list
-lomi transactions view <transaction_id>
-lomi transactions refund <transaction_id>
-lomi transactions capture <transaction_id>
+lomi dev
 ```
 
-### `lomi webhooks`
+Features:
+- Local development server
+- Integration testing support
+- Environment configuration
 
-The `webhooks` command allows you to manage your webhooks. You can list your registered webhooks, create new webhooks, and delete existing webhooks.
+### `lomi status`
+
+Displays your integration status:
 
 ```bash copy
-lomi webhooks list
-lomi webhooks create --url <webhook_url> --events <comma_separated_events>
-lomi webhooks delete <webhook_id>
+lomi status
 ```
 
-## Support
+Shows:
+- API connectivity status
+- Account information
+- Integration health
 
-If you encounter any issues or have any questions or feedback, please contact our support team at [hello@lomi.africa](mailto:hello@lomi.africa) or visit our [documentation](https://developers.lomi.africa) for more information.
+### `lomi payments`
+
+Manage payment operations:
+
+```bash copy
+# List payments
+lomi payments list
+
+# Get payment details
+lomi payments get <payment_id>
+```
+
+### `lomi webhook`
+
+Manage webhook endpoints:
+
+```bash copy
+# Register new webhook
+lomi webhook register
+
+# List webhooks
+lomi webhook list --merchant-id <merchant_id>
+```
+
+### `lomi api-key`
+
+Manage API keys:
+
+```bash copy
+# List keys
+lomi api-key list
+
+# Create key
+lomi api-key create
+```
+
+## Global Options
+
+- `--api-key`: Set API key
+- `--env`: Set environment (default: 'production')
+- `--json`: JSON output format
+
+## Next Steps
+
+- [Configuration](./configuration) - Configure the CLI
+- [Webhook Development](./webhook-development) - Set up webhooks
+
+For command details, use `lomi help [command]`. For support, contact [hello@lomi.africa](mailto:hello@lomi.africa).

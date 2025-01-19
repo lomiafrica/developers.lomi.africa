@@ -1,0 +1,319 @@
+# CI/CD Integration
+
+This guide covers best practices for integrating lomi with your CI/CD pipeline, ensuring reliable deployments and automated testing.
+
+## Environment Setup
+
+### 1. Environment Variables
+
+```yaml
+# .env.ci
+LOMI_API_KEY=test_key_xxx
+LOMI_WEBHOOK_SECRET=whsec_xxx
+LOMI_ENV=test
+```
+
+### 2. Secrets Management
+
+```typescript
+// config/secrets.ts
+export function loadSecrets() {
+  const requiredSecrets = [
+    'LOMI_API_KEY',
+    'LOMI_WEBHOOK_SECRET'
+  ];
+  
+  for (const secret of requiredSecrets) {
+    if (!process.env[secret]) {
+      throw new Error(`Missing required secret: ${secret}`);
+    }
+  }
+}
+```
+
+## GitHub Actions
+
+### 1. Test Workflow
+
+```yaml
+# .github/workflows/test.yml
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run tests
+        run: npm test
+        env:
+          LOMI_API_KEY: ${{ secrets.LOMI_TEST_API_KEY }}
+          LOMI_WEBHOOK_SECRET: ${{ secrets.TEST_WEBHOOK_SECRET }}
+          LOMI_ENV: test
+```
+
+### 2. Deploy Workflow
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches: [ main ]
+    
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+          
+      - name: Deploy to production
+        run: |
+          npm ci
+          npm run build
+          npm run deploy
+        env:
+          LOMI_API_KEY: ${{ secrets.LOMI_PROD_API_KEY }}
+          LOMI_WEBHOOK_SECRET: ${{ secrets.PROD_WEBHOOK_SECRET }}
+          LOMI_ENV: production
+```
+
+## Automated Testing
+
+### 1. Pre-deployment Tests
+
+```typescript
+// scripts/pre-deploy.ts
+import { LomiSDK } from '@lomi/sdk';
+
+async function runPreDeploymentChecks() {
+  const lomi = new LomiSDK({
+    apiKey: process.env.LOMI_API_KEY
+  });
+  
+  // 1. Verify API connectivity
+  await lomi.merchants.list();
+  
+  // 2. Test webhook endpoint
+  const webhookTest = await lomi.webhooks.test({
+    url: process.env.WEBHOOK_URL
+  });
+  
+  if (!webhookTest.success) {
+    throw new Error('Webhook test failed');
+  }
+  
+  // 3. Verify provider availability
+  const providers = await lomi.providers.list();
+  if (providers.length === 0) {
+    throw new Error('No payment providers available');
+  }
+}
+```
+
+### 2. Integration Tests
+
+```typescript
+// tests/integration/payment.test.ts
+describe('Payment Integration', () => {
+  const lomi = new LomiSDK({
+    apiKey: process.env.LOMI_API_KEY
+  });
+  
+  beforeAll(async () => {
+    // Setup test environment
+    await setupTestEnvironment();
+  });
+  
+  it('should process payment end-to-end', async () => {
+    // Create session
+    const session = await lomi.checkoutSessions.create({
+      merchant_id: process.env.TEST_MERCHANT_ID,
+      amount: 1000,
+      currency: 'XOF',
+      provider_codes: ['FREE_MONEY']
+    });
+    
+    // Simulate payment
+    await lomi.test.simulatePayment(session.id);
+    
+    // Verify success
+    const updated = await lomi.checkoutSessions.retrieve(
+      session.id
+    );
+    expect(updated.status).toBe('succeeded');
+  });
+});
+```
+
+## Deployment Strategies
+
+### 1. Blue-Green Deployment
+
+```typescript
+// scripts/deploy.ts
+async function blueGreenDeploy() {
+  // 1. Deploy to staging
+  await deploy('staging');
+  
+  // 2. Run health checks
+  const health = await checkHealth('staging');
+  if (!health.ok) {
+    await rollback('staging');
+    throw new Error('Health check failed');
+  }
+  
+  // 3. Switch traffic
+  await switchTraffic('staging', 'production');
+  
+  // 4. Monitor for errors
+  await monitorDeployment();
+}
+```
+
+### 2. Canary Deployment
+
+```typescript
+// scripts/canary.ts
+async function canaryDeploy() {
+  // 1. Deploy to canary
+  await deploy('canary', { capacity: '10%' });
+  
+  // 2. Monitor metrics
+  const metrics = await monitorCanary({
+    duration: '1h',
+    errorThreshold: 0.1
+  });
+  
+  if (metrics.errorRate > 0.1) {
+    await rollback('canary');
+    throw new Error('Canary failed');
+  }
+  
+  // 3. Scale up deployment
+  await scaleDeployment('canary', '100%');
+}
+```
+
+## Monitoring
+
+### 1. Health Checks
+
+```typescript
+// monitoring/health.ts
+export async function checkServiceHealth() {
+  try {
+    // 1. API health
+    await lomi.merchants.list();
+    
+    // 2. Webhook health
+    const webhooks = await lomi.webhooks.list();
+    const activeWebhooks = webhooks.filter(
+      w => w.status === 'active'
+    );
+    
+    if (activeWebhooks.length === 0) {
+      throw new Error('No active webhooks');
+    }
+    
+    // 3. Database health
+    await db.raw('SELECT 1');
+    
+    return { status: 'healthy' };
+  } catch (error) {
+    return {
+      status: 'unhealthy',
+      error: error.message
+    };
+  }
+}
+```
+
+### 2. Metrics Collection
+
+```typescript
+// monitoring/metrics.ts
+export function collectMetrics() {
+  return {
+    // Payment metrics
+    payments: {
+      success: getSuccessRate(),
+      volume: getPaymentVolume(),
+      latency: getAverageLatency()
+    },
+    
+    // Webhook metrics
+    webhooks: {
+      delivery: getDeliveryRate(),
+      latency: getWebhookLatency()
+    },
+    
+    // System metrics
+    system: {
+      memory: getMemoryUsage(),
+      cpu: getCPUUsage(),
+      errors: getErrorRate()
+    }
+  };
+}
+```
+
+## Rollback Procedures
+
+### 1. Automated Rollback
+
+```typescript
+// scripts/rollback.ts
+async function automaticRollback(deployment: string) {
+  try {
+    // 1. Stop traffic to new version
+    await stopTraffic(deployment);
+    
+    // 2. Restore previous version
+    await restorePreviousVersion();
+    
+    // 3. Verify rollback
+    const health = await checkHealth('production');
+    if (!health.ok) {
+      throw new Error('Rollback verification failed');
+    }
+    
+    // 4. Notify team
+    await notifyTeam('Rollback completed');
+  } catch (error) {
+    await notifyTeam('Manual intervention required');
+    throw error;
+  }
+}
+```
+
+## Next Steps
+
+- [Testing Guide](./testing)
+- [Security Best Practices](./security-best-practices)
+- [API Reference](/api-reference) 
