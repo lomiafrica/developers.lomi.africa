@@ -74,7 +74,7 @@ export const EditorLayout = ({ pmCode, computedTranslation, setPmCode, layoutMod
         <ResizableHandle className="opacity-70" />
         <ResizablePanel defaultSize={50} className={cn("flex relative", rowMode ? openDialog ? "transition-none my-1" : "my-1" : "w-full")}>
           <div className="absolute bottom-2 right-2 z-30 p-1 rounded-tl-md rounded-br-md">
-            <Image src="/43.png" alt="lomi. code" height={30} width={30} />
+            <Image src="/max.png" alt="lomi. code" height={30} width={30} />
           </div>
           <Editor
             options={editorOptions}

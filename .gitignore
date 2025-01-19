@@ -7,6 +7,10 @@
 # testing
 /coverage
 
+# cache
+/.mypy_cache
+/.husky
+
 # next.js
 /.next/
 /out/
@@ -17,6 +21,8 @@
 # misc
 .DS_Store
 *.pem
+FIRSTPRINCIPLES.md
+.cursorrules
 
 # debug
 npm-debug.log*
@@ -32,3 +38,11 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# next.js configs
+next.config.js
+next.config.cjs
+!next.config.mjs
+
+# old meta files
+**/_meta.json

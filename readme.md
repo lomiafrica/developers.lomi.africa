@@ -24,11 +24,11 @@ For detailed instructions and guides, please refer to our [documentation](https:
 
 ## Contributing
 
-We welcome contributions to improve lomi. and its documentation. If you find any issues or have suggestions, please open an issue or submit a pull request on our [GitHub repository](https://github.com/lomiafrica/lomi-docs).
+We welcome contributions to improve lomi. and its documentation. If you find any issues or have suggestions, please open an issue or submit a pull request on our [GitHub repository](https://github.com/lomiafrica/developers.lomi.africa).
 
 ## Support
 
-If you need any assistance or have questions about the product or the team, please reach out to [support@lomi.africa](mailto:support@lomi.africa) or visit our [support center](https://lomi.africa/support).
+If you need any assistance or have questions about the product or the team, please reach out to [hello@lomi.africa](mailto:hello@lomi.africa) or visit our [support center](https://lomi.africa/support).
 
 ## License
 
