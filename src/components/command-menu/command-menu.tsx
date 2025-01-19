@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { CommandDialog, CommandList } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
-import { CommandIcon, Expand, Search, Shrink } from "lucide-react";
+import { Expand, Search, Shrink } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import jsonFileCache from "@/lib/cache/fileCache.json";
@@ -16,28 +16,27 @@ import { HistoryType } from "@/lib/types/history";
 
 const defaultSuggestions = [
   {
-    title: "Get Started",
+    title: "Popular Topics",
     items: [
-      { name: "Introduction", path: "/introduction" },
-      { name: "Get Started", path: "/get-started" },
-      { name: "Git Integration", path: "/git-integration" },
+      { name: "Authentication", path: "/api-reference/authentication", description: "Learn how to authenticate with the Lomi API" },
+      { name: "Webhooks", path: "/api-reference/webhooks", description: "Set up and manage webhooks for real-time updates" },
+      { name: "Error Handling", path: "/api-reference/errors", description: "Common errors and how to handle them" },
     ]
   },
   {
-    title: "API Reference",
+    title: "Quick Start",
     items: [
-      { name: "API Overview", path: "/api-reference/overview" },
-      { name: "Authentication", path: "/api-reference/authentication" },
-      { name: "Data Models", path: "/api-reference/data-models" },
-      { name: "Webhooks", path: "/api-reference/webhooks" },
+      { name: "Introduction", path: "/introduction", description: "Get started with Lomi's payment platform" },
+      { name: "API Overview", path: "/api-reference/overview", description: "High-level overview of the Lomi API" },
+      { name: "Data Models", path: "/api-reference/data-models", description: "Understanding Lomi's data structures" },
     ]
   },
   {
-    title: "Advanced Topics",
+    title: "Developer Tools",
     items: [
-      { name: "Advanced Guides", path: "/advanced-guides" },
-      { name: "License Management", path: "/license-management" },
-      { name: "Lomi CLI", path: "/lomi-cli" },
+      { name: "Git Integration", path: "/git-integration", description: "Connect your repository with Lomi" },
+      { name: "Lomi CLI", path: "/lomi-cli", description: "Command-line tools for Lomi developers" },
+      { name: "License Management", path: "/license-management", description: "Manage your Lomi licenses" },
     ]
   }
 ];
@@ -57,40 +56,25 @@ export const CommandMenu = ({
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    const filteredFiles = Object.values(fileCache).filter((file) => {
-      const searchLower = searchValue.toLowerCase();
-      const isPage = file.path.startsWith('src/pages/');
-      const isMarkdown = file.path.endsWith('.mdx') || file.path.endsWith('.md');
+    // Filter fileCache based on the searchValue
+    const filteredFiles = Object.values(fileCache).filter(
+      (file) =>
+        file.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        file.content.toLowerCase().includes(searchValue.toLowerCase()),
+    );
 
-      if (!isPage || !isMarkdown) return false;
-
-      return (
-        file.name.toLowerCase().includes(searchLower) ||
-        file.content.toLowerCase().includes(searchLower) ||
-        file.path.toLowerCase().includes(searchLower)
-      );
-    });
-
-    const groupedFiles = filteredFiles.reduce((acc, file) => {
-      // Extract section from path, e.g., "api-reference" from "src/pages/api-reference/overview.mdx"
-      const pathParts = file.path.split('/');
-      const sectionIndex = pathParts.indexOf('pages') + 1;
-      const section = pathParts[sectionIndex] || 'Other';
-
-      // Format section name
-      const formattedSection = section
-        .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-
-      if (!acc[formattedSection]) {
-        acc[formattedSection] = [file];
-      } else {
-        acc[formattedSection].push(file);
-      }
-      return acc;
-    }, {} as Record<string, FileData[]>);
-
+    const groupedFiles = filteredFiles.reduce(
+      (acc, file) => {
+        const { parentName, ...rest } = file;
+        if (!acc[parentName ?? ""]) {
+          acc[parentName ?? ""] = [{ ...rest, parentName }];
+        } else {
+          acc[parentName ?? ""].push({ ...rest, parentName });
+        }
+        return acc;
+      },
+      {} as Record<string, FileData[]>,
+    );
     setResults(groupedFiles);
   }, [searchValue, fileCache]);
 
@@ -119,51 +103,87 @@ export const CommandMenu = ({
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen} expanded={expanded}>
-      <div className="flex items-center border-b px-3">
-        <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+      <div className="flex items-center border-b-2 pl-3">
+        <Search height={16} width={16} />
         <Input
-          placeholder="Search documentation..."
-          className="h-11 flex-1 border-0 bg-transparent px-3 py-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-0"
+          placeholder="Search in the documentation..."
+          className="ml-1 py-6 border-0 rounded-none !shadow-none focus-visible:!shadow-none !ring-offset-0 !ring-0"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
         <Button
           variant="ghost"
+          className="px-2"
           size="icon"
-          className="h-8 w-8 shrink-0"
           onClick={() => setExpanded((expanded) => !expanded)}
         >
           {expanded ? (
-            <Shrink className="h-4 w-4" />
+            <Shrink height={16} width={16} />
           ) : (
-            <Expand className="h-4 w-4" />
+            <Expand height={16} width={16} />
           )}
         </Button>
       </div>
 
-      <CommandList className={cn("h-[min(400px,60vh)] overflow-y-auto p-4", expanded && "h-[80vh]")}>
+      <CommandList
+        className={cn(
+          "overflow-y-auto transition-all duration-200",
+          expanded
+            ? "min-h-[85vh] h-[85vh] w-full max-w-[1400px] p-6"
+            : "min-h-[65vh] h-[65vh] w-full max-w-2xl p-4"
+        )}
+      >
         {searchValue.length === 0 ? (
           Object.keys(history || {}).length > 0 ? (
-            <div className={cn("space-y-4", expanded && "px-4")}>
-              <History
-                history={history}
-                setOpen={setOpen}
-                expanded={expanded}
-              />
+            <div
+              className={cn(
+                "flex flex-col w-full px-2 sm:px-3",
+                expanded && "px-2 sm:px-10",
+              )}
+            >
+              <div className="space-y-1">
+                <h2 className="px-2 text-sm font-medium text-muted-foreground">Recent Searches</h2>
+                <History
+                  history={history}
+                  setOpen={setOpen}
+                  expanded={expanded}
+                />
+              </div>
+              <div className="border-t pt-4 mt-4">
+                <h2 className="px-2 mb-2 text-sm font-medium text-muted-foreground">Suggested</h2>
+                {defaultSuggestions.map((section) => (
+                  <div key={section.title} className="mb-4">
+                    <h3 className="px-2 mb-1 text-xs font-medium text-muted-foreground/70">{section.title}</h3>
+                    <div className="space-y-1">
+                      {section.items.map((item) => (
+                        <button
+                          key={item.path}
+                          className="w-full text-left px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                          onClick={() => handleSuggestionClick(item)}
+                        >
+                          <div className="font-medium">{item.name}</div>
+                          <div className="text-xs text-muted-foreground line-clamp-1">{item.description}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
             <div className="space-y-6">
               {defaultSuggestions.map((section) => (
                 <div key={section.title} className="px-2">
-                  <h2 className="mb-2 text-sm font-semibold text-muted-foreground">{section.title}</h2>
-                  <div className="space-y-2">
+                  <h2 className="mb-2 text-sm font-medium text-muted-foreground">{section.title}</h2>
+                  <div className="space-y-1">
                     {section.items.map((item) => (
                       <button
                         key={item.path}
-                        className="flex w-full items-center rounded-sm px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                        className="flex flex-col w-full text-left px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
                         onClick={() => handleSuggestionClick(item)}
                       >
-                        {item.name}
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-xs text-muted-foreground line-clamp-1">{item.description}</span>
                       </button>
                     ))}
                   </div>
@@ -172,23 +192,21 @@ export const CommandMenu = ({
             </div>
           )
         ) : Object.keys(results || {}).length === 0 ? (
-          <div className="flex items-center justify-center py-16">
+          <div className="flex items-center justify-center w-full h-20">
             <Typography variant="muted">
               No results for &quot;<strong>{searchValue}</strong>&quot;
             </Typography>
           </div>
         ) : (
-          <div className="space-y-4">
-            {Object.entries(results || {}).map(([key, fileGroup]) => (
-              <ResultGroup
-                results={fileGroup}
-                key={`result_group_${key}_${searchValue}`}
-                className={cn(expanded && "px-4")}
-                keyword={searchValue}
-                setOpen={setOpen}
-              />
-            ))}
-          </div>
+          Object.entries(results || {}).map(([key, fileGroup]) => (
+            <ResultGroup
+              results={fileGroup}
+              key={`result_group_${key}_${searchValue}`}
+              className={cn("mt-2 sm:mt-4", expanded && "px-2 sm:px-10")}
+              keyword={searchValue}
+              setOpen={setOpen}
+            />
+          ))
         )}
       </CommandList>
     </CommandDialog>
