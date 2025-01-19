@@ -40,10 +40,10 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://developers.lomi.africa',
     title: 'lomi. | Developer Documentation',
-    description: "Documentation website for the lomi. API - The open source Generative AI 3D asset creation and distribution platform.",
+    description: "Documentation website for the lomi. API - The open source payment orchestration platform powering West-African businesses",
     siteName: 'lomi. | Developer Documentation',
     images: [{
-      url: '/og-image.png',
+      url: '/lomi-icon.png',
       width: 1200,
       height: 630,
       alt: 'lomi. Documentation'
@@ -53,27 +53,20 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'lomi. | Developer Documentation',
     description: "Documentation website for the lomi. API - The open source payment orchestration platform powering West-African businesses",
-    images: ['/og-image.png'],
+    images: ['/lomi-icon.png'],
     creator: '@lomi',
   },
   icons: {
     icon: [
       {
-        url: "/lomi.png",
-        href: "/lomi.png",
-        sizes: "32x32",
-        type: "image/png",
-      },
-      {
-        url: "/lomi.png",
-        href: "/lomi.png",
-        sizes: "192x192",
-        type: "image/png",
+        url: "/favicon.ico",
+        href: "/favicon.ico",
+        sizes: "any",
       },
     ],
     apple: [
       {
-        url: "/lomi.png",
+        url: "/favicon.ico",
         sizes: "180x180",
         type: "image/png",
       },
@@ -81,7 +74,7 @@ export const metadata: Metadata = {
     other: [
       {
         rel: "mask-icon",
-        url: "/lomi.png",
+        url: "/favicon.ico",
       },
     ],
   },

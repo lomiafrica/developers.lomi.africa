@@ -1,0 +1,78 @@
+# Authentication
+
+The lomi.africa API uses API keys for authentication. All API requests must include your API key in the headers.
+
+## API Keys
+
+Your API key should be included in the `X-API-KEY` header of all requests:
+
+```bash
+X-API-KEY: your_api_key_here
+```
+
+## Example Request
+
+```bash
+curl -X GET "https://api.lomi.africa/v1/merchants/123" \
+  -H "X-API-KEY: your_api_key_here" \
+  -H "Content-Type: application/json"
+```
+
+```typescript
+import { LomiClient } from '@lomi/sdk';
+
+const lomi = new LomiClient({
+  apiKey: 'your_api_key_here'
+});
+```
+
+## Security Best Practices
+
+1. **Keep Keys Secure**
+   - Never expose API keys in client-side code
+   - Don't commit API keys to version control
+   - Use environment variables to store keys
+
+2. **Key Rotation**
+   - Rotate keys periodically
+   - Immediately rotate compromised keys
+   - Use different keys for development and production
+
+3. **Access Control**
+   - Use test keys for development
+   - Limit key access to necessary team members
+   - Monitor key usage regularly
+
+## Test vs Production Keys
+
+- **Test Keys**: Start with `test_` prefix
+  - Use for development and testing
+  - No real transactions processed
+  - Test provider integrations available
+
+- **Production Keys**: Start with `live_` prefix
+  - Use for real transactions
+  - Actual money movement
+  - Real provider integrations
+
+## Getting API Keys
+
+1. [Sign up](https://dashboard.lomi.africa/signup) for a lomi.africa account
+2. Complete the merchant verification process
+3. Navigate to API Settings in your dashboard
+4. Generate API keys for test and production environments
+
+## Key Management
+
+You can manage your API keys from the [Dashboard](https://dashboard.lomi.africa/settings/api):
+- Generate new keys
+- Revoke existing keys
+- View key usage statistics
+- Set key permissions and restrictions
+
+## Rate Limiting
+
+API keys are subject to rate limiting:
+- Test keys: 100 requests per minute
+- Production keys: 1000 requests per minute
+- Custom limits available for enterprise plans 

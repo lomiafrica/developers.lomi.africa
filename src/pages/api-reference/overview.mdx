@@ -1,0 +1,69 @@
+# API Overview
+
+The lomi.africa Payments API is a powerful payment orchestration platform that enables businesses to accept payments across multiple providers and payment methods in Africa.
+
+## Base URL
+
+All API requests should be made to:
+
+```bash
+https://api.lomi.africa/v1
+```
+
+## Key Features
+
+- **Multiple Payment Providers**: Support for major payment providers including Orange Money, Wave, MTN, Moov, Airtel, M-Pesa, and more
+- **Various Payment Methods**: Accept payments via Mobile Money, Cards, Bank Transfers, USSD, QR Codes, and Digital Wallets
+- **Subscription Management**: Create and manage recurring billing plans with flexible frequencies
+- **Payment Links**: Generate shareable payment links for quick collection
+- **Webhook Integration**: Real-time notifications for payment events
+- **Comprehensive Reporting**: Detailed transaction history and analytics
+- **Multi-Currency Support**: Handle transactions in XOF, USD, and EUR
+
+## API Versioning
+
+The current version is `v1`. We maintain backward compatibility and notify of any breaking changes in advance.
+
+## Rate Limiting
+
+The API implements rate limiting to ensure stability. Rate limits are applied on a per-API-key basis. Contact support for custom limits.
+
+## Response Format
+
+All responses are returned in JSON format. Successful responses include the requested data, while error responses include error details and messages.
+
+Example success response:
+```json
+{
+  "data": {
+    "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
+    "status": "completed"
+  }
+}
+```
+
+Example error response:
+```json
+{
+  "code": "invalid_request",
+  "message": "Invalid currency code provided",
+  "details": {
+    "field": "currency_code",
+    "value": "XXX"
+  }
+}
+```
+
+## SDK Support
+
+We provide official SDKs for:
+- Node.js/TypeScript
+- Python (coming soon)
+- PHP (coming soon)
+- Go (coming soon)
+
+## Need Help?
+
+- Join our [Developer Community](https://community.lomi.africa)
+- Contact [Support](mailto:support@lomi.africa)
+- Read our [API Status](https://status.lomi.africa) 

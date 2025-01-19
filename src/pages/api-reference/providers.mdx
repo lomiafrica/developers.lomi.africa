@@ -1,0 +1,228 @@
+# Payment Providers
+
+This guide details the payment providers available through Lomi's API and their specific requirements.
+
+## Overview
+
+Lomi supports multiple payment providers across Africa, each with its own features and requirements:
+
+| Provider | Countries | Methods | Currencies |
+|----------|-----------|----------|------------|
+| Orange Money | SN, ML, BF | Mobile Money | XOF |
+| Wave | SN, CI | Mobile Money, QR | XOF |
+| MTN | CI, BF | Mobile Money | XOF |
+| Moov | SN, CI | Mobile Money | XOF |
+| Ecobank | Global | Cards | XOF, USD, EUR |
+| M-Pesa | KE | Mobile Money | USD |
+
+## Provider Setup
+
+### Orange Money
+```typescript
+// Connect Orange Money account
+const provider = await lomi.providers.connect({
+  provider_code: 'ORANGE',
+  phone_number: '+221777777777',
+  merchant_code: 'OM123456'
+});
+
+// Create transaction
+const transaction = await lomi.transactions.create({
+  provider_code: 'ORANGE',
+  payment_method_code: 'MOBILE_MONEY',
+  amount: 1000,
+  currency_code: 'XOF',
+  customer_phone: '+221777777777'
+});
+```
+
+#### Requirements
+- Merchant account with Orange Money
+- Business KYC verification
+- Valid merchant code
+- API credentials
+
+### Wave
+```typescript
+// Connect Wave account
+const provider = await lomi.providers.connect({
+  provider_code: 'WAVE',
+  business_id: 'WAVE123456',
+  api_key: 'wave_api_key'
+});
+
+// Create QR code payment
+const qr = await lomi.qrCodes.create({
+  provider_code: 'WAVE',
+  amount: 1000,
+  currency_code: 'XOF'
+});
+```
+
+#### Requirements
+- Wave Business account
+- Business verification
+- API credentials
+- Callback URL configuration
+
+## Provider Features
+
+### Orange Money
+
+- **Payment Methods**
+  - USSD push payments
+  - QR code payments
+  - Direct debit
+  
+- **Limits**
+  - Min: 100 XOF
+  - Max: 1,000,000 XOF per transaction
+  - Daily: 2,000,000 XOF
+  
+- **Features**
+  - Instant notifications
+  - Refund support
+  - Recurring payments
+  - Split payments
+
+### Wave
+
+- **Payment Methods**
+  - QR code payments
+  - Direct payments
+  - Payment links
+  
+- **Limits**
+  - Min: 100 XOF
+  - Max: 2,000,000 XOF per transaction
+  - Daily: 5,000,000 XOF
+  
+- **Features**
+  - Real-time notifications
+  - Instant refunds
+  - Business profiles
+  - Analytics dashboard
+
+## Testing
+
+### Test Credentials
+
+Each provider has specific test credentials:
+
+```typescript
+// Orange Money test account
+const lomi = new LomiClient({
+  apiKey: 'test_key',
+  provider_credentials: {
+    ORANGE: {
+      test_numbers: ['+221770000000', '+221770000001'],
+      merchant_code: 'TEST123'
+    }
+  }
+});
+```
+
+### Test Scenarios
+
+#### Successful Payment
+```typescript
+const transaction = await lomi.transactions.create({
+  provider_code: 'ORANGE',
+  amount: 1000,
+  customer_phone: '+221770000000' // Test success number
+});
+```
+
+#### Failed Payment
+```typescript
+const transaction = await lomi.transactions.create({
+  provider_code: 'ORANGE',
+  amount: 1000,
+  customer_phone: '+221770000001' // Test failure number
+});
+```
+
+## Provider-Specific Errors
+
+### Orange Money Errors
+| Code | Description | Resolution |
+|------|-------------|------------|
+| `INSUFFICIENT_BALANCE` | Customer lacks funds | Ask customer to top up |
+| `INVALID_PIN` | Wrong PIN entered | Ask customer to retry |
+| `DAILY_LIMIT` | Daily limit exceeded | Try different provider |
+
+### Wave Errors
+| Code | Description | Resolution |
+|------|-------------|------------|
+| `USER_CANCELLED` | User cancelled payment | Prompt to retry |
+| `ACCOUNT_LOCKED` | Account security lock | Contact Wave support |
+| `INVALID_BUSINESS` | Invalid business account | Verify credentials |
+
+## Best Practices
+
+### 1. Provider Selection
+```typescript
+// Check provider availability
+const providers = await lomi.providers.list({
+  country: 'SN',
+  currency: 'XOF'
+});
+
+// Sort by priority
+const preferredProvider = providers.sort((a, b) => 
+  b.success_rate - a.success_rate
+)[0];
+```
+
+### 2. Fallback Strategy
+```typescript
+async function processPayment(data) {
+  const providers = ['ORANGE', 'WAVE', 'MTN'];
+  
+  for (const provider of providers) {
+    try {
+      return await lomi.transactions.create({
+        ...data,
+        provider_code: provider
+      });
+    } catch (error) {
+      if (error.code === 'provider_unavailable') {
+        continue; // Try next provider
+      }
+      throw error;
+    }
+  }
+}
+```
+
+### 3. Provider Health Monitoring
+```typescript
+// Monitor provider status
+const status = await lomi.providers.getStatus('ORANGE');
+if (status.health !== 'healthy') {
+  // Use fallback provider
+}
+```
+
+## Integration Checklist
+
+- [ ] Provider account setup
+- [ ] API credentials configuration
+- [ ] Webhook endpoint setup
+- [ ] Test transactions verification
+- [ ] Error handling implementation
+- [ ] Monitoring setup
+- [ ] Production verification
+
+## Support
+
+Each provider has dedicated support channels:
+
+- Orange Money: support@orange.com
+- Wave: merchant.support@wave.com
+- MTN: api.support@mtn.com
+
+For general integration support:
+- Email: support@lomi.africa
+- Documentation: https://developers.lomi.africa
+- Status page: https://status.lomi.africa 

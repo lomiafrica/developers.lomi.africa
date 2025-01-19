@@ -1,0 +1,191 @@
+# Error Handling
+
+## Error Types
+
+All API errors follow a consistent structure that includes an error code, message, and additional details when available.
+
+```json
+{
+  "code": "invalid_request",
+  "message": "The provided currency is not supported",
+  "details": {
+    "field": "currency_code",
+    "value": "GBP",
+    "allowed_values": ["XOF", "USD", "EUR"]
+  }
+}
+```
+
+## Error Categories
+
+### Authentication Errors (401)
+| Code | Description | Resolution |
+|------|-------------|------------|
+| `invalid_api_key` | Invalid API key provided | Check your API key is correct and active |
+| `expired_api_key` | API key has expired | Generate a new API key in the dashboard |
+| `missing_api_key` | No API key provided | Include X-API-KEY header in your request |
+
+### Authorization Errors (403)
+| Code | Description | Resolution |
+|------|-------------|------------|
+| `insufficient_permissions` | API key lacks required permissions | Request additional permissions or use a different key |
+| `account_inactive` | Merchant account is inactive | Contact support to reactivate your account |
+| `rate_limit_exceeded` | Too many requests | Implement exponential backoff in your integration |
+
+### Validation Errors (400)
+| Code | Description | Resolution |
+|------|-------------|------------|
+| `invalid_amount` | Invalid transaction amount | Ensure amount is positive and within limits |
+| `invalid_currency` | Unsupported currency code | Use one of: XOF, USD, EUR |
+| `invalid_phone` | Invalid phone number format | Use international format: +221XXXXXXXXX |
+| `missing_required_field` | Required field not provided | Check the API reference for required fields |
+
+### Resource Errors (404)
+| Code | Description | Resolution |
+|------|-------------|------------|
+| `merchant_not_found` | Merchant ID doesn't exist | Verify the merchant_id is correct |
+| `transaction_not_found` | Transaction not found | Check the transaction_id |
+| `customer_not_found` | Customer doesn't exist | Verify the customer_id |
+
+### Provider Errors (503)
+| Code | Description | Resolution |
+|------|-------------|------------|
+| `provider_unavailable` | Payment provider is offline | Retry the request or try a different provider |
+| `provider_timeout` | Provider request timed out | Retry with exponential backoff |
+| `provider_rejected` | Provider rejected transaction | Check provider-specific error details |
+
+## Error Handling Best Practices
+
+### Implement Retry Logic
+```typescript
+import { LomiClient, ProviderError } from '@lomi/sdk';
+
+async function processPayment(data) {
+  const maxRetries = 3;
+  let attempt = 0;
+
+  while (attempt < maxRetries) {
+    try {
+      const result = await lomi.transactions.create(data);
+      return result;
+    } catch (error) {
+      if (error instanceof ProviderError && error.isRetryable()) {
+        attempt++;
+        await sleep(Math.pow(2, attempt) * 1000); // Exponential backoff
+        continue;
+      }
+      throw error;
+    }
+  }
+}
+```
+
+### Handle Rate Limits
+```typescript
+import { RateLimitError } from '@lomi/sdk';
+
+try {
+  await lomi.transactions.list();
+} catch (error) {
+  if (error instanceof RateLimitError) {
+    const resetTime = error.resetAt;
+    const waitMs = resetTime - Date.now();
+    await sleep(waitMs);
+    // Retry request
+  }
+}
+```
+
+### Validate Input Data
+```typescript
+import { ValidationError } from '@lomi/sdk';
+
+try {
+  await lomi.customers.create({
+    email: 'invalid-email',
+    phone: 'invalid-phone'
+  });
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.log(error.details); // Shows specific validation failures
+    // Handle each validation error
+  }
+}
+```
+
+## Provider-Specific Errors
+
+Each payment provider may return specific error codes. Here's how to handle them:
+
+### Orange Money
+```typescript
+try {
+  await lomi.transactions.create({
+    provider_code: 'ORANGE',
+    // ...
+  });
+} catch (error) {
+  if (error.provider_code === 'ORANGE') {
+    switch (error.provider_error_code) {
+      case 'INSUFFICIENT_BALANCE':
+        // Handle insufficient balance
+        break;
+      case 'INVALID_PIN':
+        // Handle invalid PIN
+        break;
+      // Handle other Orange-specific errors
+    }
+  }
+}
+```
+
+### Wave
+```typescript
+try {
+  await lomi.transactions.create({
+    provider_code: 'WAVE',
+    // ...
+  });
+} catch (error) {
+  if (error.provider_code === 'WAVE') {
+    switch (error.provider_error_code) {
+      case 'USER_CANCELLED':
+        // Handle user cancellation
+        break;
+      case 'DAILY_LIMIT_EXCEEDED':
+        // Handle limit exceeded
+        break;
+      // Handle other Wave-specific errors
+    }
+  }
+}
+```
+
+## Error Monitoring
+
+We recommend using our dashboard's error monitoring tools to:
+- Track error rates and patterns
+- Set up alerts for critical errors
+- Analyze error distributions by provider
+- Monitor API health and performance
+
+## Debugging Tools
+
+### Test Mode
+Use test mode to simulate various error scenarios:
+```typescript
+const lomi = new LomiClient({
+  apiKey: 'test_key',
+  debug: true // Enables detailed error logging
+});
+```
+
+### Request IDs
+All API responses include a unique request ID. Include this when contacting support:
+```typescript
+try {
+  await lomi.transactions.create(data);
+} catch (error) {
+  console.log(error.requestId); // Use this ID for support
+}
+``` 
