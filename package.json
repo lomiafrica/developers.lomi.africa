@@ -13,9 +13,9 @@
     "format:fix": "prettier --write --list-different .",
     "prepare": "husky",
     "cache:clean": "rm -rf src/lib/cache/*",
-    "generate-sitemap": "python scripts/generate_sitemap.py",
-    "convert-meta": "node scripts/convert-meta-files.js",
-    "verify-meta": "node scripts/verify-meta-files.js",
+    "generate:sitemap": "python scripts/generate_sitemap.py",
+    "convert:meta": "node scripts/convert-meta-files.js",
+    "verify:meta": "node scripts/verify-meta-files.js",
     "clean": "rm -rf .next && rm -rf node_modules/.cache"
   },
   "dependencies": {

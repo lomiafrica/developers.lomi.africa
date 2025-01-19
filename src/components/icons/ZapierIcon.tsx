@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import Image from 'next/image';
 
 interface IconProps {
     width?: number;
@@ -9,7 +10,7 @@ interface IconProps {
 export const ZapierIcon: FC<IconProps> = ({ width = 24, height = 24, className }) => {
     return (
         <div style={{ width, height }} className={className}>
-            <img
+            <Image
                 src="/icon/zapier.png"
                 alt="Zapier"
                 width={width}

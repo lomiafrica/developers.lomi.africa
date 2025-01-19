@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { CommandDialog, CommandList } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
-import { Expand, Search, Shrink } from "lucide-react";
+import { Expand, Search, Shrink, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import jsonFileCache from "@/lib/cache/fileCache.json";
@@ -55,21 +55,51 @@ export const CommandMenu = ({
   const [history, setHistory] = useState<HistoryType>({});
   const [expanded, setExpanded] = useState(false);
 
+  // Clear search value when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setSearchValue("");
+    }
+  }, [open]);
+
+  // Update history when dialog opens or storage changes
+  useEffect(() => {
+    const updateHistory = () => {
+      const localHistory = JSON.parse(localStorage.getItem("history") || "{}");
+      setHistory(localHistory);
+    };
+
+    if (open) {
+      updateHistory();
+    }
+
+    // Listen for storage changes
+    window.addEventListener('storage', updateHistory);
+    return () => window.removeEventListener('storage', updateHistory);
+  }, [open]);
+
   useEffect(() => {
     // Filter fileCache based on the searchValue
     const filteredFiles = Object.values(fileCache).filter(
-      (file) =>
-        file.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        file.content.toLowerCase().includes(searchValue.toLowerCase()),
+      (file) => {
+        // Exclude _meta files and ensure there's a match
+        const isNotMetaFile = !file.path?.includes('_meta');
+        const hasMatch = file.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          file.content.toLowerCase().includes(searchValue.toLowerCase());
+
+        return isNotMetaFile && hasMatch;
+      }
     );
 
     const groupedFiles = filteredFiles.reduce(
       (acc, file) => {
         const { parentName, ...rest } = file;
-        if (!acc[parentName ?? ""]) {
-          acc[parentName ?? ""] = [{ ...rest, parentName }];
+        const section = parentName || 'Other';
+
+        if (!acc[section]) {
+          acc[section] = [{ ...rest, parentName }];
         } else {
-          acc[parentName ?? ""].push({ ...rest, parentName });
+          acc[section].push({ ...rest, parentName });
         }
         return acc;
       },
@@ -77,11 +107,6 @@ export const CommandMenu = ({
     );
     setResults(groupedFiles);
   }, [searchValue, fileCache]);
-
-  useEffect(() => {
-    const localHistory = JSON.parse(localStorage.getItem("history") || "{}");
-    setHistory(localHistory);
-  }, []);
 
   const handleSuggestionClick = (suggestion: { name: string; path: string }) => {
     // Add to history
@@ -142,7 +167,20 @@ export const CommandMenu = ({
               )}
             >
               <div className="space-y-1">
-                <h2 className="px-2 text-sm font-medium text-muted-foreground">Recent Searches</h2>
+                <div className="flex items-center justify-between px-2">
+                  <h2 className="text-sm font-medium text-muted-foreground">Recent searches</h2>
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center justify-between px-2 py-1 text-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/40 text-blue-700 dark:text-blue-300 cursor-pointer rounded-none"
+                    onClick={() => {
+                      localStorage.removeItem("history");
+                      setHistory({});
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3 mr-1" />
+                    Clear
+                  </Badge>
+                </div>
                 <History
                   history={history}
                   setOpen={setOpen}
