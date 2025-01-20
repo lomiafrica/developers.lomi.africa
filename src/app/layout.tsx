@@ -20,8 +20,18 @@ export const metadata: Metadata = {
     template: "%s | lomi. | Developers docs"
   },
   description: "Documentation website for the lomi. API - The open source payment orchestration platform powering West-African businesses",
-  keywords: [""],
-  authors: [{ name: "lomi." }],
+  keywords: [
+    "lomi",
+    "payment orchestration",
+    "west africa",
+    "payment api",
+    "payment gateway",
+    "developer documentation",
+    "api documentation",
+    "fintech",
+    "african payments"
+  ],
+  authors: [{ name: "lomi.", url: "https://lomi.africa" }],
   creator: "lomi.",
   publisher: "lomi.",
   robots: {
@@ -43,18 +53,20 @@ export const metadata: Metadata = {
     description: "Documentation website for the lomi. API - The open source payment orchestration platform powering West-African businesses",
     siteName: 'lomi. | Developer Documentation',
     images: [{
-      url: '/lomi-icon.png',
+      url: 'https://developers.lomi.africa/lomi-icon.png',
       width: 1200,
       height: 630,
-      alt: 'lomi. Documentation'
+      alt: 'lomi. Documentation',
+      type: 'image/png',
     }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'lomi. | Developer Documentation',
     description: "Documentation website for the lomi. API - The open source payment orchestration platform powering West-African businesses",
-    images: ['/lomi-icon.png'],
-    creator: '@lomi',
+    images: ['https://developers.lomi.africa/lomi-icon.png'],
+    creator: '@lomiafrica',
+    site: '@lomiafrica',
   },
   icons: {
     icon: [
@@ -66,7 +78,7 @@ export const metadata: Metadata = {
     ],
     apple: [
       {
-        url: "/favicon.ico",
+        url: "/lomi-icon.png",
         sizes: "180x180",
         type: "image/png",
       },
@@ -74,11 +86,17 @@ export const metadata: Metadata = {
     other: [
       {
         rel: "mask-icon",
-        url: "/favicon.ico",
+        url: "/lomi-icon.png",
       },
     ],
   },
   manifest: '/manifest.json',
+  alternates: {
+    canonical: 'https://developers.lomi.africa'
+  },
+  verification: {
+    google: 'google-site-verification=fD_UOOSaZDjO5rdngNSUYtYQK-sfA5DhMyiUNW7GyAs', // You'll need to add this
+  },
 };
 
 export default function RootLayout({
