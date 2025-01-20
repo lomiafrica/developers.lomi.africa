@@ -55,6 +55,7 @@
 
   * {
     @apply border-border;
+    scroll-behavior: smooth;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
     &::-webkit-scrollbar {
@@ -72,10 +73,24 @@
                 border-color 300ms ease-in-out;
   }
 
+  html {
+    height: 100vh;
+    overflow: hidden auto;
+    overscroll-behavior-y: none;
+    scroll-snap-type: y mandatory;
+  }
+  
   body {
-    @apply min-h-svh w-full bg-background text-foreground;
-    overflow-x: hidden;
-    overflow-y: auto;
+    @apply bg-background text-foreground;
+    height: 100vh;
+    overflow: hidden auto;
+    overscroll-behavior-y: none;
+  }
+
+  main {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 }
 

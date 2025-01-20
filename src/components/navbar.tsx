@@ -31,7 +31,7 @@ export const Navbar = () => {
   return (
     <div className="sticky top-0 z-30 w-full border-b bg-background">
       <nav className="container flex h-14 max-w-screen-2xl items-center justify-between">
-        <div className="flex items-center">
+        <div className="flex items-center md:ml-3">
           <Link href="/" className="flex items-center">
             {mounted ? (
               <Image
@@ -39,7 +39,7 @@ export const Navbar = () => {
                 alt="lomi. Logo"
                 height={40}
                 width={40}
-                className="h-10 w-10 ml-3 mr-2"
+                className="h-10 w-10 -ml-3 md:ml-0 mr-2"
                 priority
               />
             ) : (
