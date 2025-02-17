@@ -18,5 +18,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: Object.keys(redirects),
+  matcher: ["/introduction/getting-started", "/license-management/license-management"]
 };

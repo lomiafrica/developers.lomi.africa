@@ -74,9 +74,9 @@ export const ResultItem = ({
   const handleHistory = () => {
     const history = JSON.parse(localStorage.getItem("history") || "{}");
     history[result.path] = {
-      name: result.name,
+      title: result.name,
       path: result.path,
-      timestamp: new Date().getTime(),
+      timestamp: new Date().toISOString(),
     } as HistoryItem;
     localStorage.setItem("history", JSON.stringify(history));
     setOpen(false);

@@ -1,15 +1,113 @@
-# Getting Started with lomi.
+# Getting Started
 
-To start using lomi. for your payment processing needs, follow these steps:
+## Prerequisites
+- Business registration in a supported country
+- Valid email address
+- Technical requirements:
+  - Node.js 14+ for SDK usage
+  - HTTPS endpoint for webhooks
 
-1. **Sign up**: Visit [lomi.'s website](https://lomi.africa) and create a merchant account.
+## Quick Start
 
-2. **Set up payment methods**: Configure the payment methods you want to support in your lomi. dashboard.
+### 1. Account Setup
+Visit [lomi.africa](https://lomi.africa/sign-up) to create your account.
 
-3. **Integrate with your application**: Use lomi.'s API or SDKs to integrate payment processing into your application. Refer to the [Integration Guide](../integration/getting-started) for detailed instructions.
+### 2. Get Your API Keys
+```bash
+# Test Environment
+export LOMI_API_KEY=lomi_sk_test_...
 
-4. **Test your integration**: Use lomi.'s testing environment to simulate transactions and ensure your integration is working as expected.
+# Production Environment
+export LOMI_API_KEY=lomi_sk_live_...
+```
 
-5. **Go live**: Once you've thoroughly tested your integration, switch to live mode and start processing real transactions.
+### 3. Install SDK (Optional)
+```bash
+npm install lomi-node
+# or
+yarn add lomi-node
+```
 
-lomi. provides comprehensive documentation, SDKs, and support to help you get started quickly and smoothly.
+### 4. Make Your First API Call
+```typescript
+import { LomiSDK } from 'lomi-node';
+
+const lomi = new LomiSDK({
+  apiKey: process.env.LOMI_API_KEY,
+  baseUrl: process.env.LOMI_API_URL // Optional, defaults to production
+});
+
+// Create a checkout session
+const session = await lomi.checkoutSessions.create({
+  merchant_id: 'your_merchant_id',
+  success_url: 'https://your-site.com/success',
+  cancel_url: 'https://your-site.com/cancel',
+  provider_codes: ['ORANGE_MONEY', 'WAVE'],
+  amount: 1000,
+  currency: 'XOF'
+});
+```
+
+### 5. Set Up Webhook
+```typescript
+import express from 'express';
+const app = express();
+
+app.post('/webhook', express.json(), (req, res) => {
+  const event = lomi.webhooks.constructEvent(
+    req.body,
+    req.headers['lomi-signature'],
+    process.env.WEBHOOK_SECRET
+  );
+  
+  // Handle the event
+  switch (event.type) {
+    case 'payment.success':
+      // Handle successful payment
+      break;
+  }
+  
+  res.json({ received: true });
+});
+```
+
+## Testing
+
+Use test API keys and these test values:
+```typescript
+// Test phone numbers
+const testNumbers = {
+  ORANGE_MONEY: '771234567',
+  WAVE: '771234568',
+  FREE_MONEY: '771234569'
+};
+
+// Test card
+const testCard = {
+  number: '4242424242424242',
+  exp_month: 12,
+  exp_year: 2024,
+  cvc: '123'
+};
+```
+
+## Go Live Checklist
+
+1. ✓ Complete business verification
+2. ✓ Set up webhook endpoint with HTTPS
+3. ✓ Test all payment methods
+4. ✓ Switch to live API keys
+5. ✓ Update webhook URL in dashboard
+6. ✓ Implement proper error handling
+
+## Next Steps
+
+- [Process Transactions](./process-transactions)
+- [API Reference](/api-reference)
+- [Error Handling](/errors)
+
+## Support
+
+- Technical issues: [hello@lomi.africa](mailto:hello@lomi.africa)
+- API Status: [status.lomi.africa](https://status.lomi.africa)
+- Schedule call: [Book Demo](https://cal.com/babacar-diop-umkvq2/30min)

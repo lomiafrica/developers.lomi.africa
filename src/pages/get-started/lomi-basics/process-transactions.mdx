@@ -1,17 +1,127 @@
 # Processing Transactions
 
-With lomi. integrated into your application or website, you can start processing transactions.
+## Creating a Checkout Session
 
-1. When a customer initiates a payment on your website or app, send a payment request to lomi. using the appropriate API endpoint or SDK method.
+```typescript
+const session = await lomi.checkoutSessions.create({
+  merchant_id: 'your_merchant_id',
+  success_url: 'https://your-site.com/success',
+  cancel_url: 'https://your-site.com/cancel',
+  provider_codes: ['ORANGE_MONEY', 'WAVE'],
+  amount: 1000,
+  currency: 'XOF',
+  metadata: {
+    order_id: '123',
+    customer_id: '456'
+  }
+});
+```
 
-2. lomi. will handle the payment flow, securely collecting the customer's payment details and processing the transaction through the selected payment method.
+## Listing Transactions
 
-3. You will receive a response indicating the status of the transaction (success, failure, or pending).
+```typescript
+const transactions = await lomi.transactions.list({
+  merchant_id: 'your_merchant_id',
+  status: 'succeeded',  // 'pending' | 'succeeded' | 'failed'
+  provider: 'ORANGE_MONEY',
+  from_date: '2024-01-01T00:00:00Z',
+  to_date: '2024-01-31T23:59:59Z',
+  limit: 100,
+  page: 1
+});
+```
 
-4. Use webhooks to receive real-time notifications about transaction updates and status changes.
+## Handling Webhooks
 
-5. Manage and track your transactions through the lomi. dashboard, which provides detailed reporting and analytics.
+```typescript
+app.post('/webhook', express.json(), (req, res) => {
+  try {
+    const event = lomi.webhooks.constructEvent(
+      req.body,
+      req.headers['lomi-signature'],
+      process.env.LOMI_WEBHOOK_SECRET
+    );
 
-lomi. ensures secure and reliable payment processing, with built-in fraud detection and PCI DSS compliance.
+    switch (event.type) {
+      case 'payment.succeeded':
+        await handleSuccessfulPayment(event.data);
+        break;
+      case 'payment.failed':
+        await handleFailedPayment(event.data);
+        break;
+      case 'payment.pending':
+        await handlePendingPayment(event.data);
+        break;
+    }
 
-For more information on transaction processing and best practices, refer to the [Transaction Processing Guide](../transactions/overview). Please note that you can also use lomi. in a Low-code and No-code set-up.
+    res.json({ received: true });
+  } catch (err) {
+    res.status(400).json({
+      error: {
+        message: err.message
+      }
+    });
+  }
+});
+```
+
+## Error Handling
+
+```typescript
+try {
+  const session = await lomi.checkoutSessions.create({
+    // ... session parameters
+  });
+} catch (error) {
+  if (error.statusCode === 400) {
+    // Handle validation errors
+    console.error('Validation failed:', error.validationErrors);
+  } else if (error.statusCode === 401) {
+    // Handle authentication errors
+    console.error('Invalid API key');
+  } else {
+    // Handle other errors
+    console.error('Error:', error.message);
+  }
+}
+```
+
+## Rate Limits
+
+- 300 requests per 15 minutes per IP
+- Webhook endpoints must respond within 30 seconds
+- Idempotency keys are valid for 24 hours
+
+## Best Practices
+
+1. **Idempotency**
+   ```typescript
+   const session = await lomi.checkoutSessions.create({
+     // ... session parameters
+   }, {
+     idempotencyKey: 'unique_request_id'
+   });
+   ```
+
+2. **Metadata**
+   ```typescript
+   const session = await lomi.checkoutSessions.create({
+     // ... session parameters
+     metadata: {
+       order_id: '123',
+       customer_email: 'customer@example.com',
+       product_ids: ['prod_1', 'prod_2']
+     }
+   });
+   ```
+
+3. **Webhook Retries**
+   - Implement exponential backoff
+   - Store failed events for retry
+   - Monitor webhook delivery rates
+
+## Next Steps
+
+- [API Reference](/api-reference)
+- [Error Codes](/errors)
+- [Testing Guide](/testing)

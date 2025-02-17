@@ -1,12 +1,132 @@
 # Branching Strategy
 
-When working on your lomi. integration, it's important to use a consistent branching strategy to manage your codebase. We recommend the following branching strategy:
+We follow a modified GitFlow workflow that emphasizes simplicity and continuous delivery.
 
-- `main` (or `master`): The main branch that contains the stable, production-ready code.
-- `develop`: The branch that contains the latest development changes that are ready for testing.
-- `feature/*`: Branches used for developing new features. These branches should be created from the `develop` branch and merged back into `develop` when the feature is complete.
-- `bugfix/*`: Branches used for fixing bugs. These branches should be created from the `develop` branch and merged back into `develop` when the bug is fixed.
-- `release/*`: Branches used for preparing a new release. These branches should be created from the `develop` branch and merged into both `main` and `develop` when the release is ready.
-- `hotfix/*`: Branches used for fixing critical bugs in production. These branches should be created from the `main` branch and merged into both `main` and `develop` when the hotfix is complete.
+## Main Branches
 
-By using this branching strategy, you can ensure that your codebase remains stable and organized while allowing for parallel development of features and bug fixes. 
+### `main` Branch
+- Production-ready code
+- Protected branch
+- Requires pull request and review
+- Tagged with version numbers
+- Automated deployments to production
+
+### `develop` Branch
+- Integration branch
+- Latest development changes
+- Automated deployments to staging
+- CI runs all tests
+
+## Feature Development
+
+### Feature Branches
+```bash
+# Create feature branch
+git checkout develop
+git checkout -b feature/payment-method-wave
+
+# Keep updated with develop
+git fetch origin
+git rebase origin/develop
+
+# Push changes
+git push origin feature/payment-method-wave
+```
+
+### Bug Fix Branches
+```bash
+# Create bug fix branch
+git checkout develop
+git checkout -b fix/transaction-timeout
+
+# After testing
+git push origin fix/transaction-timeout
+```
+
+## Release Process
+
+### Release Branches
+```bash
+# Create release branch
+git checkout develop
+git checkout -b release/1.2.0
+
+# Version bump and final testing
+npm version minor
+git push origin release/1.2.0
+```
+
+### Hotfix Branches
+```bash
+# Create hotfix branch
+git checkout main
+git checkout -b hotfix/1.2.1
+
+# Fix critical bug
+npm version patch
+git push origin hotfix/1.2.1
+```
+
+## Branch Protection Rules
+
+1. **`main` Branch**
+   - Require pull request reviews
+   - Require status checks to pass
+   - No direct pushes
+   - Linear history (rebase merging)
+
+2. **`develop` Branch**
+   - Require status checks to pass
+   - Allow rebase merging
+   - Automated test suite must pass
+
+## Merge Strategy
+
+1. **Feature to Develop**
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git merge --no-ff feature/payment-method-wave
+   git push origin develop
+   ```
+
+2. **Release to Main**
+   ```bash
+   git checkout main
+   git pull origin main
+   git merge --no-ff release/1.2.0
+   git tag -a v1.2.0 -m "Version 1.2.0"
+   git push origin main --tags
+   ```
+
+## Best Practices
+
+1. **Branch Naming**
+   - `feature/*` - New features
+   - `fix/*` - Bug fixes
+   - `release/*` - Release preparation
+   - `hotfix/*` - Emergency fixes
+   - Use descriptive names
+
+2. **Commit Messages**
+   ```bash
+   # Format
+   <type>(<scope>): <description>
+
+   # Examples
+   feat(payments): add Wave payment method
+   fix(webhooks): handle timeout errors
+   docs(api): update authentication guide
+   ```
+
+3. **Code Review**
+   - Create detailed pull requests
+   - Add relevant labels
+   - Link related issues
+   - Request specific reviewers
+
+## Next Steps
+
+- [Code Reviews](./code-reviews)
+- [Versioning](./versioning)
+- [Contributing Guidelines](./contributing-guidelines) 

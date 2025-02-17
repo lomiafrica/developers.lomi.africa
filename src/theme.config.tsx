@@ -1,50 +1,64 @@
 // imports have to start with "./src" instead of "src"
 import { Navbar } from "@/components/navbar";
 import { SidebarTitle } from "@/components/sidebar-title";
+import { DocsThemeConfig } from 'nextra-theme-docs'
 
-const themeConfig = {
-  useNextSeoProps() {
-    return {
-      titleTemplate: "%s – lomi. Docs",
-      additionalLinkTags: [
-        {
-          href: "/11.png",
-          rel: "icon",
-          sizes: "32x32",
-          type: "image/png",
-        },
-        {
-          href: "/11.png",
-          rel: "apple-touch-icon",
-          sizes: "32x32",
-          type: "image/png",
-        },
-      ],
-    };
+const config: DocsThemeConfig = {
+  head: () => {
+    return (
+      <>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta property="og:title" content="lomi. | Developers docs" />
+        <meta property="og:description" content="The open-source payment orchestration platform powering West-African businesses" />
+        <title>lomi. | Developers docs</title>
+        <link rel="canonical" href="https://developers.lomi.africa" />
+        <link rel="icon" href="/fav.png" />
+        <link rel="apple-touch-icon" href="/lomi.png" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "lomi. | Developers docs",
+              "description": "The open-source payment orchestration platform powering West-African businesses",
+              "url": "https://developers.lomi.africa",
+              "publisher": {
+                "@type": "Organization",
+                "name": "lomi.",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://developers.lomi.africa/lomi.png"
+                }
+              }
+            })
+          }}
+        />
+      </>
+    )
   },
   project: {
-    link: "https://github.com/lomiafrica/lomi-docs",
+    link: "https://github.com/lomiafrica/developers.lomi.africa",
   },
   chat: {
-    link: "https://github.com/lomiafrica/lomi-docs",
+    link: "https://github.com/lomiafrica/developers.lomi.africa",
   },
-  docsRepositoryBase: "https://github.com/lomiafrica/lomi-docs/tree/main",
-  head: (
-    <>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta property="og:title" content="lomi. Docs" />
-      <meta property="og:description" content="Open-source payment orchestration platform for West-Africa" />
-    </>
-  ),
+  docsRepositoryBase: "https://github.com/lomiafrica/developers.lomi.africa/tree/main",
   navbar: {
     component: <Navbar />,
   },
   sidebar: {
-    toggleButton: true,
+    toggleButton: false,
     autoCollapse: true,
     defaultMenuCollapseLevel: 1,
   },
-  footer: false,
+  footer: {
+    component: null
+  },
+  themeSwitch: {
+    component: () => null
+  },
+  darkMode: false,
 };
 
-export default themeConfig;
+export default config;

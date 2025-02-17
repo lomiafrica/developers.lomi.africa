@@ -1,0 +1,196 @@
+# Webhooks
+
+Webhooks allow your application to receive real-time notifications about events that occur in your Lomi account.
+
+## Setting Up Webhooks
+
+### 1. Create a Webhook Endpoint
+```typescript
+const webhook = await lomi.webhooks.create({
+  url: "https://example.com/webhooks",
+  authorized_events: ["TRANSACTION_COMPLETED", "REFUND_COMPLETED"],
+  metadata: { environment: "production" }
+});
+```
+
+### 2. Verify Webhook Signatures
+```typescript
+import { verifyWebhookSignature } from '@lomi/sdk';
+
+app.post('/webhooks', express.raw({type: 'application/json'}), (req, res) => {
+  const signature = req.headers['x-lomi-signature'];
+  
+  try {
+    const event = verifyWebhookSignature(
+      req.body,
+      signature,
+      webhookSecret
+    );
+    handleWebhookEvent(event);
+    res.json({received: true});
+  } catch (err) {
+    res.status(400).send('Webhook signature verification failed');
+  }
+});
+```
+
+## Event Types
+
+### Transaction Events
+| Event | Description |
+|-------|-------------|
+| `TRANSACTION_CREATED` | Transaction has been initiated |
+| `TRANSACTION_COMPLETED` | Payment was successful |
+| `TRANSACTION_FAILED` | Payment attempt failed |
+| `TRANSACTION_EXPIRED` | Payment session expired |
+
+### Refund Events
+| Event | Description |
+|-------|-------------|
+| `REFUND_CREATED` | Refund has been initiated |
+| `REFUND_COMPLETED` | Refund was successful |
+| `REFUND_FAILED` | Refund attempt failed |
+
+### Subscription Events
+| Event | Description |
+|-------|-------------|
+| `SUBSCRIPTION_CREATED` | New subscription created |
+| `SUBSCRIPTION_UPDATED` | Subscription details changed |
+| `SUBSCRIPTION_CANCELLED` | Subscription was cancelled |
+| `SUBSCRIPTION_RENEWED` | Recurring payment processed |
+| `SUBSCRIPTION_PAYMENT_FAILED` | Recurring payment failed |
+
+### Provider Events
+| Event | Description |
+|-------|-------------|
+| `PROVIDER_CONNECTED` | New provider connected |
+| `PROVIDER_DISCONNECTED` | Provider disconnected |
+| `PROVIDER_CREDENTIALS_EXPIRED` | Provider credentials need renewal |
+
+## Event Payloads
+
+### Transaction Completed
+```json
+{
+  "id": "evt_123",
+  "type": "TRANSACTION_COMPLETED",
+  "created_at": "2024-01-19T12:00:00Z",
+  "data": {
+    "transaction_id": "txn_123",
+    "merchant_id": "merchant_123",
+    "amount": 1000,
+    "currency_code": "XOF",
+    "status": "completed",
+    "provider_code": "ORANGE",
+    "payment_method_code": "MOBILE_MONEY"
+  }
+}
+```
+
+### Subscription Renewed
+```json
+{
+  "id": "evt_124",
+  "type": "SUBSCRIPTION_RENEWED",
+  "created_at": "2024-01-19T12:00:00Z",
+  "data": {
+    "subscription_id": "sub_123",
+    "plan_id": "plan_123",
+    "customer_id": "cust_123",
+    "transaction_id": "txn_124",
+    "amount": 5000,
+    "currency_code": "XOF",
+    "next_billing_date": "2024-02-19T12:00:00Z"
+  }
+}
+```
+
+## Best Practices
+
+### 1. Implement Idempotency
+```typescript
+app.post('/webhooks', async (req, res) => {
+  const eventId = req.body.id;
+  
+  // Check if event was already processed
+  if (await hasProcessedEvent(eventId)) {
+    return res.json({received: true});
+  }
+  
+  // Process the event
+  await handleWebhookEvent(req.body);
+  
+  // Mark event as processed
+  await markEventProcessed(eventId);
+  
+  res.json({received: true});
+});
+```
+
+### 2. Handle Retries
+```typescript
+app.post('/webhooks', async (req, res) => {
+  try {
+    await handleWebhookEvent(req.body);
+    res.json({received: true});
+  } catch (error) {
+    // Return 5xx for retryable errors
+    if (error.isRetryable) {
+      res.status(500).json({error: 'Please retry'});
+    } else {
+      // Return 200 for non-retryable errors to prevent retries
+      res.json({received: true});
+    }
+  }
+});
+```
+
+### 3. Monitor Webhook Health
+```typescript
+// Track failed deliveries
+app.post('/webhooks', async (req, res) => {
+  try {
+    await handleWebhookEvent(req.body);
+    await recordWebhookSuccess(req.body.id);
+  } catch (error) {
+    await recordWebhookFailure(req.body.id, error);
+    throw error;
+  }
+});
+```
+
+## Testing Webhooks
+
+### Using Test Events
+```typescript
+// Create test webhook event
+const testEvent = await lomi.webhooks.generateTestEvent({
+  type: 'TRANSACTION_COMPLETED',
+  data: {
+    amount: 1000,
+    currency_code: 'XOF'
+  }
+});
+```
+
+### Local Development
+We recommend using tools like [ngrok](https://ngrok.com) for local webhook testing:
+
+```bash
+# Start ngrok
+ngrok http 3000
+
+# Update webhook URL
+curl -X PATCH "https://api.lomi.africa/v1/webhooks/webhook_123" \
+  -H "X-API-KEY: your_api_key" \
+  -d '{"url": "https://your-ngrok-url/webhooks"}'
+```
+
+## Webhook Logs
+
+View webhook delivery attempts and responses in the [Dashboard](https://dashboard.lomi.africa/webhooks):
+- Delivery status
+- Response codes
+- Response bodies
+- Retry attempts
+- Timing information 

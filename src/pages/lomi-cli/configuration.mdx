@@ -1,0 +1,110 @@
+# CLI Configuration
+
+The lomi. CLI can be configured through various methods to suit your development workflow.
+
+## Configuration File
+
+Create a `lomi.config.json` in your project root:
+
+```json copy
+{
+  "environment": "development",
+  "webhook": {
+    "url": "https://your-domain.com/webhook",
+    "secret": "your_webhook_secret",
+    "events": ["payment.success", "payment.failed"]
+  },
+  "dev": {
+    "port": 3000,
+    "cors": true,
+    "webhook_url": "http://localhost:3000/webhook"
+  }
+}
+```
+
+## Environment Variables
+
+The CLI respects the following environment variables:
+
+```bash copy
+# Authentication
+LOMI_API_KEY=your_api_key
+
+# Environment
+LOMI_ENV=development|staging|production
+
+# Development
+LOMI_DEV_PORT=3000
+LOMI_WEBHOOK_URL=https://your-domain.com/webhook
+LOMI_WEBHOOK_SECRET=your_webhook_secret
+```
+
+## Project-Level Configuration
+
+For team settings, create a `.lomi` directory in your project:
+
+```bash
+.lomi/
+  ├── config.json     # Project configuration
+  ├── credentials     # API keys and secrets
+  └── webhooks/       # Webhook event samples
+```
+
+## Configuration Precedence
+
+Settings are loaded in the following order (later sources override earlier ones):
+
+1. Default configuration
+2. Project config file (`lomi.config.json`)
+3. Environment variables
+4. Command line arguments
+
+## Environment-Specific Configuration
+
+Create environment-specific configurations:
+
+```json copy
+// lomi.config.development.json
+{
+  "webhook": {
+    "url": "http://localhost:3000/webhook"
+  }
+}
+
+// lomi.config.production.json
+{
+  "webhook": {
+    "url": "https://api.yourdomain.com/webhook"
+  }
+}
+```
+
+## Secure Credentials
+
+The CLI automatically encrypts sensitive information:
+
+```bash copy
+# Store a secure value
+lomi config set webhook.secret your_secret
+
+# Use in your application
+lomi config get webhook.secret
+```
+
+## Team Configuration
+
+Share non-sensitive configuration with your team:
+
+```bash copy
+# Export shareable configuration
+lomi config export --safe > lomi.config.team.json
+
+# Import team configuration
+lomi config import lomi.config.team.json
+```
+
+## Next Steps
+
+- Learn about [Webhook Development](./webhook-development)
+- Explore our [Testing Guide](./testing)
+- Set up [CI/CD Integration](./ci-cd) 

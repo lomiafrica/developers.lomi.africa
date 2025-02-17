@@ -1,4 +1,3 @@
-import { useData } from "nextra/ssg";
 import { useMonaco } from "@monaco-editor/react";
 import { Suspense, useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +8,21 @@ import { Columns2, Copy, Expand, Rows2, Shrink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { prettifyName, transformThemeName } from "./utils";
 
-export const ToolBar = ({ copyClipboard, openDialog, setOpenDialog, editorTheme, setEditorTheme, layoutMode, setLayoutMode, className, editorBg, setEditorBg }: {
+// Replace useData with a static themes array for now
+const themes = ['github-dark', 'github-light', 'monokai']; // Add your themes here
+
+export const ToolBar = ({
+  copyClipboard,
+  openDialog,
+  setOpenDialog,
+  editorTheme,
+  setEditorTheme,
+  layoutMode,
+  setLayoutMode,
+  className,
+  editorBg,
+  setEditorBg
+}: {
   copyClipboard: () => void,
   openDialog: boolean,
   setOpenDialog: (open: boolean) => void,
@@ -21,7 +34,6 @@ export const ToolBar = ({ copyClipboard, openDialog, setOpenDialog, editorTheme,
   editorBg: string,
   setEditorBg: (color: string) => void
 }) => {
-  const { themes } = useData()
   const monaco = useMonaco();
   const [selectedTheme, setSelectedTheme] = useState(editorTheme);
 
@@ -33,20 +45,26 @@ export const ToolBar = ({ copyClipboard, openDialog, setOpenDialog, editorTheme,
       setEditorBg(theme === 'vs-dark' ? '#1E1E1E' : '#fff')
       return;
     }
-    const themeData = await fetch(`/static/themes/${theme}.json`).then(res => res.json());
-    monaco?.editor.defineTheme(transformThemeName(theme), themeData);
-    monaco?.editor.setTheme(theme);
-    setEditorTheme(transformThemeName(theme));
-    setEditorBg(themeData.colors['editor.background']);
+    try {
+      const themeData = await fetch(`/static/themes/${theme}.json`).then(res => res.json());
+      monaco?.editor.defineTheme(transformThemeName(theme), themeData);
+      monaco?.editor.setTheme(theme);
+      setEditorTheme(transformThemeName(theme));
+      setEditorBg(themeData.colors['editor.background']);
+    } catch (error) {
+      console.error('Failed to load theme:', error);
+    }
   };
+
   return (
-    <Suspense fallback={<Badge color="slate">Loading themes...</Badge>}>
+    <Suspense fallback={<Badge variant="outline">Loading themes...</Badge>}>
       <div
         className={cn(
-        "flex w-full justify-between items-center relative z-20",
-        openDialog && 'bg-white dark:bg-zinc-900 p-2',
-        className
-      )}>
+          "flex w-full justify-between items-center relative z-20",
+          openDialog && 'bg-white dark:bg-zinc-900 p-2',
+          className
+        )}
+      >
         <div className="flex items-center">
           <Select onValueChange={handleThemeChange}>
             <SelectTrigger className="mr-2">
@@ -95,5 +113,5 @@ export const ToolBar = ({ copyClipboard, openDialog, setOpenDialog, editorTheme,
         </div>
       </div>
     </Suspense>
-  )
-}
+  );
+};

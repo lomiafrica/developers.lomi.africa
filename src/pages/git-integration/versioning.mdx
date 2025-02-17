@@ -1,23 +1,158 @@
 # Versioning
 
-Versioning your lomi. integration is important for tracking changes and managing releases. We recommend using semantic versioning (SemVer) for your integration.
+We follow Semantic Versioning (SemVer) for all our packages and APIs.
 
-With SemVer, each version number consists of three parts: `MAJOR.MINOR.PATCH`.
+## Version Format
 
-- `MAJOR`: Increment this when you make incompatible API changes.
-- `MINOR`: Increment this when you add functionality in a backwards-compatible manner.
-- `PATCH`: Increment this when you make backwards-compatible bug fixes.
+```bash
+MAJOR.MINOR.PATCH
+# Example: 1.2.3
+```
 
-When preparing a new release:
+- **MAJOR**: Breaking changes
+- **MINOR**: New features (backward compatible)
+- **PATCH**: Bug fixes (backward compatible)
 
-1. **Update the version number**: Increment the appropriate part of the version number based on the changes included in the release.
+## Version Management
 
-2. **Create a release branch**: Create a new branch from `develop` with the name `release/X.Y.Z`, where `X.Y.Z` is the new version number.
+### NPM Version
 
-3. **Finalize the release**: Make any necessary final changes to the release branch, such as updating documentation or fixing last-minute bugs.
+```bash
+# Patch release
+npm version patch
+# 1.2.3 -> 1.2.4
 
-4. **Merge the release branch**: Once the release is ready, merge the release branch into both `main` and `develop`.
+# Minor release
+npm version minor
+# 1.2.3 -> 1.3.0
 
-5. **Tag the release**: Create a new Git tag with the version number (e.g., `v1.2.3`) to mark the release point in your codebase.
+# Major release
+npm version major
+# 1.2.3 -> 2.0.0
+```
 
-By following a consistent versioning scheme and release process, you can make it easier to manage your integration and communicate changes to your team and users. 
+### Git Tags
+
+```bash
+# Create annotated tag
+git tag -a v1.2.3 -m "Version 1.2.3"
+
+# Push tags
+git push origin --tags
+```
+
+## Release Process
+
+1. **Update Version**
+   ```bash
+   # Update package.json
+   npm version minor
+
+   # Update changelog
+   git cliff -o CHANGELOG.md
+   
+   # Commit changes
+   git add CHANGELOG.md
+   git commit -m "chore: update changelog"
+   ```
+
+2. **Create Release**
+   ```bash
+   # Create GitHub release
+   gh release create v1.2.3 \
+     --title "Version 1.2.3" \
+     --notes-file CHANGELOG.md
+   ```
+
+## API Versioning
+
+### URL Versioning
+
+```bash
+# Current version
+https://api.lomi.africa/v1/checkout/sessions
+
+# Future version
+https://api.lomi.africa/v2/checkout/sessions
+```
+
+### Version Lifecycle
+
+1. **Active**
+   - Latest version
+   - Full support
+   - Regular updates
+
+2. **Maintained**
+   - Previous version
+   - Security updates
+   - Bug fixes only
+
+3. **Deprecated**
+   - Old version
+   - Limited support
+   - Migration required
+
+## Breaking Changes
+
+1. **Notification**
+   - Advance notice (minimum 6 months)
+   - Migration guide
+   - Deprecation warnings
+
+2. **Documentation**
+   - Version comparison
+   - Migration steps
+   - Code examples
+
+3. **Support**
+   - Migration assistance
+   - Legacy version support
+   - Transition period
+
+## Version Control
+
+### Package Files
+
+```json
+{
+  "name": "@lomi/sdk",
+  "version": "1.2.3",
+  "engines": {
+    "node": ">=14"
+  }
+}
+```
+
+### Lock Files
+
+```bash
+# NPM
+package-lock.json
+
+# Yarn
+yarn.lock
+```
+
+## Best Practices
+
+1. **Version Numbers**
+   - Use semantic versioning
+   - Document changes
+   - Keep changelog updated
+
+2. **Dependencies**
+   - Pin exact versions
+   - Regular updates
+   - Security audits
+
+3. **Release Notes**
+   - Clear descriptions
+   - Breaking changes
+   - Upgrade guide
+
+## Next Steps
+
+- [Contributing Guidelines](./contributing-guidelines)
+- [API Reference](/api-reference)
+- [Changelog](https://github.com/lomi/api/blob/main/CHANGELOG.md) 

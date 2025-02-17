@@ -1,10 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { Typography } from "@/components/ui/typography";
 
 export const SidebarTitle = ({
   type,
-  title,
-  route,
+  title
 }: {
   type?: string;
   title?: string;

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { CommandDialog, CommandList } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
-import { CommandIcon, Expand, Search, Shrink } from "lucide-react";
+import { Expand, Search, Shrink, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import jsonFileCache from "@/lib/cache/fileCache.json";
@@ -14,6 +14,33 @@ import { ResultGroup } from "@/components/command-menu/results/result-group";
 import { History } from "@/components/command-menu/history/history";
 import { HistoryType } from "@/lib/types/history";
 
+const defaultSuggestions = [
+  {
+    title: "Popular Topics",
+    items: [
+      { name: "Authentication", path: "/api-reference/authentication", description: "Learn how to authenticate with the Lomi API" },
+      { name: "Webhooks", path: "/api-reference/webhooks", description: "Set up and manage webhooks for real-time updates" },
+      { name: "Error Handling", path: "/api-reference/errors", description: "Common errors and how to handle them" },
+    ]
+  },
+  {
+    title: "Quick Start",
+    items: [
+      { name: "Introduction", path: "/introduction", description: "Get started with Lomi's payment platform" },
+      { name: "API Overview", path: "/api-reference/overview", description: "High-level overview of the Lomi API" },
+      { name: "Data Models", path: "/api-reference/data-models", description: "Understanding Lomi's data structures" },
+    ]
+  },
+  {
+    title: "Developer Tools",
+    items: [
+      { name: "Git Integration", path: "/git-integration", description: "Connect your repository with Lomi" },
+      { name: "Lomi CLI", path: "/lomi-cli", description: "Command-line tools for Lomi developers" },
+      { name: "License Management", path: "/license-management", description: "Manage your Lomi licenses" },
+    ]
+  }
+];
+
 export const CommandMenu = ({
   open,
   setOpen,
@@ -23,25 +50,56 @@ export const CommandMenu = ({
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   fileCache: FileCache;
 }) => {
-  // const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [results, setResults] = useState<Record<string, FileData[]>>({});
   const [history, setHistory] = useState<HistoryType>({});
+  const [expanded, setExpanded] = useState(false);
+
+  // Clear search value when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setSearchValue("");
+    }
+  }, [open]);
+
+  // Update history when dialog opens or storage changes
+  useEffect(() => {
+    const updateHistory = () => {
+      const localHistory = JSON.parse(localStorage.getItem("history") || "{}");
+      setHistory(localHistory);
+    };
+
+    if (open) {
+      updateHistory();
+    }
+
+    // Listen for storage changes
+    window.addEventListener('storage', updateHistory);
+    return () => window.removeEventListener('storage', updateHistory);
+  }, [open]);
+
   useEffect(() => {
     // Filter fileCache based on the searchValue
     const filteredFiles = Object.values(fileCache).filter(
-      (file) =>
-        file.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        file.content.toLowerCase().includes(searchValue.toLowerCase()),
+      (file) => {
+        // Exclude _meta files and ensure there's a match
+        const isNotMetaFile = !file.path?.includes('_meta');
+        const hasMatch = file.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          file.content.toLowerCase().includes(searchValue.toLowerCase());
+
+        return isNotMetaFile && hasMatch;
+      }
     );
 
     const groupedFiles = filteredFiles.reduce(
       (acc, file) => {
         const { parentName, ...rest } = file;
-        if (!acc[parentName ?? ""]) {
-          acc[parentName ?? ""] = [{ ...rest, parentName }];
+        const section = parentName || 'Other';
+
+        if (!acc[section]) {
+          acc[section] = [{ ...rest, parentName }];
         } else {
-          acc[parentName ?? ""].push({ ...rest, parentName });
+          acc[section].push({ ...rest, parentName });
         }
         return acc;
       },
@@ -49,11 +107,25 @@ export const CommandMenu = ({
     );
     setResults(groupedFiles);
   }, [searchValue, fileCache]);
-  useEffect(() => {
-    const localHistory = JSON.parse(localStorage.getItem("history") || "{}");
-    setHistory(localHistory);
-  }, []);
-  const [expanded, setExpanded] = useState(false);
+
+  const handleSuggestionClick = (suggestion: { name: string; path: string }) => {
+    // Add to history
+    const newHistory = {
+      ...history,
+      [suggestion.name]: {
+        title: suggestion.name,
+        path: suggestion.path,
+        timestamp: new Date().toISOString(),
+      },
+    };
+    localStorage.setItem("history", JSON.stringify(newHistory));
+    setHistory(newHistory);
+
+    // Navigate to the path
+    window.location.href = suggestion.path;
+    setOpen(false);
+  };
+
   return (
     <CommandDialog open={open} onOpenChange={setOpen} expanded={expanded}>
       <div className="flex items-center border-b-2 pl-3">
@@ -66,7 +138,7 @@ export const CommandMenu = ({
         />
         <Button
           variant="ghost"
-          className="mr-12 px-2"
+          className="px-2"
           size="icon"
           onClick={() => setExpanded((expanded) => !expanded)}
         >
@@ -78,7 +150,14 @@ export const CommandMenu = ({
         </Button>
       </div>
 
-      <CommandList className={cn("p-2 h-full", expanded ? "" : "h-full")}>
+      <CommandList
+        className={cn(
+          "overflow-y-auto transition-all duration-200",
+          expanded
+            ? "min-h-[85vh] h-[85vh] w-full max-w-[1400px] p-6"
+            : "min-h-[65vh] h-[65vh] w-full max-w-2xl p-4"
+        )}
+      >
         {searchValue.length === 0 ? (
           Object.keys(history || {}).length > 0 ? (
             <div
@@ -87,30 +166,75 @@ export const CommandMenu = ({
                 expanded && "px-2 sm:px-10",
               )}
             >
-              <History
-                history={history}
-                setOpen={setOpen}
-                expanded={expanded}
-              />
+              <div className="space-y-1">
+                <div className="flex items-center justify-between px-2">
+                  <h2 className="text-sm font-medium text-muted-foreground">Recent searches</h2>
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center justify-between px-2 py-1 text-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/40 text-blue-700 dark:text-blue-300 cursor-pointer rounded-none"
+                    onClick={() => {
+                      localStorage.removeItem("history");
+                      setHistory({});
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3 mr-1" />
+                    Clear
+                  </Badge>
+                </div>
+                <History
+                  history={history}
+                  setOpen={setOpen}
+                  expanded={expanded}
+                />
+              </div>
+              <div className="border-t pt-4 mt-4">
+                <h2 className="px-2 mb-2 text-sm font-medium text-muted-foreground">Suggested</h2>
+                {defaultSuggestions.map((section) => (
+                  <div key={section.title} className="mb-4">
+                    <h3 className="px-2 mb-1 text-xs font-medium text-muted-foreground/70">{section.title}</h3>
+                    <div className="space-y-1">
+                      {section.items.map((item) => (
+                        <button
+                          key={item.path}
+                          className="w-full text-left px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                          onClick={() => handleSuggestionClick(item)}
+                        >
+                          <div className="font-medium">{item.name}</div>
+                          <div className="text-xs text-muted-foreground line-clamp-1">{item.description}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
-            <div className="flex flex-col w-full justify-center py-6 text-center">
-              <Typography variant="muted">
-                No recent searches. <br />
-              </Typography>
-              <Typography variant="small" className="mt-4">
-                We will add suggestions here in the future !
-              </Typography>
+            <div className="space-y-6">
+              {defaultSuggestions.map((section) => (
+                <div key={section.title} className="px-2">
+                  <h2 className="mb-2 text-sm font-medium text-muted-foreground">{section.title}</h2>
+                  <div className="space-y-1">
+                    {section.items.map((item) => (
+                      <button
+                        key={item.path}
+                        className="flex flex-col w-full text-left px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                        onClick={() => handleSuggestionClick(item)}
+                      >
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-xs text-muted-foreground line-clamp-1">{item.description}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           )
         ) : Object.keys(results || {}).length === 0 ? (
-          Object.keys(results || {}).length === 0 && (
-            <div className="flex items-center justify-center w-full h-20">
-              <Typography variant="muted">
-                No results for &quot;<strong>{searchValue}</strong>&quot;
-              </Typography>
-            </div>
-          )
+          <div className="flex items-center justify-center w-full h-20">
+            <Typography variant="muted">
+              No results for &quot;<strong>{searchValue}</strong>&quot;
+            </Typography>
+          </div>
         ) : (
           Object.entries(results || {}).map(([key, fileGroup]) => (
             <ResultGroup
@@ -133,6 +257,7 @@ export const CommandMenuTrigger = ({
   className?: string;
 }) => {
   const [open, setOpen] = useState(false);
+
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
@@ -143,6 +268,7 @@ export const CommandMenuTrigger = ({
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, []);
+
   return (
     <>
       <CommandMenu
@@ -153,20 +279,17 @@ export const CommandMenuTrigger = ({
       />
       <Button
         className={cn(
-          className,
-          "pr-1.5 h-8 sm:h-10 py-1 sm:py-2 px-2 sm:px-4",
+          "flex items-center gap-2 h-9 px-3 rounded-none border border-input bg-transparent",
+          className
         )}
         variant="outline"
         onClick={() => setOpen((open) => !open)}
       >
-        <div className="flex items-center">
-          <Typography variant="small" className="text-xs sm:text-sm">
-            Search <span className="hidden sm:inline-flex">documentation</span>
-          </Typography>
-          <Badge className="ml-3 sm:ml-6 rounded px-1" variant="secondary">
-            <CommandIcon className="mr-0.5 h-3 w-3" />K
-          </Badge>
-        </div>
+        <Search className="h-4 w-4 text-muted-foreground" />
+        <span className="text-sm text-muted-foreground hidden sm:inline-flex">Search docs</span>
+        <Badge variant="secondary" className="ml-auto rounded-sm px-1">
+          <span className="text-xs">⌘K</span>
+        </Badge>
       </Button>
     </>
   );

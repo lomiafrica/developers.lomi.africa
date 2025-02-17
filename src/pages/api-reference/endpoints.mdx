@@ -1,0 +1,207 @@
+# API Endpoints
+
+This section provides detailed information about all available API endpoints. Each endpoint includes examples in multiple programming languages and detailed request/response schemas.
+
+## Merchants
+
+### Get Merchant Details
+`GET /merchants/{merchant_id}`
+
+Retrieve detailed information about a merchant.
+
+```typescript
+// Using TypeScript SDK
+const merchant = await lomi.merchants.get('merchant_123');
+```
+
+```python
+# Using Python SDK (coming soon)
+merchant = lomi.merchants.get('merchant_123')
+```
+
+```bash
+# Using curl
+curl -X GET "https://api.lomi.africa/v1/merchants/merchant_123" \
+  -H "X-API-KEY: your_api_key_here"
+```
+
+#### Response
+```json
+{
+  "merchant_id": "merchant_123",
+  "name": "Example Store",
+  "email": "store@example.com",
+  "phone_number": "+221777777777",
+  "onboarded": true,
+  "country": "SN",
+  "created_at": "2024-01-19T12:00:00Z"
+}
+```
+
+### List Connected Providers
+`GET /merchants/{merchant_id}/providers`
+
+Get a list of payment providers connected to a merchant account.
+
+## Products
+
+### Create Product
+`POST /products`
+
+Create a new product for payment collection.
+
+```typescript
+const product = await lomi.products.create({
+  name: "Premium Plan",
+  price: 10000,
+  currency_code: "XOF",
+  description: "Monthly premium subscription"
+});
+```
+
+#### Request Body
+```json
+{
+  "name": "string",
+  "price": "number",
+  "currency_code": "XOF | USD | EUR",
+  "description": "string?",
+  "image_url": "string?", 
+  "is_active": "boolean?",
+  "display_on_storefront": "boolean?"
+}
+```
+
+### List Products
+`GET /products?merchant_id={merchant_id}`
+
+Retrieve all products for a merchant.
+
+## Subscriptions
+
+### Create Subscription Plan
+`POST /subscriptions`
+
+Create a recurring billing plan.
+
+```typescript
+const plan = await lomi.subscriptions.create({
+  name: "Pro Plan",
+  amount: 5000,
+  currency_code: "XOF",
+  billing_frequency: "monthly"
+});
+```
+
+### Manage Subscriptions
+- `GET /subscriptions` - List all subscription plans
+- `GET /subscriptions/{plan_id}` - Get plan details
+- `PATCH /subscriptions/{plan_id}` - Update plan
+- `DELETE /subscriptions/{plan_id}` - Delete plan
+
+## Transactions
+
+### Create Transaction
+`POST /transactions`
+
+Process a payment transaction.
+
+```typescript
+const transaction = await lomi.transactions.create({
+  merchant_id: "merchant_123",
+  customer_id: "customer_456",
+  amount: 1000,
+  currency_code: "XOF",
+  provider_code: "ORANGE",
+  payment_method_code: "MOBILE_MONEY"
+});
+```
+
+### List Transactions
+`GET /transactions?merchant_id={merchant_id}`
+
+Get transaction history with optional filters.
+
+## Payment Links
+
+### Create Payment Link
+`POST /payment-links`
+
+Generate a shareable payment link.
+
+```typescript
+const link = await lomi.paymentLinks.create({
+  merchant_id: "merchant_123",
+  title: "Product Purchase",
+  amount: 15000,
+  currency_code: "XOF",
+  allowed_providers: ["ORANGE", "WAVE", "MTN"]
+});
+```
+
+### Manage Payment Links
+- `GET /payment-links` - List all payment links
+- `GET /payment-links/{link_id}` - Get link details
+- `PATCH /payment-links/{link_id}` - Update link
+- `DELETE /payment-links/{link_id}` - Delete link
+
+## Checkout Sessions
+
+### Create Checkout Session
+`POST /checkout-sessions`
+
+Create a new checkout session for collecting payments.
+
+```typescript
+const session = await lomi.checkoutSessions.create({
+  merchant_id: "merchant_123",
+  success_url: "https://example.com/success",
+  cancel_url: "https://example.com/cancel",
+  provider_codes: ["ORANGE", "WAVE"]
+});
+```
+
+### List Checkout Sessions
+`GET /checkout-sessions?merchant_id={merchant_id}`
+
+Get all checkout sessions with optional status filters.
+
+## Customers
+
+### Create Customer
+`POST /customers`
+
+Create a new customer record.
+
+```typescript
+const customer = await lomi.customers.create({
+  merchant_id: "merchant_123",
+  email: "customer@example.com",
+  phone_number: "+221777777777"
+});
+```
+
+### Manage Customers
+- `GET /customers` - List all customers
+- `GET /customers/{customer_id}` - Get customer details
+- `PATCH /customers/{customer_id}` - Update customer
+- `DELETE /customers/{customer_id}` - Delete customer
+
+## Refunds
+
+### Create Refund
+`POST /refunds`
+
+Initiate a refund for a transaction.
+
+```typescript
+const refund = await lomi.refunds.create({
+  transaction_id: "txn_123",
+  amount: 1000,
+  reason: "Customer request"
+});
+```
+
+### Manage Refunds
+- `GET /refunds/{refund_id}` - Get refund details
+- `PATCH /refunds/{refund_id}` - Update refund status 

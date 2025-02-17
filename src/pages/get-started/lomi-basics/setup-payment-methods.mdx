@@ -1,11 +1,112 @@
-# Setting Up Payment Methods
+# Payment Methods
 
-After creating your merchant account, the next step is to set up the payment methods you want to offer to your customers.
+## Available Providers
 
-1. Log in to your dashboard.
-2. Navigate to the "Payment Methods" section.
-3. Select the payment method you want to add (e.g., MTN, Wave or Orange Mobile Money).
+```typescript
+// List available payment providers
+const providers = await lomi.providers.list();
+```
 
-Repeat these steps for each payment method you want to support. lomi. will handle the integration with the respective payment providers automatically.
+Response example:
+```json
+{
+  "providers": [
+    {
+      "code": "ORANGE_MONEY",
+      "name": "Orange Money",
+      "currencies": ["XOF"],
+      "status": "active"
+    },
+    {
+      "code": "WAVE",
+      "name": "Wave",
+      "currencies": ["XOF"],
+      "status": "active"
+    },
+    {
+      "code": "MTN",
+      "name": "MTN Mobile Money",
+      "currencies": ["XOF"],
+      "status": "active"
+    }
+  ]
+}
+```
 
-Feel free to customize your checkout experience, set up webhooks for real-time notifications, and explore other features available in your dashboard.
+## Using Providers in Checkout
+
+```typescript
+const session = await lomi.checkoutSessions.create({
+  merchant_id: 'your_merchant_id',
+  provider_codes: ['ORANGE_MONEY', 'WAVE'], // Specify available methods
+  amount: 1000,
+  currency: 'XOF',
+  success_url: 'https://your-site.com/success',
+  cancel_url: 'https://your-site.com/cancel',
+  metadata: {
+    order_id: '123'
+  }
+});
+```
+
+## Provider Requirements
+
+### Mobile Money
+- **Orange Money**: Requires customer phone number
+- **Wave**: Requires customer phone number
+- **Free Money**: Requires customer phone number
+
+All mobile money providers:
+- Support XOF currency
+- Require valid phone numbers
+- Process payments in real-time
+
+## Testing
+
+Use these test credentials:
+
+```typescript
+const testCredentials = {
+  ORANGE_MONEY: {
+    phone: '771234567',
+    otp: '123456'  // Always succeeds
+  },
+  WAVE: {
+    phone: '771234568',
+    otp: '123456'  // Always succeeds
+  },
+  FREE_MONEY: {
+    phone: '771234569',
+    otp: '123456'  // Always succeeds
+  }
+};
+```
+
+## Error Handling
+
+Common provider errors:
+```typescript
+try {
+  const session = await lomi.checkoutSessions.create({
+    // ... session parameters
+  });
+} catch (error) {
+  switch (error.code) {
+    case 'provider_not_available':
+      // Provider temporarily unavailable
+      break;
+    case 'invalid_phone_number':
+      // Invalid phone number format
+      break;
+    case 'currency_not_supported':
+      // Provider doesn't support the currency
+      break;
+  }
+}
+```
+
+## Next Steps
+
+- [Process Transactions](./process-transactions)
+- [Testing Guide](/testing)
+- [API Reference](/api-reference)

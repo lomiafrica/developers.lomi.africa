@@ -54,7 +54,7 @@ export const History = ({
     <div className={cn("flex flex-col w-full mt-2", className)}>
       {Object.entries(history || {}).map(([key, item]) => (
         <HistoryItem
-          name={item.name?.replace("_", " ")}
+          name={item.title?.replace("_", " ")}
           path={item.path}
           key={`history_item_${key}`}
           className={cn(expanded && "mt-2 py-3 h-auto")}
