@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "npm run clean && python scripts/generate_sitemap.py && next build",
+    "build": "bun run clean && python scripts/generate_sitemap.py && next build",
     "buildCache": "node utils/cache/buildFileCache.js && node utils/cache/buildIndexCache.js",
     "start": "next start",
     "lint": "next lint",
