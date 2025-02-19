@@ -8,7 +8,7 @@ const meta: Meta = {
     "contributing": "Contributing",
     "merchant-of-record": "Merchant of Record",
     "advanced-guides": "Advanced Guides",
-    "open-source": "Open Source",
+    "freedom": "Open Source",
     "support": "Support"
 };
 

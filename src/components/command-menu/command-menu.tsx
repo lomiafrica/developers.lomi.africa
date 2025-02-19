@@ -23,27 +23,27 @@ interface CommandDialogProps extends DialogProps {
 
 const defaultSuggestions = [
   {
-    title: "Popular Topics",
+    title: "Popular topics",
     items: [
-      { name: "Authentication", path: "/reference/core/authentication", description: "Learn how to authenticate with the Lomi API" },
-      { name: "Webhooks", path: "/reference/core/webhooks", description: "Set up and manage webhooks for real-time updates" },
-      { name: "Error Handling", path: "/reference/core/errors", description: "Common errors and how to handle them" },
+      { name: "Authentication", path: "https://developers.lomi.africa/reference/core/authentication", description: "Learn how to authenticate with the Lomi API" },
+      { name: "Webhooks", path: "https://developers.lomi.africa/reference/core/webhooks", description: "Set up and manage webhooks for real-time updates" },
+      { name: "Error Handling", path: "https://developers.lomi.africa/reference/core/errors", description: "Common errors and how to handle them" },
     ]
   },
   {
-    title: "Quick Start",
+    title: "Getting started",
     items: [
-      { name: "Introduction", path: "/docs/introduction", description: "Get started with Lomi's payment platform" },
-      { name: "API Overview", path: "/reference/core/overview", description: "High-level overview of the Lomi API" },
-      { name: "Data Models", path: "/reference/core/data-models", description: "Understanding Lomi's data structures" },
+      { name: "Introduction", path: "https://developers.lomi.africa/docs/introduction/what-is-lomi", description: "Get started with Lomi's payment platform" },
+      { name: "API Overview", path: "https://developers.lomi.africa/reference/core/overview", description: "High-level overview of the Lomi API" },
+      { name: "Data Models", path: "https://developers.lomi.africa/reference/core/data-models", description: "Understanding Lomi's data structures" },
     ]
   },
   {
-    title: "Developer Tools",
+    title: "Dev' tools",
     items: [
-      { name: "Git Integration", path: "docs/contributing", description: "Connect your repository with Lomi" },
-      { name: "Lomi CLI", path: "docs/lomi-cli", description: "Command-line tools for Lomi developers" },
-      { name: "License Management", path: "docs/open-source", description: "Manage your Lomi licenses" },
+      { name: "Git Integration", path: "https://developers.lomi.africa/docs/contributing/bounty-program", description: "Connect your repository with Lomi" },
+      { name: "Lomi CLI", path: "https://developers.lomi.africa/docs/lomi-cli/overview", description: "Command-line tools for Lomi developers" },
+      { name: "License Management", path: "https://developers.lomi.africa/docs/freedom/open-source", description: "Manage your Lomi licenses" },
     ]
   }
 ];
