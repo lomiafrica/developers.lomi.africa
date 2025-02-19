@@ -10,10 +10,15 @@ import { useTheme } from "next-themes";
 import { XIcon } from "@/components/icons/XIcon";
 import { PHIcon } from "@/components/icons/PHIcon";
 import { LinkedInIcon } from "@/components/icons/LinkedInIcon";
+import { AuthModal } from "@/components/auth/auth-modal";
+import { supabase } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/contexts/auth-context";
 
 export const Navbar = () => {
   const { setTheme, theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -21,6 +26,10 @@ export const Navbar = () => {
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
   };
 
   // Only access theme after component is mounted to prevent hydration mismatch
@@ -111,18 +120,28 @@ export const Navbar = () => {
             ) : (
               <div className="h-9 w-9" /> // Placeholder while loading
             )}
-            <Link
-              href="https://lomi.africa/sign-up"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-4 text-xs font-semibold text-[#366FDF] hover:text-[#4DA1F8] dark:text-[#4DA1F8] dark:hover:text-[#1E4B9E] transition-colors"
-
-            >
-              Get Started
-            </Link>
+            {user ? (
+              <Button
+                onClick={handleSignOut}
+                className="ml-4 text-xs font-semibold text-[#366FDF] hover:text-[#4DA1F8] dark:text-[#4DA1F8] dark:hover:text-[#1E4B9E] transition-colors"
+              >
+                Sign out
+              </Button>
+            ) : (
+              <span
+                onClick={() => setIsAuthModalOpen(true)}
+                className="ml-4 text-xs font-semibold text-[#366FDF] hover:text-[#4DA1F8] dark:text-[#4DA1F8] dark:hover:text-[#1E4B9E] transition-colors cursor-pointer"
+              >
+                Get Started
+              </span>
+            )}
           </div>
-        </div >
-      </nav >
-    </div >
+        </div>
+      </nav>
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+    </div>
   );
 };
