@@ -25,25 +25,25 @@ const defaultSuggestions = [
   {
     title: "Popular Topics",
     items: [
-      { name: "Authentication", path: "/api-reference/authentication", description: "Learn how to authenticate with the Lomi API" },
-      { name: "Webhooks", path: "/api-reference/webhooks", description: "Set up and manage webhooks for real-time updates" },
-      { name: "Error Handling", path: "/api-reference/errors", description: "Common errors and how to handle them" },
+      { name: "Authentication", path: "/reference/core/authentication", description: "Learn how to authenticate with the Lomi API" },
+      { name: "Webhooks", path: "/reference/core/webhooks", description: "Set up and manage webhooks for real-time updates" },
+      { name: "Error Handling", path: "/reference/core/errors", description: "Common errors and how to handle them" },
     ]
   },
   {
     title: "Quick Start",
     items: [
-      { name: "Introduction", path: "/introduction", description: "Get started with Lomi's payment platform" },
-      { name: "API Overview", path: "/api-reference/overview", description: "High-level overview of the Lomi API" },
-      { name: "Data Models", path: "/api-reference/data-models", description: "Understanding Lomi's data structures" },
+      { name: "Introduction", path: "/docs/introduction", description: "Get started with Lomi's payment platform" },
+      { name: "API Overview", path: "/reference/core/overview", description: "High-level overview of the Lomi API" },
+      { name: "Data Models", path: "/reference/core/data-models", description: "Understanding Lomi's data structures" },
     ]
   },
   {
     title: "Developer Tools",
     items: [
-      { name: "Git Integration", path: "/git-integration", description: "Connect your repository with Lomi" },
-      { name: "Lomi CLI", path: "/lomi-cli", description: "Command-line tools for Lomi developers" },
-      { name: "License Management", path: "/license-management", description: "Manage your Lomi licenses" },
+      { name: "Git Integration", path: "docs/contributing", description: "Connect your repository with Lomi" },
+      { name: "Lomi CLI", path: "docs/lomi-cli", description: "Command-line tools for Lomi developers" },
+      { name: "License Management", path: "docs/open-source", description: "Manage your Lomi licenses" },
     ]
   }
 ];

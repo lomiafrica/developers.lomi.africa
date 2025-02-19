@@ -5,7 +5,7 @@ const meta: Meta = {
     "get-started": "Getting Started",
     "features": "Features",
     "lomi-cli": "lomi. with CLI",
-    "git-integration": "Contributing",
+    "contributing": "Contributing",
     "merchant-of-record": "Merchant of Record",
     "advanced-guides": "Advanced Guides",
     "open-source": "Open Source",
