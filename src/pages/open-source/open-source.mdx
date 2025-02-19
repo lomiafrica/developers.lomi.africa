@@ -1,0 +1,77 @@
+# Open Source
+
+lomi. is committed to enable fast, adapted and accessible payments for everyone. As part of this commitment, our technology is entirely public and available online.
+
+lomi. offers both an open-source solution and a hosted platform to cater to the diverse needs of our users. This section provides an overview of the deployment options available and how to get started.
+
+## Self-hosting
+
+If you would like to host the platform yourself and never pay our technology fees, you can easily get started by cloning our main repository on Github. You'll get access to the latest version of our solution and be able to customize it to your needs. However you'll have to get commercial agreements with some of our payment providers to fully leverage our products in self service.
+
+Merchants looking for an easy way to accept payments, do not need to worry about this — anyone can simply start using lomi. on our website without any restrictions and/or additional setup. While self hosting is possible, it is not something we recommend for most merchants as you'll lose the benefits of having a dedicated merchant of record and the speed and ease of use lomi. can provide to your business.
+
+### Quick Start Guide
+
+```bash copy
+# Clone the repository
+git clone https://github.com/lomi-africa/lomi.
+cd lomi.
+
+# Install dependencies
+bun install
+
+# Set up environment
+cp .env.example .env
+
+# Set up database
+supabase link
+
+# Start database migrations
+supabase db push
+
+# Start development server
+bun run dev
+```
+
+
+## Hosted platform — https://portal.lomi.africa
+
+For businesses that prefer a fully-managed solution, we offer a hosted platform on our website. The hosted platform provides additional features, dedicated support, and benefits tailored to the needs of growing businesses.
+
+To get started with the hosted platform, simply create an account on [portal.lomi.africa](https://portal.lomi.africa/sign-up) and follow the setup instructions. Our team will be available to assist you throughout the process and provide guidance on optimizing your payment orchestration setup.
+
+
+### Quick comparison
+
+| Feature | Open Source | Hosted Platform |
+|---------|------------|-----------------|
+| Core Payment Processing | ✓ | ✓ |
+| Built-in Payment Channels | - | ✓ |
+| Advanced Analytics | ✓ | ✓ |
+| Self-hosting | ✓ | - |
+| Custom Deployment | ✓ | - |
+| Automatic Updates | - | ✓ |
+| Dedicated Support | - | ✓ |
+
+### Support options
+
+The hosted platform includes:
+- 24/7 Technical Support
+- Priority Issue Resolution
+- Implementation Assistance
+
+
+### Resources
+- [Main GitHub Repository](https://github.com/lomiafrica/)
+- [Discord Community](https://discord.gg/33syDfh9)
+- [Status](https://status.lomi.africa)
+
+## Need help deciding?
+
+If you have any questions about the differences between the open-source and hosted versions of lomi., or if you need help deciding which option is best suited for your needs, please don't hesitate to reach out to our team at [hello@lomi.africa](mailto:hello@lomi.africa).
+
+To learn more about our vision and why lomi. is open-source, please visit our [blog](https://lomi.africa/blog), and learn more about our [story](https://lomi.africa/story).
+
+You can also:
+- Schedule a demo and chat with our team: [Book Now](https://cal.com/babacar-diop-umkvq2/30min)
+- Play with our pricing tool: [Pricing](https://lomi.africa/pricing)

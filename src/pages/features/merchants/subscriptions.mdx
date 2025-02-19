@@ -1,0 +1,125 @@
+# Subscriptions
+
+Manage recurring payments and subscriptions for your business with lomi.'s subscription system. Our subscription API allows you to create and manage subscription plans, handle billing cycles, and process recurring payments automatically.
+
+## Creating Subscription Plans
+
+Create flexible subscription plans that match your business model:
+
+```typescript
+const plan = await lomi.subscriptionPlans.create({
+  name: "Premium Plan",
+  amount: 5000, // Amount in XOF
+  interval: "month",
+  currency: "XOF",
+  description: "Premium access to all features"
+});
+```
+
+### Supported Intervals
+- `day` - Daily billing
+- `week` - Weekly billing
+- `month` - Monthly billing
+- `year` - Yearly billing
+
+## Managing Subscriptions
+
+### Create a Subscription
+
+```typescript
+const subscription = await lomi.subscriptions.create({
+  customer: "cus_123456789",
+  plan: "plan_987654321",
+  payment_method: "pm_123456789",
+  start_date: "2024-02-20"
+});
+```
+
+### Update a Subscription
+
+```typescript
+const subscription = await lomi.subscriptions.update("sub_123456789", {
+  plan: "plan_new_987654321",
+  prorate: true
+});
+```
+
+### Cancel a Subscription
+
+```typescript
+const subscription = await lomi.subscriptions.cancel("sub_123456789", {
+  at_period_end: true // Cancel at the end of the billing period
+});
+```
+
+## Billing Cycles
+
+Subscriptions are billed automatically based on the plan's interval:
+
+1. The first payment is processed immediately
+2. Subsequent payments are processed on the renewal date
+3. Failed payments are retried according to your retry settings
+
+### Retry Schedule
+- First retry: 3 days after failure
+- Second retry: 5 days after first retry
+- Final retry: 7 days after second retry
+
+## Usage-Based Billing
+
+Track and bill for usage within a subscription period:
+
+```typescript
+await lomi.subscriptionItems.createUsageRecord("si_123456789", {
+  quantity: 100,
+  timestamp: "2024-02-20",
+  action: "increment"
+});
+```
+
+## Subscription Lifecycle
+
+1. **Active**: Subscription is active and billing normally
+2. **Past Due**: Payment has failed but retries are ongoing
+3. **Canceled**: Subscription has been canceled
+4. **Unpaid**: All payment retries have failed
+
+## Customer Portal
+
+Let customers manage their own subscriptions through our hosted Customer Portal:
+
+```typescript
+const session = await lomi.billingPortal.sessions.create({
+  customer: "cus_123456789",
+  return_url: "https://your-site.com/account"
+});
+```
+
+## Subscription Analytics
+
+Track subscription metrics in your Dashboard:
+- Monthly Recurring Revenue (MRR)
+- Annual Recurring Revenue (ARR)
+- Customer Churn Rate
+- Revenue Churn Rate
+- Customer Lifetime Value (LTV)
+
+## Webhooks
+
+Subscribe to subscription-related webhook events:
+- `subscription.created`
+- `subscription.updated`
+- `subscription.deleted`
+- `subscription.trial_will_end`
+- `invoice.payment_succeeded`
+- `invoice.payment_failed`
+
+## Testing Subscriptions
+
+Test subscription flows in development:
+1. Use test API keys
+2. Set shorter intervals for testing
+3. Simulate payment failures
+4. Test webhook integrations
+
+For more details, see our [Subscription API Reference](/api-reference/subscriptions).

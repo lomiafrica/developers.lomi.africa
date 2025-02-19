@@ -1,0 +1,95 @@
+# Analytics
+
+lomi. offers a professional metrics dashboard out of the box, helping you focus on growing your revenue rather than measuring it.
+
+## Sales Metrics
+
+Track your business performance with our comprehensive analytics dashboard. All metrics are updated in real-time and can be exported for further analysis.
+
+## Filtering Options
+
+### Time Period
+Change the time period in the X-axis to view data by:
+- Yearly
+- Monthly
+- Weekly
+- Daily
+- Hourly
+
+### Date Range
+Select custom date ranges to analyze specific time periods:
+- Last 7 days
+- Last 30 days
+- Last 3 months
+- Last 12 months
+- Custom range
+
+### Product Filters
+- View metrics across all products
+- Filter by specific products
+- Filter by subscription tiers
+- Group by product categories
+
+## Available Metrics
+
+### Revenue Metrics
+- **Gross Revenue**: Total revenue before fees
+- **Net Revenue**: Revenue after fees and refunds
+- **Revenue by Payment Method**: Breakdown by mobile money, cards, etc.
+
+### Transaction Metrics
+- **Total Orders**: Number of successful transactions
+- **Average Order Value (AOV)**: Average revenue per order
+- **Transaction Success Rate**: Percentage of successful payments
+
+### Product Performance
+- **Top Products**: Best-selling products by volume and revenue
+- **One-Time Sales**: Number and revenue from single purchases
+- **Product Revenue**: Revenue breakdown by product
+
+### Subscription Analytics
+- **New Subscriptions**: Count of new subscription sign-ups
+- **Active Subscriptions**: Currently active subscriptions
+- **Churn Rate**: Subscription cancellation rate
+- **Monthly Recurring Revenue (MRR)**: Predictable monthly revenue
+- **Annual Recurring Revenue (ARR)**: Yearly subscription revenue
+- **Renewal Rate**: Percentage of successful subscription renewals
+
+### Customer Insights
+- **New Customers**: First-time buyers
+- **Returning Customers**: Repeat purchase rate
+- **Customer Lifetime Value**: Average revenue per customer
+- **Geographic Distribution**: Sales by region
+
+### Payment Analytics
+- **Payment Methods**: Usage breakdown
+- **Success Rates**: By payment method
+- **Failed Payments**: Analysis of declined transactions
+- **Refund Rate**: Percentage of refunded transactions
+
+## Data Export
+
+Export your analytics data in various formats:
+- CSV for spreadsheet analysis
+- PDF for reporting
+- JSON for custom integrations
+- Scheduled email reports
+
+## Custom Metrics
+
+Need specific metrics for your business? Contact our [support team](mailto:support@lomi.africa) to discuss custom analytics solutions.
+
+## API Access
+
+Access your analytics data programmatically through our API:
+
+```typescript
+const analytics = await lomi.analytics.retrieve({
+  start_date: "2024-01-01",
+  end_date: "2024-02-20",
+  metrics: ["revenue", "orders", "mrr"],
+  interval: "day"
+});
+```
+
+For detailed API documentation, visit our [Analytics API Reference](/api-reference/analytics).

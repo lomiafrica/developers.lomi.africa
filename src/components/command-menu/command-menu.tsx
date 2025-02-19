@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { CommandDialog, CommandList } from "@/components/ui/command";
+import { CommandList } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
 import { Expand, Search, Shrink, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,13 @@ import { Typography } from "@/components/ui/typography";
 import { ResultGroup } from "@/components/command-menu/results/result-group";
 import { History } from "@/components/command-menu/history/history";
 import { HistoryType } from "@/lib/types/history";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Command } from "@/components/ui/command";
+import { DialogProps } from "@radix-ui/react-dialog";
+
+interface CommandDialogProps extends DialogProps {
+  expanded?: boolean;
+}
 
 const defaultSuggestions = [
   {
@@ -40,6 +47,25 @@ const defaultSuggestions = [
     ]
   }
 ];
+
+const CommandDialog = ({ children, expanded = false, ...props }: CommandDialogProps) => {
+  return (
+    <Dialog {...props}>
+      <DialogContent className={cn(
+        "overflow-hidden p-0 shadow-lg rounded-sm border",
+        expanded ? "max-w-4xl" : "max-w-2xl"
+      )}>
+        <Command
+          className={cn(
+            "bg-popover [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
+          )}
+        >
+          {children}
+        </Command>
+      </DialogContent>
+    </Dialog>
+  );
+};
 
 export const CommandMenu = ({
   open,
@@ -132,7 +158,7 @@ export const CommandMenu = ({
         <Search height={16} width={16} />
         <Input
           placeholder="Search in the documentation..."
-          className="ml-1 py-6 border-0 rounded-none !shadow-none focus-visible:!shadow-none !ring-offset-0 !ring-0"
+          className="ml-1 py-6 border-0 rounded-sm !shadow-none focus-visible:!shadow-none !ring-offset-0 !ring-0"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
@@ -171,7 +197,7 @@ export const CommandMenu = ({
                   <h2 className="text-sm font-medium text-muted-foreground">Recent searches</h2>
                   <Badge
                     variant="secondary"
-                    className="flex items-center justify-between px-2 py-1 text-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/40 text-blue-700 dark:text-blue-300 cursor-pointer rounded-none"
+                    className="flex items-center justify-between px-2 py-1 text-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/40 text-blue-700 dark:text-blue-300 cursor-pointer rounded-sm"
                     onClick={() => {
                       localStorage.removeItem("history");
                       setHistory({});
@@ -279,7 +305,7 @@ export const CommandMenuTrigger = ({
       />
       <Button
         className={cn(
-          "flex items-center gap-2 h-9 px-3 rounded-none border border-input bg-transparent",
+          "flex items-center gap-2 h-9 px-3 rounded-sm border border-input bg-transparent",
           className
         )}
         variant="outline"
