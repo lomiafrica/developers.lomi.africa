@@ -1,5 +1,6 @@
 import InfoBox from "@/components/ui/info-box";
 import Link from "next/link";
+import PageFeedback from "@/components/ui/page-feedback";
 
 
 <InfoBox>
@@ -21,3 +22,9 @@ import Link from "next/link";
 <InfoBox mini variant="yellow">
   Your account has been successfully verified.
 </InfoBox>
+
+<InfoBox variant="tip" type="tip" title="Tip">
+  Make sure that you're using the raw request body when verifying webhooks, since the cryptographic signature is sensitive to even the slightest change. Watch out for frameworks that parse the request as JSON and then stringify it, since this too will break the signature verification.
+</InfoBox>
+
+<PageFeedback />
