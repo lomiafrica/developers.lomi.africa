@@ -1,6 +1,6 @@
 # Documentation
 
-Welcome to the documentation for [lomi.](https://lomi.africa), an open-source unified payment orchestration platform designed to simplify payment processing across (West) Africa.
+Welcome to the documentation for [lomi.](https://lomi.africa), an open-source unified payment orchestration platform designed to simplify payment processing across francophone West Africa.
 
 ## Key Features
 
