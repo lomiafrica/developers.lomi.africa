@@ -26,6 +26,8 @@ For detailed instructions and guides, please refer to our [documentation](https:
 
 We welcome contributions to improve lomi. and its documentation. If you find any issues or have suggestions, please open an issue or submit a pull request on our [GitHub repository](https://github.com/lomiafrica/developers.lomi.africa).
 
+For detailed contribution guidelines, please see the main [CONTRIBUTING.md](https://github.com/lomiafrica/lomi./blob/master/CONTRIBUTING.md) in the monorepo.
+
 ## Support
 
 If you need any assistance or have questions about the product or the team, please reach out to [hello@lomi.africa](mailto:hello@lomi.africa) or visit our [support center](https://lomi.africa/support).
