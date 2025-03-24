@@ -25,7 +25,7 @@ const defaultSuggestions = [
   {
     title: "Popular topics",
     items: [
-      { name: "Authentication", path: "https://developers.lomi.africa/reference/core/authentication", description: "Learn how to authenticate with the Lomi API" },
+      { name: "Authentication", path: "https://developers.lomi.africa/reference/core/authentication", description: "Learn how to authenticate with the lomi. API" },
       { name: "Webhooks", path: "https://developers.lomi.africa/reference/core/webhooks", description: "Set up and manage webhooks for real-time updates" },
       { name: "Error Handling", path: "https://developers.lomi.africa/reference/core/errors", description: "Common errors and how to handle them" },
     ]
@@ -33,17 +33,16 @@ const defaultSuggestions = [
   {
     title: "Getting started",
     items: [
-      { name: "Introduction", path: "https://developers.lomi.africa/docs/introduction/what-is-lomi", description: "Get started with Lomi's payment platform" },
-      { name: "API Overview", path: "https://developers.lomi.africa/reference/core/overview", description: "High-level overview of the Lomi API" },
-      { name: "Data Models", path: "https://developers.lomi.africa/reference/core/data-models", description: "Understanding Lomi's data structures" },
+      { name: "Introduction", path: "https://developers.lomi.africa/docs/introduction/what-is-lomi", description: "Get started with lomi.'s payment platform" },
+      { name: "API Overview", path: "https://developers.lomi.africa/reference/core/overview", description: "High-level overview of the lomi. API" },
+      { name: "Data Models", path: "https://developers.lomi.africa/reference/core/data-models", description: "Understanding lomi.'s data structures" },
     ]
   },
   {
     title: "Dev' tools",
     items: [
-      { name: "Git Integration", path: "https://developers.lomi.africa/docs/contributing/bounty-program", description: "Connect your repository with Lomi" },
-      { name: "Lomi CLI", path: "https://developers.lomi.africa/docs/lomi-cli/overview", description: "Command-line tools for Lomi developers" },
-      { name: "License Management", path: "https://developers.lomi.africa/docs/freedom/open-source", description: "Manage your Lomi licenses" },
+      { name: "lomi. CLI", path: "https://developers.lomi.africa/docs/lomi-cli/overview", description: "Command-line tools for lomi. developers" },
+      { name: "License Management", path: "https://developers.lomi.africa/docs/freedom/open-source", description: "Manage your lomi. licenses" },
     ]
   }
 ];

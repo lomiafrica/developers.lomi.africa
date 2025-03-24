@@ -89,10 +89,10 @@ export const Navbar = () => {
                 <span className="sr-only">GitHub</span>
               </Link>
               <Link
-                href="https://jumbo.africa"
+                href="https://jumbo.lomi.africa"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${baseIconClass} hover:bg-[#1E4B9E]/5 dark:hover:bg-[#4DA1F8]/10 hover:text-[#1E4B9E] dark:hover:text-[#4DA1F8] hover:border hover:border-[#1E4B9E]/10 dark:hover:border-[#4DA1F8]/20 rounded-sm`}
+                className={`${baseIconClass} hover:bg-green-400/5 dark:hover:bg-green-400/10 hover:text-green-400 dark:hover:text-green-400 hover:border hover:border-green-400/10 dark:hover:border-green-400/20 rounded-sm`}
               >
                 <JumboIcon className="h-7 w-7" />
                 <span className="sr-only">Jumbo</span>
@@ -168,8 +168,8 @@ export const Navbar = () => {
               GitHub
             </Link>
             <Link
-              href="https://jumbo.africa"
-              className="p-2 hover:bg-[#1E4B9E]/5 dark:hover:bg-[#4DA1F8]/10 text-[#1E4B9E] dark:text-[#4DA1F8] rounded-sm"
+              href="https://jumbo.lomi.africa"
+              className="p-2 hover:bg-green-400/5 dark:hover:bg-green-400/10 text-green-400 dark:text-green-400 rounded-sm"
             >
               Jumbo
             </Link>
