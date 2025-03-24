@@ -1,6 +1,6 @@
-# Payment Methods
+# **Payment Methods**
 
-## Available Providers
+## **Available Providers**
 
 ```typescript
 // List available payment providers
@@ -33,7 +33,7 @@ Response example:
 }
 ```
 
-## Using Providers in Checkout
+## **Using Providers in Checkout**
 
 ```typescript
 const session = await lomi.checkoutSessions.create({
@@ -49,63 +49,28 @@ const session = await lomi.checkoutSessions.create({
 });
 ```
 
-## Provider Requirements
+## **Provider Requirements**
 
 ### Mobile Money
 - **Orange Money**: Requires customer phone number
 - **Wave**: Requires customer phone number
-- **Free Money**: Requires customer phone number
 
 All mobile money providers:
 - Support XOF currency
 - Require valid phone numbers
 - Process payments in real-time
 
-## Testing
+## **Testing**
 
 Use these test credentials:
 
-```typescript
-const testCredentials = {
-  ORANGE_MONEY: {
-    phone: '771234567',
-    otp: '123456'  // Always succeeds
-  },
-  WAVE: {
-    phone: '771234568',
-    otp: '123456'  // Always succeeds
-  },
-  FREE_MONEY: {
-    phone: '771234569',
-    otp: '123456'  // Always succeeds
-  }
-};
-```
+xxxxxx
 
-## Error Handling
+## **Error Handling**
 
-Common provider errors:
-```typescript
-try {
-  const session = await lomi.checkoutSessions.create({
-    // ... session parameters
-  });
-} catch (error) {
-  switch (error.code) {
-    case 'provider_not_available':
-      // Provider temporarily unavailable
-      break;
-    case 'invalid_phone_number':
-      // Invalid phone number format
-      break;
-    case 'currency_not_supported':
-      // Provider doesn't support the currency
-      break;
-  }
-}
-```
+xxxxxx
 
-## Next Steps
+## **Next Steps**
 
 - [Process Transactions](./process-transactions)
 - [Testing Guide](/testing)

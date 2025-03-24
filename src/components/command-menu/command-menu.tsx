@@ -286,7 +286,7 @@ export const CommandMenuTrigger = ({
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === "d" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen((open) => !open);
       }
@@ -314,7 +314,7 @@ export const CommandMenuTrigger = ({
         <Search className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm text-muted-foreground hidden sm:inline-flex">Search docs</span>
         <Badge variant="secondary" className="ml-auto rounded-sm px-1">
-          <span className="text-xs">⌘K</span>
+          <span className="text-xs">⌘D</span>
         </Badge>
       </Button>
     </>

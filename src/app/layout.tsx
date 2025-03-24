@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     default: "lomi. | Developers Documentation",
     template: "%s | lomi. | Developers docs"
   },
-  description: "Documentation website for the lomi. API - The open source payment orchestration platform powering West-African businesses",
+  description: "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
   keywords: [
     "lomi",
     "payment orchestration",
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: 'https://developers.lomi.africa',
     title: 'lomi. | Developer Documentation',
-    description: "Documentation website for the lomi. API - The open source payment orchestration platform powering West-African businesses",
+    description: "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
     siteName: 'lomi. | Developer Documentation',
     images: [{
       url: 'https://developers.lomi.africa/lomi-icon.png',
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'lomi. | Developer Documentation',
-    description: "Documentation website for the lomi. API - The open source payment orchestration platform powering West-African businesses",
+    description: "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
     images: ['https://developers.lomi.africa/lomi-icon.png'],
     creator: '@lomiafrica',
     site: '@lomiafrica',
@@ -96,7 +96,7 @@ export const metadata: Metadata = {
     canonical: 'https://developers.lomi.africa'
   },
   verification: {
-    google: 'google-site-verification=fD_UOOSaZDjO5rdngNSUYtYQK-sfA5DhMyiUNW7GyAs', // You'll need to add this
+    google: 'google-site-verification=fD_UOOSaZDjO5rdngNSUYtYQK-sfA5DhMyiUNW7GyAs',
   },
 };
 

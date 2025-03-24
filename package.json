@@ -9,8 +9,6 @@
     "buildCache": "node utils/cache/buildFileCache.js && node utils/cache/buildIndexCache.js",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --check .",
-    "format:fix": "prettier --write --list-different .",
     "prepare": "husky",
     "cache:clean": "rm -rf src/lib/cache/*",
     "generate:sitemap": "python scripts/generate_sitemap.py",

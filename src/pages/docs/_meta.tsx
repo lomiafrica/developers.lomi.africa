@@ -2,14 +2,13 @@ import { Meta } from '@/lib/types/meta';
 
 const meta: Meta = {
     "introduction": "Introduction",
-    "get-started": "Getting Started",
-    "features": "Features",
-    "lomi-cli": "lomi. with CLI",
-    "contributing": "Contributing",
     "merchant-of-record": "Merchant of Record",
-    "advanced-guides": "Advanced Guides",
     "freedom": "Open Source",
-    "support": "Support"
+    "get-started": "Getting started",
+    "lomi-cli": "lomi. with CLI",
+    "advanced-guides": "Advanced guides",
+    "support": "Support",
+    "contributing": "Contributing"
 };
 
 export default meta;

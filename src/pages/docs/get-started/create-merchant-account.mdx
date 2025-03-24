@@ -1,18 +1,60 @@
-# Getting Started
+# **Getting Started**
 
-## Prerequisites
-- Business registration in a supported country
-- Valid email address
-- Technical requirements:
-  - Node.js 14+ for SDK usage
+## **Prerequisites**
+
+- Business registration in any country of the world. You'll need to provide the following business details:
+   - Legal business name
+   - Valid email address
+   - Tax ID
+   - Country of operation (Côte d'Ivoire or Sénégal)
+   - Contact information
+
+and few technical requirements:
+  - Node.js 18+ for SDK usage
   - HTTPS endpoint for webhooks
 
-## Quick Start
+## **Quick Start**
 
-### 1. Account Setup
-Visit [lomi.africa](https://lomi.africa/sign-up) to create your account.
+Once verified, access your API credentials:
 
-### 2. Get Your API Keys
+```typescript
+// Test Environment
+const testClient = new LomiSDK({
+  apiKey: 'lomi_sk_test_...',
+  baseUrl: 'https://sandbox.api.lomi.africa/v1'
+});
+
+// Production Environment
+const liveClient = new LomiSDK({
+  apiKey: 'lomi_sk_live_...',
+  baseUrl: 'https://api.lomi.africa/v1'
+});
+```
+
+## **Merchant Information**
+
+Retrieve merchant details:
+```typescript
+const merchant = await lomi.merchants.get('merchant_id');
+```
+
+Response example:
+```json
+{
+  "merchant_id": "mer_123",
+  "business_name": "Example Corp",
+  "country": "SN",
+  "currency": "XOF",
+  "status": "active",
+  "capabilities": {
+    "orange_money_payments": "active",
+    "wave_payments": "active",
+    "card_payments": "pending"
+  }
+}
+```
+
+### 2. Get Your API Keys from the home page
 ```bash
 # Test Environment
 export LOMI_API_KEY=lomi_sk_test_...
@@ -23,9 +65,9 @@ export LOMI_API_KEY=lomi_sk_live_...
 
 ### 3. Install SDK (Optional)
 ```bash
-npm install lomi-node
+npm install lomi.cli
 # or
-yarn add lomi-node
+yarn add lomi.cli
 ```
 
 ### 4. Make Your First API Call
@@ -42,7 +84,7 @@ const session = await lomi.checkoutSessions.create({
   merchant_id: 'your_merchant_id',
   success_url: 'https://your-site.com/success',
   cancel_url: 'https://your-site.com/cancel',
-  provider_codes: ['ORANGE_MONEY', 'WAVE'],
+  provider_codes: ['ORANGE', 'WAVE'],
   amount: 1000,
   currency: 'XOF'
 });
@@ -71,43 +113,18 @@ app.post('/webhook', express.json(), (req, res) => {
 });
 ```
 
-## Testing
+## **Testing**
 
-Use test API keys and these test values:
-```typescript
-// Test phone numbers
-const testNumbers = {
-  ORANGE_MONEY: '771234567',
-  WAVE: '771234568',
-  FREE_MONEY: '771234569'
-};
+xxxxx
 
-// Test card
-const testCard = {
-  number: '4242424242424242',
-  exp_month: 12,
-  exp_year: 2024,
-  cvc: '123'
-};
-```
-
-## Go Live Checklist
-
-1. ✓ Complete business verification
-2. ✓ Set up webhook endpoint with HTTPS
-3. ✓ Test all payment methods
-4. ✓ Switch to live API keys
-5. ✓ Update webhook URL in dashboard
-6. ✓ Implement proper error handling
-
-## Next Steps
+## **Next Steps**
 
 - [Process Transactions](./process-transactions)
 - [API Reference](/api-reference)
 - [Error Handling](/errors)
 
-## Support
+## **Support**
 
 - Technical issues: [hello@lomi.africa](mailto:hello@lomi.africa)
 - API Status: [status.lomi.africa](https://status.lomi.africa)
-- Schedule call: [Book Demo](https://cal.com/babacar-diop-umkvq2/30min)
+- Schedule call: [Book Demo](https://cal.com/babacar-diop)

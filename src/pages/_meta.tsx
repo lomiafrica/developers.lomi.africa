@@ -2,8 +2,7 @@ import { Meta } from '@/lib/types/meta';
 
 const meta: Meta = {
     "docs": "Docs",
-    "reference": "API Reference",
-    "knowledge": "Knowledge Base"
+    "reference": "API Reference"
 };
 
 export default meta;

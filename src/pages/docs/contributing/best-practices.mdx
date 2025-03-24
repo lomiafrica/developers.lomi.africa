@@ -2,76 +2,6 @@
 
 ## Code Organization
 
-### 1. Project Structure
-```bash
-api.lomi.africa/
-├── src/
-│   ├── controllers/   # Request handlers
-│   ├── services/      # Business logic
-│   ├── models/        # Data models
-│   ├── middleware/    # Express middleware
-│   └── utils/         # Helper functions
-├── tests/
-│   ├── unit/         # Unit tests
-│   └── integration/  # Integration tests
-└── scripts/          # Build and utility scripts
-```
-
-### 2. File Naming
-```bash
-# TypeScript files
-user.controller.ts
-payment.service.ts
-webhook.middleware.ts
-
-# Test files
-user.test.ts
-payment.integration.test.ts
-```
-
-## Code Style
-
-### 1. TypeScript Usage
-```typescript
-// Use interfaces for type definitions
-interface PaymentRequest {
-  amount: number;
-  currency: string;
-  provider_code: string;
-}
-
-// Use type guards
-function isPaymentRequest(obj: unknown): obj is PaymentRequest {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'amount' in obj &&
-    'currency' in obj &&
-    'provider_code' in obj
-  );
-}
-```
-
-### 2. Error Handling
-```typescript
-// Custom error classes
-class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
-
-// Error handling middleware
-app.use((error: Error, req: Request, res: Response) => {
-  if (error instanceof ValidationError) {
-    res.status(400).json({ error: error.message });
-  } else {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-```
-
 ## Security
 
 ### 1. Environment Variables
@@ -100,35 +30,6 @@ const sanitizeData = (data: any) => {
 
 ## Testing
 
-### 1. Test Organization
-```typescript
-describe('PaymentService', () => {
-  describe('createPayment', () => {
-    it('should create payment with valid data', async () => {
-      // Test implementation
-    });
-
-    it('should handle validation errors', async () => {
-      // Test implementation
-    });
-  });
-});
-```
-
-### 2. Test Coverage
-```bash
-# Run coverage report
-npm run test:coverage
-
-# Coverage thresholds in jest.config.ts
-coverageThreshold: {
-  global: {
-    branches: 80,
-    functions: 80,
-    lines: 80
-  }
-}
-```
 
 ## Git Workflow
 
