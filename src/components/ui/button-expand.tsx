@@ -43,15 +43,6 @@ function ButtonExpand({
     )
 }
 
-// Pre-configured button for Connect action
-function ButtonExpandIconRight() {
-    return (
-        <ButtonExpand
-            text={"Connect"}
-            onClick={() => window.location.href = '/sign-in'}
-        />
-    )
-}
 
 // Pre-configured button for Talk to us action
 function ButtonExpandTalkToUs() {
@@ -126,7 +117,6 @@ function ButtonExpandMobileMenu({ onClick, isOpen }: { onClick: () => void, isOp
 
 export {
     ButtonExpand,
-    ButtonExpandIconRight,
     ButtonExpandTalkToUs,
     ButtonExpandBack,
     ButtonExpandLogo,
