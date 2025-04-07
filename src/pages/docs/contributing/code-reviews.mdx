@@ -1,10 +1,10 @@
-# Code Reviews
+# Code reviews
 
 Our code review process ensures code quality, knowledge sharing, and maintainability.
 
-## Pull Request Guidelines
+## Pull request guidelines
 
-### 1. Title Format
+### 1. Title format
 ```bash
 # Format
 <type>(<scope>): <description>
@@ -15,7 +15,7 @@ fix(webhooks): handle timeout errors
 docs(api): update authentication guide
 ```
 
-### 2. Description Template
+### 2. Description template
 ```markdown
 ## Changes
 - Added Wave payment provider integration
@@ -30,13 +30,13 @@ docs(api): update authentication guide
 ## Screenshots
 [If applicable]
 
-## Related Issues
+## Related issues
 Closes #123
 ```
 
-## Review Process
+## Review process
 
-### 1. Self Review
+### 1. Self review
 ```bash
 # Run tests
 npm test
@@ -48,20 +48,20 @@ npm run lint
 npm run docs:build
 ```
 
-### 2. Code Review
+### 2. Code review
 - Request reviews from relevant team members
 - Address feedback promptly
 - Re-request review after changes
 
-### 3. CI Checks
+### 3. CI checks
 - All tests must pass
 - Code coverage requirements met
 - No security vulnerabilities
 - Documentation updated
 
-## Review Checklist
+## Review checklist
 
-### 1. Code Quality
+### 1. Code quality
 - [ ] Follows coding standards
 - [ ] No duplicate code
 - [ ] Proper error handling
@@ -85,9 +85,9 @@ npm run docs:build
 - [ ] README updates
 - [ ] Changelog entry
 
-## Best Practices
+## Best practices
 
-### 1. As a Submitter
+### 1. As a submitter
 ```typescript
 // DO: Small, focused changes
 function validatePayment(amount: number): boolean {
@@ -100,7 +100,7 @@ function validateAndProcessPayment() {
 }
 ```
 
-### 2. As a Reviewer
+### 2. As a reviewer
 ```typescript
 // Good feedback
 // Consider using a type guard for better type safety
@@ -112,7 +112,7 @@ function isValidAmount(amount: unknown): amount is number {
 // This is wrong
 ```
 
-### 3. Code Examples
+### 3. Code examples
 ```typescript
 // Before
 function process(data) {
@@ -130,9 +130,9 @@ function process(data: InputData): OutputData {
 }
 ```
 
-## Review Comments
+## Review comments
 
-### 1. Constructive Feedback
+### 1. Constructive feedback
 ```typescript
 // Instead of:
 // This is messy
@@ -159,9 +159,9 @@ function validateWebhookSignature(
 // - `data` -> `paymentData`
 ```
 
-## After Review
+## After review
 
-### 1. Addressing Feedback
+### 1. Addressing feedback
 ```bash
 # Update branch
 git fetch origin
@@ -186,8 +186,8 @@ git checkout develop
 git rebase feature/payment-method
 ```
 
-## Next Steps
+## Next steps
 
-- [Contributing Guidelines](./contributing-guidelines)
-- [Branching Strategy](./branching-strategy)
-- [Best Practices](./best-practices) 
+- [Contributing guidelines](./contributing-guidelines)
+- [Branching strategy](./branching-strategy)
+- [Best practices](./best-practices) 

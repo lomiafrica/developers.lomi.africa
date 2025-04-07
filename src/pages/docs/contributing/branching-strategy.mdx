@@ -1,132 +1,188 @@
 # Branching Strategy
 
-We follow a modified GitFlow workflow that emphasizes simplicity and continuous delivery.
+We follow a Git workflow inspired by GitFlow but simplified for continuous delivery and integration. This strategy ensures a stable production branch (`main`) while facilitating active development on the `develop` branch.
 
-## Main Branches
+## Main branches
 
-### `main` Branch
-- Production-ready code
-- Protected branch
-- Requires pull request and review
-- Tagged with version numbers
-- Automated deployments to production
+These are the long-lived core branches of the repository.
 
-### `develop` Branch
-- Integration branch
-- Latest development changes
-- Automated deployments to staging
-- CI runs all tests
+### `main` branch
 
-## Feature Development
+- Represents the **production-ready** code. Only fully tested and approved code resides here.
+- **Protected**: Direct pushes are disabled. Changes must come through reviewed Pull Requests from `release` or `hotfix` branches.
+- **Tagged**: Each merge into `main` corresponds to a release and should be tagged with a semantic version number (e.g., `v1.2.3`).
+- **Deployments**: Merges to `main` trigger automated deployments to the production environment.
 
-### Feature Branches
+### `develop` branch
+
+- Serves as the primary **integration branch** for ongoing development.
+- Contains the latest successfully built development code, including completed features and bug fixes awaiting release.
+- **Protected**: Requires status checks (CI tests) to pass before merging.
+- **Deployments**: Changes merged into `develop` are typically deployed automatically to a staging or pre-production environment for further testing.
+- **Source for Features**: All feature branches should be created from `develop`.
+
+## Feature development
+
+Short-lived branches used for specific tasks.
+
+### Feature branches (`feature/*`)
+
+Used for developing new features.
+
 ```bash
-# Create feature branch
+# 1. Ensure your local develop is up-to-date
 git checkout develop
+git pull upstream develop
+
+# 2. Create your feature branch from develop
 git checkout -b feature/payment-method-wave
 
-# Keep updated with develop
-git fetch origin
-git rebase origin/develop
+# 3. Work on your feature, commit changes regularly
+# ... make changes ...
+git add .
+git commit -m "feat(payments): implement initial Wave structure"
 
-# Push changes
+# 4. Keep your branch updated with develop (optional but recommended)
+git fetch upstream
+git rebase upstream/develop
+
+# 5. Push your feature branch to your fork
 git push origin feature/payment-method-wave
 ```
 
-### Bug Fix Branches
-```bash
-# Create bug fix branch
-git checkout develop
-git checkout -b fix/transaction-timeout
+### Bug fix branches (`fix/*`)
 
-# After testing
-git push origin fix/transaction-timeout
+Used for fixing non-critical bugs discovered during development.
+
+```bash
+# 1. Create bug fix branch from develop
+git checkout develop
+git pull upstream develop
+git checkout -b fix/transaction-timeout-handling
+
+# 2. Fix the bug and commit
+# ... make changes ...
+git add .
+git commit -m "fix(transactions): increase timeout and add retry logic"
+
+# 3. Push the branch
+git push origin fix/transaction-timeout-handling
 ```
 
-## Release Process
+## Release process
 
-### Release Branches
+Managed branches for preparing and executing releases.
+
+### Release branches (`release/*`)
+
+Used to prepare a new production release. Allows for final testing, documentation updates, and minor bug fixes specific to the release.
+
 ```bash
-# Create release branch
+# 1. Create release branch from develop
 git checkout develop
-git checkout -b release/1.2.0
+git pull upstream develop
+git checkout -b release/v1.2.0
 
-# Version bump and final testing
-npm version minor
-git push origin release/1.2.0
+# 2. Perform release tasks (e.g., bump version, update changelog)
+npm version minor -m "chore(release): prepare release %s"
+# ... final tests, documentation updates ...
+
+# 3. Push the release branch (allows CI to run tests)
+git push origin release/v1.2.0
+
+# 4. Once ready, merge into main and develop, then tag main
+# (See Merge Strategy below)
 ```
 
-### Hotfix Branches
+### Hotfix branches (`hotfix/*`)
+
+Used for addressing critical bugs found in the production (`main`) branch. These require immediate attention.
+
 ```bash
-# Create hotfix branch
+# 1. Create hotfix branch directly from main
 git checkout main
-git checkout -b hotfix/1.2.1
+git pull upstream main
+git checkout -b hotfix/critical-auth-issue-1.2.1
 
-# Fix critical bug
-npm version patch
-git push origin hotfix/1.2.1
+# 2. Fix the critical bug
+# ... make changes ...
+git add .
+git commit -m "fix(auth): resolve critical login vulnerability"
+
+# 3. Bump the patch version
+npm version patch -m "chore(release): hotfix %s"
+
+# 4. Push the hotfix branch
+git push origin hotfix/critical-auth-issue-1.2.1
+
+# 5. Once fixed and tested, merge into main and develop, then tag main
+# (See Merge Strategy below)
 ```
 
-## Branch Protection Rules
+## Branch protection rules
 
-1. **`main` Branch**
-   - Require pull request reviews
-   - Require status checks to pass
-   - No direct pushes
-   - Linear history (rebase merging)
+Configured in the GitHub repository settings to enforce the workflow.
 
-2. **`develop` Branch**
-   - Require status checks to pass
-   - Allow rebase merging
-   - Automated test suite must pass
+1.  **`main` Branch**
+    - Require Pull Request reviews before merging (at least 1 approval).
+    - Require status checks (CI tests, linting) to pass before merging.
+    - Require branches to be up to date before merging.
+    - **Disallow direct pushes.**
+    - Enforce linear history (prefer squash or rebase merging for PRs).
 
-## Merge Strategy
+2.  **`develop` Branch**
+    - Require status checks to pass before merging.
+    - Allow maintainers to merge without review (optional, based on team policy).
+    - Prefer squash or rebase merging for feature PRs to keep history clean.
 
-1. **Feature to Develop**
-   ```bash
-   git checkout develop
-   git pull origin develop
-   git merge --no-ff feature/payment-method-wave
-   git push origin develop
-   ```
+## Merge strategy
 
-2. **Release to Main**
-   ```bash
-   git checkout main
-   git pull origin main
-   git merge --no-ff release/1.2.0
-   git tag -a v1.2.0 -m "Version 1.2.0"
-   git push origin main --tags
-   ```
+How branches are merged back into the main lines.
 
-## Best Practices
+1.  **Feature/Fix branches to `develop`**
+    - Create a Pull Request from your `feature/*` or `fix/*` branch targeting the `develop` branch.
+    - Ensure CI checks pass and code review is complete (if required).
+    - **Use Squash and Merge or Rebase and Merge** via the GitHub PR interface to maintain a clean `develop` history.
+    - Delete the feature/fix branch after merging.
 
-1. **Branch Naming**
-   - `feature/*` - New features
-   - `fix/*` - Bug fixes
-   - `release/*` - Release preparation
-   - `hotfix/*` - Emergency fixes
-   - Use descriptive names
+2.  **`release/*` Branch to `main` and `develop`**
+    - Create a Pull Request from the `release/*` branch targeting `main`.
+    - Ensure all final checks and approvals are met.
+    - **Use Merge Commit (`--no-ff`)** to preserve the history of the release preparation.
+    - After merging to `main`, **tag the merge commit** on `main` with the version number (e.g., `git tag v1.2.0 <main_merge_commit_hash>`). Push the tag (`git push upstream --tags`).
+    - Create another Pull Request (or merge directly if permissions allow) from the `release/*` branch back into `develop` to incorporate any release-specific fixes made on the release branch.
+    - Delete the release branch after merging into both `main` and `develop`.
 
-2. **Commit Messages**
-   ```bash
-   # Format
-   <type>(<scope>): <description>
+3.  **`hotfix/*` Branch to `main` and `develop`**
+    - Similar to releases: Create a PR targeting `main`, merge using Merge Commit (`--no-ff`), tag the merge commit on `main`, push the tag.
+    - Create another PR (or merge directly) from the `hotfix/*` branch back into `develop` to ensure the fix is included in ongoing development.
+    - Delete the hotfix branch after merging into both `main` and `develop`.
 
-   # Examples
-   feat(payments): add Wave payment method
-   fix(webhooks): handle timeout errors
-   docs(api): update authentication guide
-   ```
+## Best practices summary
 
-3. **Code Review**
-   - Create detailed pull requests
-   - Add relevant labels
-   - Link related issues
-   - Request specific reviewers
+1.  **Branch naming conventions**
+    - `feature/<description>`
+    - `fix/<description>`
+    - `release/v<version>`
+    - `hotfix/<description-or-version>`
+    - Use kebab-case (hyphen-separated) descriptions.
 
-## Next Steps
+2.  **Commit messages**
+    - Follow the [Conventional Commits specification](https://www.conventionalcommits.org/).
+    ```bash
+    # Format: <type>(<scope>): <subject>
+    # Example: feat(payments): add Wave payment provider integration
+    ```
+    - Reference related issue numbers in the commit body or footer (e.g., `Closes #123`).
 
-- [Code Reviews](./code-reviews)
+3.  **Pull requests**
+    - Write clear, descriptive PR titles and descriptions.
+    - Link to the relevant issue(s).
+    - Keep PRs focused on a single logical change.
+    - Request reviews from relevant team members or code owners.
+
+## Next steps
+
+- [Code reviews](./code-reviews)
 - [Versioning](./versioning)
-- [Contributing Guidelines](./contributing-guidelines) 
+- [Contributing guidelines](./contributing-guidelines) 

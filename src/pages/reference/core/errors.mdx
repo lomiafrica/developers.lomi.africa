@@ -1,191 +1,90 @@
-# Error Handling
+# Errors
 
-## Error Types
+Lomi uses conventional HTTP status codes to indicate the success or failure of an API request. In general:
 
-All API errors follow a consistent structure that includes an error code, message, and additional details when available.
+-   Codes in the `2xx` range indicate success.
+-   Codes in the `4xx` range indicate an error that failed given the information provided (e.g., a required parameter was omitted, a charge failed, etc.).
+-   Codes in the `5xx` range indicate an error with Lomi's servers (these are rare).
+
+When an API request fails (returns a `4xx` or `5xx` status code), the response body will contain a JSON object detailing the error.
+
+## Error response structure
+
+All error responses follow a consistent JSON format:
 
 ```json
 {
-  "code": "invalid_request",
-  "message": "The provided currency is not supported",
-  "details": {
-    "field": "currency_code",
-    "value": "GBP",
-    "allowed_values": ["XOF", "USD", "EUR"]
+  "error": {
+    "message": "A human-readable description of the error.",
+    "details": "Optional: Additional details or structured information about the error."
   }
 }
 ```
 
-## Error Categories
+| Property    | Type                   | Description                                                    |
+| ----------- | ---------------------- | -------------------------------------------------------------- |
+| `error`     | object                 | Container for the error information.                           |
+| `message`   | string                 | A brief, human-readable summary of the error.                  |
+| `details`   | string or object       | Optional. Provides more specific context or structured data about the error (e.g., validation failures, conflicting resources). |
 
-### Authentication Errors (401)
-| Code | Description | Resolution |
-|------|-------------|------------|
-| `invalid_api_key` | Invalid API key provided | Check your API key is correct and active |
-| `expired_api_key` | API key has expired | Generate a new API key in the dashboard |
-| `missing_api_key` | No API key provided | Include X-API-KEY header in your request |
+## HTTP status codes
 
-### Authorization Errors (403)
-| Code | Description | Resolution |
-|------|-------------|------------|
-| `insufficient_permissions` | API key lacks required permissions | Request additional permissions or use a different key |
-| `account_inactive` | Merchant account is inactive | Contact support to reactivate your account |
-| `rate_limit_exceeded` | Too many requests | Implement exponential backoff in your integration |
+Here are some common HTTP status codes you might encounter:
 
-### Validation Errors (400)
-| Code | Description | Resolution |
-|------|-------------|------------|
-| `invalid_amount` | Invalid transaction amount | Ensure amount is positive and within limits |
-| `invalid_currency` | Unsupported currency code | Use one of: XOF, USD, EUR |
-| `invalid_phone` | Invalid phone number format | Use international format: +221XXXXXXXXX |
-| `missing_required_field` | Required field not provided | Check the API reference for required fields |
+| Code | Status                  | Meaning                                                                                     |
+| ---- | ----------------------- | ------------------------------------------------------------------------------------------- |
+| 200  | OK                      | The request was successful.                                                                 |
+| 201  | Created                 | The request was successful and a resource was created (e.g., creating a webhook).         |
+| 204  | No Content              | The request was successful but there is no representation to return (e.g., deleting a webhook). |
+| 400  | Bad Request             | The request was unacceptable, often due to missing a required parameter or invalid data format. |
+| 401  | Unauthorized            | No valid API key provided.                                                                  |
+| 403  | Forbidden               | The API key doesn't have permissions to perform the request.                                |
+| 404  | Not Found               | The requested resource doesn't exist.                                                       |
+| 409  | Conflict                | The request conflicts with the current state of the resource (e.g., duplicate webhook URL). |
+| 429  | Too Many Requests       | Rate limits have been exceeded.                                                             |
+| 500  | Internal Server Error   | Something went wrong on Lomi's end (these are rare).                                        |
+| 503  | Service Unavailable     | We're temporarily offline for maintenance. Please try again later.                           |
 
-### Resource Errors (404)
-| Code | Description | Resolution |
-|------|-------------|------------|
-| `merchant_not_found` | Merchant ID doesn't exist | Verify the merchant_id is correct |
-| `transaction_not_found` | Transaction not found | Check the transaction_id |
-| `customer_not_found` | Customer doesn't exist | Verify the customer_id |
+## Common error messages
 
-### Provider Errors (503)
-| Code | Description | Resolution |
-|------|-------------|------------|
-| `provider_unavailable` | Payment provider is offline | Retry the request or try a different provider |
-| `provider_timeout` | Provider request timed out | Retry with exponential backoff |
-| `provider_rejected` | Provider rejected transaction | Check provider-specific error details |
+While the specific `message` and `details` will vary, here are examples associated with common status codes:
 
-## Error Handling Best Practices
+**400 Bad Request:**
 
-### Implement Retry Logic
-```typescript
-import { LomiClient, ProviderError } from '@lomi/sdk';
+-   `"message": "Invalid request"`, `"details": "Missing required field: 'url'"`
+-   `"message": "Invalid request"`, `"details": "Invalid Webhook ID format."`
+-   `"message": "Invalid request body"`
 
-async function processPayment(data) {
-  const maxRetries = 3;
-  let attempt = 0;
+**401 Unauthorized:**
 
-  while (attempt < maxRetries) {
-    try {
-      const result = await lomi.transactions.create(data);
-      return result;
-    } catch (error) {
-      if (error instanceof ProviderError && error.isRetryable()) {
-        attempt++;
-        await sleep(Math.pow(2, attempt) * 1000); // Exponential backoff
-        continue;
-      }
-      throw error;
-    }
-  }
-}
-```
+-   `"message": "Invalid API key"`, `"details": "The provided API key is invalid or does not exist"`
+-   `"message": "Missing API key"`, `"details": "API key is required for authentication"`
+-   `"message": "Authentication required"`
 
-### Handle Rate Limits
-```typescript
-import { RateLimitError } from '@lomi/sdk';
+**404 Not Found:**
 
-try {
-  await lomi.transactions.list();
-} catch (error) {
-  if (error instanceof RateLimitError) {
-    const resetTime = error.resetAt;
-    const waitMs = resetTime - Date.now();
-    await sleep(waitMs);
-    // Retry request
-  }
-}
-```
+-   `"message": "Webhook not found"`, `"details": "Webhook with ID 'wh_...' does not exist or does not belong to this organization."`
+-   `"message": "Resource not found"`
 
-### Validate Input Data
-```typescript
-import { ValidationError } from '@lomi/sdk';
+**409 Conflict:**
 
-try {
-  await lomi.customers.create({
-    email: 'invalid-email',
-    phone: 'invalid-phone'
-  });
-} catch (error) {
-  if (error instanceof ValidationError) {
-    console.log(error.details); // Shows specific validation failures
-    // Handle each validation error
-  }
-}
-```
+-   `"message": "Conflict"`, `"details": "A webhook with this URL already exists for your organization."`
 
-## Provider-Specific Errors
+**429 Too Many Requests:**
 
-Each payment provider may return specific error codes. Here's how to handle them:
+-   `"message": "Rate limit exceeded"`
 
-### Orange Money
-```typescript
-try {
-  await lomi.transactions.create({
-    provider_code: 'ORANGE',
-    // ...
-  });
-} catch (error) {
-  if (error.provider_code === 'ORANGE') {
-    switch (error.provider_error_code) {
-      case 'INSUFFICIENT_BALANCE':
-        // Handle insufficient balance
-        break;
-      case 'INVALID_PIN':
-        // Handle invalid PIN
-        break;
-      // Handle other Orange-specific errors
-    }
-  }
-}
-```
+**500 Internal Server Error:**
 
-### Wave
-```typescript
-try {
-  await lomi.transactions.create({
-    provider_code: 'WAVE',
-    // ...
-  });
-} catch (error) {
-  if (error.provider_code === 'WAVE') {
-    switch (error.provider_error_code) {
-      case 'USER_CANCELLED':
-        // Handle user cancellation
-        break;
-      case 'DAILY_LIMIT_EXCEEDED':
-        // Handle limit exceeded
-        break;
-      // Handle other Wave-specific errors
-    }
-  }
-}
-```
+-   `"message": "Internal server error"`
+-   `"message": "Database error"`, `"details": "Failed to execute database query."`
 
-## Error Monitoring
+## Handling errors
 
-We recommend using our dashboard's error monitoring tools to:
-- Track error rates and patterns
-- Set up alerts for critical errors
-- Analyze error distributions by provider
-- Monitor API health and performance
+Your integration should gracefully handle potential API errors:
 
-## Debugging Tools
-
-### Test Mode
-Use test mode to simulate various error scenarios:
-```typescript
-const lomi = new LomiClient({
-  apiKey: 'test_key',
-  debug: true // Enables detailed error logging
-});
-```
-
-### Request IDs
-All API responses include a unique request ID. Include this when contacting support:
-```typescript
-try {
-  await lomi.transactions.create(data);
-} catch (error) {
-  console.log(error.requestId); // Use this ID for support
-}
-``` 
+1.  **Check the HTTP Status Code:** Determine the general outcome of the request.
+2.  **Parse the Response Body:** If the status code indicates an error (`4xx` or `5xx`), parse the JSON response body.
+3.  **Use Error Information:** Use the `message` and `details` from the parsed JSON to understand the specific problem.
+4.  **Implement Logic:** Based on the error type, implement appropriate logic (e.g., prompt user to fix input for `400`, check credentials for `401`, retry later for `429` or `5xx`).
+5.  **Log Errors:** Log errors, including the full response body and potentially the request ID (if provided in headers), to aid debugging. 

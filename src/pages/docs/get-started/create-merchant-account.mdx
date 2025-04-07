@@ -1,130 +1,289 @@
-# **Getting Started**
+# **Getting started**
 
 ## **Prerequisites**
 
-- Business registration in any country of the world. You'll need to provide the following business details:
-   - Legal business name
-   - Valid email address
-   - Tax ID
-   - Country of operation (Côte d'Ivoire or Sénégal)
-   - Contact information
+- Business registration in any country of the world.
+You'll need to provide the following business details:
+  - Legal business name
+  - Valid email address
+  - Tax ID
+  - Country of operation
+  - Legal representative contact information
+  - Legal representative ID
 
-and few technical requirements:
+and a few technical requirements:
   - Node.js 18+ for SDK usage
-  - HTTPS endpoint for webhooks
+  - An HTTPS endpoint accessible from the internet for receiving webhooks
 
-## **Quick Start**
+## **Quick start**
 
-Once verified, access your API credentials:
+Follow these steps to set up your lomi. integration and make your first API call.
 
-```typescript
-// Test Environment
-const testClient = new LomiSDK({
-  apiKey: 'lomi_sk_test_...',
-  baseUrl: 'https://sandbox.api.lomi.africa/v1'
-});
+### 1. Create your account and get your API keys
 
-// Production Environment
-const liveClient = new LomiSDK({
-  apiKey: 'lomi_sk_live_...',
-  baseUrl: 'https://api.lomi.africa/v1'
-});
-```
+First, you need to create your lomi. merchant account. During the sign-up process, you will provide your business details as listed in the prerequisites. Once your account application is submitted and approved, you'll be able to connect payment channels and process live transactions.
 
-## **Merchant Information**
+Once your account is approved, navigate to the API Keys section to find your unique keys. lomi. provides separate keys for the **Test** and **Live** environments, allowing you to build and test your integration safely.
 
-Retrieve merchant details:
-```typescript
-const merchant = await lomi.merchants.get('merchant_id');
-```
+**For development and testing, always use your Test API keys.** Your Test secret key will have a prefix like `lomi_sk_test_...`.
 
-Response example:
-```json
-{
-  "merchant_id": "mer_123",
-  "business_name": "Example Corp",
-  "country": "SN",
-  "currency": "XOF",
-  "status": "active",
-  "capabilities": {
-    "orange_money_payments": "active",
-    "wave_payments": "active",
-    "card_payments": "pending"
-  }
-}
-```
+### 2. Set environment variables
 
-### 2. Get Your API Keys from the home page
+Set your Test API key and the API base URL for the sandbox environment as environment variables in your terminal. This is the recommended way to handle credentials.
+
 ```bash
-# Test Environment
-export LOMI_API_KEY=lomi_sk_test_...
-
-# Production Environment
-export LOMI_API_KEY=lomi_sk_live_...
-```
-
-### 3. Install SDK (Optional)
-```bash
-npm install lomi.cli
+# Replace with your actual Test Secret Key from the lomi. dashboard
+export LOMI_API_KEY=lomi_sk_test_xxxxxxxxxxxxxxxxxxxxxx
 # or
-yarn add lomi.cli
+# Set the API Key directly for production.
+export LOMI_API_KEY=lomi_sk_live_xxxxxxxxxxxxxxxxxxxxxx
 ```
 
-### 4. Make Your First API Call
-```typescript
-import { LomiSDK } from 'lomi-node';
+Optionally, set the API base URL for the sandbox environment (though the SDK might default correctly if only a test key is provided):
 
+```bash
+export LOMI_API_URL=https://sandbox.api.lomi.africa/v1
+# or
+export LOMI_API_URL=https://api.lomi.africa/v1
+```
+
+### 3. Install lomi. with your CLI
+
+The lomi. CLI tool provides convenient commands for interacting with the API, managing resources, and testing webhooks. More information on how to use the CLI is available on its dedicated page: [lomi. CLI Documentation](/docs/cli) *(xxxxxx)*
+
+```bash
+bun install lomi.cli
+# or
+npm install lomi.cli
+```
+
+### 4. Make your first API call
+
+Now, let's retrieve your merchant details using the Node.js SDK. This example assumes you have set the `LOMI_API_KEY` and `LOMI_API_URL` environment variables as shown in Step 2.
+
+```typescript
+import { LomiSDK } from 'lomi.cli';
+
+// Initialize the SDK using environment variables
 const lomi = new LomiSDK({
   apiKey: process.env.LOMI_API_KEY,
-  baseUrl: process.env.LOMI_API_URL // Optional, defaults to production
+  baseUrl: process.env.LOMI_API_URL // Uses the sandbox URL from env var
 });
 
-// Create a checkout session
-const session = await lomi.checkoutSessions.create({
-  merchant_id: 'your_merchant_id',
-  success_url: 'https://your-site.com/success',
-  cancel_url: 'https://your-site.com/cancel',
-  provider_codes: ['ORANGE', 'WAVE'],
-  amount: 1000,
-  currency: 'XOF'
-});
+async function getMerchantDetails(merchantId: string) {
+  if (!process.env.LOMI_API_KEY || !process.env.LOMI_API_URL) {
+    console.error('Error: LOMI_API_KEY and LOMI_API_URL environment variables must be set.');
+    return;
+  }
+  if (!merchantId || merchantId === 'YOUR_MERCHANT_ID') {
+     console.error('Error: Please replace "YOUR_MERCHANT_ID" with your actual Merchant ID from the lomi. dashboard.');
+     return;
+  }
+
+  try {
+    console.log(`Retrieving details for merchant: ${merchantId}...`);
+    const merchant = await lomi.merchants.get(merchantId);
+    console.log('Successfully retrieved merchant details:');
+    console.log(JSON.stringify(merchant, null, 2)); // Pretty print the JSON response
+
+    /* Expected Output Structure:
+    {
+      "data": {
+        "merchant_id": "d463e162-c632-4428-a39f-22bf76793340", // Example value, will return actual merchant id
+        "name": "The African Ledger",
+        "email": "paul@africanledger.com,
+        "phone_number": "+2250160223401,
+        "country": "CI", // e.g., Côte d'Ivoire
+        "mrr": 0, // Example value, will reflect actual MRR
+        "arr": 0, // Example value, will reflect actual ARR
+        "metadata": {
+          // Any metadata associated with the merchant
+        },
+        "created_at": "2023-10-26T10:00:00Z", // Example timestamp
+        "updated_at": "2023-10-26T10:00:00Z" // Example timestamp
+      }
+    }
+    */
+
+  } catch (error) {
+    console.error('Failed to retrieve merchant details:', error);
+  }
+}
+
+// --- How to run this example ---
+// 1. Save the code above as a .ts file (e.g., getMerchant.ts).
+// 2. Make sure you have Node.js and ts-node installed (`npm install -g typescript ts-node`).
+// 3. Set your environment variables (LOMI_API_KEY, LOMI_API_URL) as shown in Step 2.
+// 4. Get your Merchant ID from the lomi. dashboard.
+// 5. Run the script: ts-node getMerchant.ts YOUR_MERCHANT_ID
+// Example: ts-node getMerchant.ts d463e263-c612-4428-a39f-22bf76793340
+
+// Example usage (replace with your actual Merchant ID):
+getMerchantDetails('YOUR_MERCHANT_ID');
 ```
 
-### 5. Set Up Webhook
+**Alternatively, using `curl`:**
+
+You can also verify your API key and retrieve merchant details directly using `curl` in your terminal. This requires the `LOMI_API_KEY` and `LOMI_API_URL` environment variables to be set (Step 2) and assumes you have `jq` installed for pretty-printing the JSON output.
+
+```bash
+# Make sure env vars are set:
+# export LOMI_API_KEY=lomi_sk_test_...
+# export LOMI_API_URL=https://sandbox.api.lomi.africa/v1
+
+# Replace YOUR_MERCHANT_ID with your actual Merchant ID
+export MERCHANT_ID=YOUR_MERCHANT_ID
+
+# Check if MERCHANT_ID is set and not the placeholder
+if [ -z "$MERCHANT_ID" ] || [ "$MERCHANT_ID" = "YOUR_MERCHANT_ID" ]; then
+  echo "Error: Please set the MERCHANT_ID environment variable with your actual Merchant ID."
+else
+  echo "Attempting to retrieve details for merchant: $MERCHANT_ID using $LOMI_API_URL ..."
+  curl -X GET "${LOMI_API_URL}/merchants/${MERCHANT_ID}" \
+    -H "X-API-Key: ${LOMI_API_KEY}" | jq .
+fi
+
+```
+This `curl` command sends a GET request to the merchants endpoint using your test API key and the sandbox URL.
+
+### 5. Set up webhooks
+
+Webhooks are essential for receiving real-time notifications about events happening in your lomi. account, such as successful payments, completed checkouts, or failed payments.
+
+Here's a basic example using Express.js to create an endpoint that listens for lomi. webhooks:
+
 ```typescript
 import express from 'express';
+import { LomiSDK } from 'lomi.cli'; // Assuming LomiSDK is correctly imported
+
 const app = express();
 
-app.post('/webhook', express.json(), (req, res) => {
-  const event = lomi.webhooks.constructEvent(
-    req.body,
-    req.headers['lomi-signature'],
-    process.env.WEBHOOK_SECRET
-  );
-  
-  // Handle the event
-  switch (event.type) {
-    case 'payment.success':
-      // Handle successful payment
-      break;
+// Use JSON middleware, but ensure raw body is captured for signature verification
+// lomi. sends webhooks as POST requests with a JSON payload.
+app.use(express.json({
+  verify: (req: any, res, buf) => { // Add type 'any' or define interface for req
+    req.rawBody = buf; // Store the raw buffer for signature verification
   }
-  
-  res.json({ received: true });
+}));
+
+// Initialize lomi. SDK (only needed for signature verification here)
+// Ensure API Key is set if verifySignature needs it, otherwise it might just need the secret.
+// Double-check if LomiSDK instance is needed or if verifySignature is static/standalone.
+// Assuming verifySignature is available on an instance or statically:
+const lomi = new LomiSDK({ apiKey: process.env.LOMI_API_KEY }); // May not be needed if secret is passed directly
+
+app.post('/webhook', (req: any, res) => { // Add type 'any' or define interface for req
+  const signature = req.headers['x-lomi-signature'] as string; // Get signature from header
+  const secret = process.env.LOMI_WEBHOOK_SECRET; // Get your webhook secret from env var
+
+  if (!secret) {
+    console.error('Webhook secret is not configured in environment variables (LOMI_WEBHOOK_SECRET).');
+    return res.status(500).send('Webhook secret not configured.');
+  }
+  if (!signature) {
+    console.warn('Webhook request received without x-lomi-signature header.');
+    return res.status(400).send('Missing signature.');
+  }
+  if (!req.rawBody) {
+     console.error('Raw body buffer not available for signature verification.');
+     return res.status(500).send('Internal server error during webhook processing.');
+  }
+
+  let isValid = false;
+  try {
+    // Verify the signature using the raw body buffer, the received signature, and your secret
+    isValid = lomi.webhooks.verifySignature(
+      req.rawBody,
+      signature,
+      secret
+    );
+  } catch (error) {
+      console.error('Error during webhook signature verification:', error);
+      return res.status(500).send('Error verifying webhook signature.');
+  }
+
+
+  if (!isValid) {
+    console.error('Invalid webhook signature received.');
+    return res.status(400).send('Invalid signature.');
+  }
+
+  // Signature is valid, proceed to handle the event
+  const event = req.body; // Use the parsed JSON body
+  console.log(`Webhook received and verified: ${event.type}`);
+
+  // Handle different event types
+  switch (event.type) {
+    // See Webhooks API docs for a full list of event types
+    case 'PAYMENT_SUCCEEDED':
+      console.log('Payment succeeded!', event.data);
+      // TODO: Implement logic for successful payment (e.g., update order status, grant access)
+      break;
+    case 'CHECKOUT_COMPLETED':
+      console.log('Checkout completed!', event.data);
+      // TODO: Implement logic for completed checkout
+      break;
+    case 'SUBSCRIPTION_RENEWED':
+      console.log('Subscription renewed!', event.data);
+      // TODO: Implement logic for subscription renewal
+      break;
+    case 'PAYMENT_FAILED':
+      console.log('Payment failed.', event.data);
+      // TODO: Implement logic for failed payment (e.g., notify customer)
+      break;
+    // Add cases for other relevant events like:
+    // case 'CUSTOMER_CREATED':
+    // case 'SUBSCRIPTION_CANCELED':
+    // etc.
+    default:
+      console.log(`Unhandled event type: ${event.type}`);
+  }
+
+  // Acknowledge receipt of the webhook
+  res.status(200).json({ received: true });
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Webhook listener running on port ${PORT}`));
+
 ```
+**Remember to:**
+- Set your `LOMI_WEBHOOK_SECRET` environment variable.
+- Expose your local endpoint to the internet using a tool like `ngrok` during development.
+- Register the public URL (e.g., the `ngrok` URL) in your lomi. dashboard's webhook settings.
 
 ## **Testing**
 
-xxxxx
+It's crucial to test your integration thoroughly in your Test znvironment before processing live transactions.
 
-## **Next Steps**
+1.  **Use the test environment:** Ensure all your test API calls and SDK initializations use:
+    *   Your **Test API key** (starting with `lomi_sk_test_...`).
+    *   The **Test Base URL** (`https://sandbox.api.lomi.africa/v1`).
+    These should be correctly set using the environment variables shown in **Step 2**.
 
-- [Process Transactions](./process-transactions)
-- [API Reference](/api-reference)
-- [Error Handling](/errors)
+2.  **Simulated data:** The Test Environment mimics the live API but uses simulated data. No real money is moved.
+
+3.  **Test your API calls:** Run the code examples (Node.js or `curl`) from **Step 5** using your Test API Key and the sandbox URL. Verify you receive a successful response containing your test merchant data.
+
+4.  **Test webhooks:**
+    *   Start your local webhook listener endpoint (from **Step 6**).
+    *   Use a tool like `ngrok` (`ngrok http 3000`) to expose your local server (running on port 3000 in the example) to the internet and get a public URL.
+    *   Configure this public URL (e.g., `https://your-ngrok-url.ngrok.io/webhook`) in your lomi. dashboard's Test Environment webhook settings. Make sure to add your `LOMI_WEBHOOK_SECRET` for the test environment there as well.
+    *   Trigger test events from the lomi. dashboard (using the "Send Test Webhook" button for specific event types) or by performing actions in the test environment (like creating a test checkout session and simulating a payment).
+    *   Verify that your local endpoint receives the event, logs indicate the signature (`x-lomi-signature`) was successfully validated using your Test Webhook Secret, and the correct event handler logic is triggered.
+
+5.  **Explore further:** For more specific testing scenarios and example `curl` commands for different API endpoints (like creating test checkout sessions, products, etc.), refer to the testing files within the `developers-reference/` directory in the documentation repository.
+
+6.  **Learn more:** Read the [API Environments guide](/docs/api-reference/api-environment) for a detailed comparison of Test vs. Live environments.
+
+## **Next steps**
+
+- [Process transactions](./process-transactions)
+- [API reference](/api-reference)
+- [Error handling](/errors)
 
 ## **Support**
 
-- Technical issues: [hello@lomi.africa](mailto:hello@lomi.africa)
-- API Status: [status.lomi.africa](https://status.lomi.africa)
-- Schedule call: [Book Demo](https://cal.com/babacar-diop)
+- Technical support: [hello@lomi.africa](mailto:hello@lomi.africa)
+- API status: [status.lomi.africa](https://status.lomi.africa)
+- Schedule call if you need assistance: [Book Demo](https://cal.com/babacar-diop)

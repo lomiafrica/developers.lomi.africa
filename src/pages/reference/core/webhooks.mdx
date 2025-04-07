@@ -1,196 +1,290 @@
 # Webhooks
 
-Webhooks allow your application to receive real-time notifications about events that occur in your lomi. account.
+Webhooks allow your application to receive real-time notifications about events that occur in your lomi. account, such as successful payments, subscription renewals, or failed transactions. Instead of polling the API, you can configure a webhook endpoint where Lomi will send event data via HTTP POST requests.
 
-## Setting Up Webhooks
+## Base URL
 
-### 1. Create a Webhook Endpoint
-```typescript
-const webhook = await lomi.webhooks.create({
-  url: "https://example.com/webhooks",
-  authorized_events: ["TRANSACTION_COMPLETED", "REFUND_COMPLETED"],
-  metadata: { environment: "production" }
-});
+```
+https://api.lomi.africa/v1
 ```
 
-### 2. Verify Webhook Signatures
-```typescript
-import { verifyWebhookSignature } from '@lomi/sdk';
+## Authentication
 
-app.post('/webhooks', express.raw({type: 'application/json'}), (req, res) => {
-  const signature = req.headers['x-lomi-signature'];
-  
-  try {
-    const event = verifyWebhookSignature(
-      req.body,
-      signature,
-      webhookSecret
-    );
-    handleWebhookEvent(event);
-    res.json({received: true});
-  } catch (err) {
-    res.status(400).send('Webhook signature verification failed');
-  }
-});
+API requests to manage webhooks require authentication using an API key in the `X-API-Key` header. See [Authentication](./authentication).
+
+```http
+X-API-Key: your_api_key
 ```
 
-## Event Types
+## Webhook security
 
-### Transaction Events
-| Event | Description |
-|-------|-------------|
-| `TRANSACTION_CREATED` | Transaction has been initiated |
-| `TRANSACTION_COMPLETED` | Payment was successful |
-| `TRANSACTION_FAILED` | Payment attempt failed |
-| `TRANSACTION_EXPIRED` | Payment session expired |
+To ensure the security and integrity of webhook events, Lomi signs each request sent to your endpoint using a unique secret associated with that webhook.
 
-### Refund Events
-| Event | Description |
-|-------|-------------|
-| `REFUND_CREATED` | Refund has been initiated |
-| `REFUND_COMPLETED` | Refund was successful |
-| `REFUND_FAILED` | Refund attempt failed |
+1.  **Signature Header:** Each webhook request includes an `X-Lomi-Signature` HTTP header.
+2.  **Webhook Secret:** When you create a webhook endpoint via the API, a `secret` (prefixed with `whsec_`) is returned. **Store this secret securely, as it will not be shown again.**
+3.  **Verification:** Your endpoint should verify the signature by computing an HMAC-SHA256 hash of the raw request body using the webhook secret and comparing it to the signature provided in the header.
 
-### Subscription Events
-| Event | Description |
-|-------|-------------|
-| `SUBSCRIPTION_CREATED` | New subscription created |
-| `SUBSCRIPTION_UPDATED` | Subscription details changed |
-| `SUBSCRIPTION_CANCELLED` | Subscription was cancelled |
-| `SUBSCRIPTION_RENEWED` | Recurring payment processed |
-| `SUBSCRIPTION_PAYMENT_FAILED` | Recurring payment failed |
+Refer to the [Webhook Signature Verification](../../../developers-reference/webhook-signature-verification) guide for detailed implementation examples in various languages.
 
-### Provider Events
-| Event | Description |
-|-------|-------------|
-| `PROVIDER_CONNECTED` | New provider connected |
-| `PROVIDER_DISCONNECTED` | Provider disconnected |
-| `PROVIDER_CREDENTIALS_EXPIRED` | Provider credentials need renewal |
+## Webhook events
 
-## Event Payloads
+When creating or updating a webhook, you subscribe it to specific event types. Lomi will only send notifications for the events you've subscribed to.
 
-### Transaction Completed
+| Event Enum                    | Description                                  | Data Payload Type |
+| ----------------------------- | -------------------------------------------- | ----------------- |
+| `PAYMENT_SUCCEEDED`           | A one-time payment is successful.            | Transaction       |
+| `PAYMENT_FAILED`              | A one-time payment attempt failed.           | Transaction       |
+| `CHECKOUT_COMPLETED`          | A checkout session was completed.            | CheckoutSession   |
+| `SUBSCRIPTION_CREATED`        | A new subscription is created.               | Subscription      |
+| `SUBSCRIPTION_RENEWED`        | A subscription successfully renews.          | Subscription      |
+| `SUBSCRIPTION_PAYMENT_FAILED` | A scheduled subscription payment failed.     | Subscription      |
+| `SUBSCRIPTION_CANCELED`       | A subscription is canceled.                  | Subscription      |
+| `REFUND_COMPLETED`            | A refund is successfully processed.          | Refund            |
+| `PROVIDER_STATUS_CHANGED`     | The status of a connected provider changes.  | ProviderSetting   |
+| `test.webhook`                | A test event generated via the API.          | TestPayload       |
+
+*(Note: The specific structure of the data payload for each event type will be documented under the respective API resource, e.g., Transactions, Subscriptions.)*
+
+## API endpoints
+
+### List webhooks
+
+Retrieves a list of all webhook endpoints configured for your organization.
+
+**Endpoint:** `GET /webhooks`
+
+**Example response (200 OK):**
+
 ```json
 {
-  "id": "evt_123",
-  "type": "TRANSACTION_COMPLETED",
-  "created_at": "2024-01-19T12:00:00Z",
-  "data": {
-    "transaction_id": "txn_123",
-    "merchant_id": "merchant_123",
-    "amount": 1000,
-    "currency_code": "XOF",
-    "status": "completed",
-    "provider_code": "ORANGE",
-    "payment_method_code": "MOBILE_MONEY"
-  }
-}
-```
-
-### Subscription Renewed
-```json
-{
-  "id": "evt_124",
-  "type": "SUBSCRIPTION_RENEWED",
-  "created_at": "2024-01-19T12:00:00Z",
-  "data": {
-    "subscription_id": "sub_123",
-    "plan_id": "plan_123",
-    "customer_id": "cust_123",
-    "transaction_id": "txn_124",
-    "amount": 5000,
-    "currency_code": "XOF",
-    "next_billing_date": "2024-02-19T12:00:00Z"
-  }
-}
-```
-
-## Best Practices
-
-### 1. Implement Idempotency
-```typescript
-app.post('/webhooks', async (req, res) => {
-  const eventId = req.body.id;
-  
-  // Check if event was already processed
-  if (await hasProcessedEvent(eventId)) {
-    return res.json({received: true});
-  }
-  
-  // Process the event
-  await handleWebhookEvent(req.body);
-  
-  // Mark event as processed
-  await markEventProcessed(eventId);
-  
-  res.json({received: true});
-});
-```
-
-### 2. Handle Retries
-```typescript
-app.post('/webhooks', async (req, res) => {
-  try {
-    await handleWebhookEvent(req.body);
-    res.json({received: true});
-  } catch (error) {
-    // Return 5xx for retryable errors
-    if (error.isRetryable) {
-      res.status(500).json({error: 'Please retry'});
-    } else {
-      // Return 200 for non-retryable errors to prevent retries
-      res.json({received: true});
+  "data": [
+    {
+      "id": "wh_a1b2c3d4e5f6",
+      "organization_id": "org_f6e5d4c3b2a1",
+      "url": "https://example.com/webhook-receiver",
+      "events": ["PAYMENT_SUCCEEDED", "SUBSCRIPTION_RENEWED"],
+      "active": true,
+      "created_at": "2025-04-06T12:00:00.000Z",
+      "updated_at": "2025-04-06T12:00:00.000Z",
+      "description": "Primary production webhook"
     }
-  }
-});
+    // ... (secret is NOT included)
+  ]
+}
 ```
 
-### 3. Monitor Webhook Health
-```typescript
-// Track failed deliveries
-app.post('/webhooks', async (req, res) => {
-  try {
-    await handleWebhookEvent(req.body);
-    await recordWebhookSuccess(req.body.id);
-  } catch (error) {
-    await recordWebhookFailure(req.body.id, error);
-    throw error;
-  }
-});
+### Create webhook
+
+Creates a new webhook endpoint.
+
+**Endpoint:** `POST /webhooks`
+
+**Request body:**
+
+```json
+{
+  "url": "https://example.com/new-webhook-receiver",
+  "authorized_events": ["PAYMENT_SUCCEEDED", "PAYMENT_FAILED"],
+  "description": "Webhook for payment events"
+}
 ```
 
-## Testing Webhooks
+*   `url` (string, required): The HTTPS URL for your webhook endpoint.
+*   `authorized_events` (array of strings, required): List of event types to subscribe to (see [Webhook Events](#webhook-events)).
+*   `description` (string, optional): A descriptive label.
 
-### Using Test Events
-```typescript
-// Create test webhook event
-const testEvent = await lomi.webhooks.generateTestEvent({
-  type: 'TRANSACTION_COMPLETED',
-  data: {
-    amount: 1000,
-    currency_code: 'XOF'
-  }
-});
+**Example response (201 Created):**
+
+```json
+{
+  "data": {
+      "id": "wh_new1b2c3d4e5f6",
+      "organization_id": "org_f6e5d4c3b2a1",
+      "url": "https://example.com/new-webhook-receiver",
+      "events": ["PAYMENT_SUCCEEDED", "PAYMENT_FAILED"],
+      "active": true,
+      "created_at": "2025-04-06T14:00:00.000Z",
+      "updated_at": "2025-04-06T14:00:00.000Z",
+      "description": "Webhook for payment events"
+  },
+  "secret": "whsec_abc123def456..." // Store this secret securely!
+}
 ```
 
-### Local Development
-We recommend using tools like [ngrok](https://ngrok.com) for local webhook testing:
+### Get webhook
+
+Retrieves details for a specific webhook.
+
+**Endpoint:** `GET /webhooks/{id}`
+
+**Path parameters:**
+
+| Parameter | Type   | Required | Description                   |
+| --------- | ------ | -------- | ----------------------------- |
+| `id`      | string | Yes      | ID of the webhook (`wh_...`) |
+
+**Example response (200 OK):**
+
+```json
+{
+  "data": {
+      "id": "wh_a1b2c3d4e5f6",
+      // ... other fields (secret is NOT included)
+      "description": "Updated description"
+  }
+}
+```
+
+### Update webhook
+
+Updates an existing webhook endpoint.
+
+**Endpoint:** `PATCH /webhooks/{id}`
+
+**Path parameters:**
+
+| Parameter | Type   | Required | Description                   |
+| --------- | ------ | -------- | ----------------------------- |
+| `id`      | string | Yes      | ID of the webhook (`wh_...`) |
+
+**Request body (include only fields to update):**
+
+```json
+{
+  "url": "https://example.com/updated-webhook-receiver",
+  "authorized_events": ["PAYMENT_SUCCEEDED"],
+  "is_active": false,
+  "description": "Updated description"
+}
+```
+
+*   `url` (string, optional): The new HTTPS URL.
+*   `authorized_events` (array of strings, optional): The new list of event types.
+*   `is_active` (boolean, optional): Set `false` to disable, `true` to enable.
+*   `description` (string, optional): A new description.
+
+**Example response (200 OK):**
+
+```json
+{
+  "data": {
+      "id": "wh_a1b2c3d4e5f6",
+      "url": "https://example.com/updated-webhook-receiver",
+      "events": ["PAYMENT_SUCCEEDED"],
+      "active": false,
+      // ... other fields
+  }
+}
+```
+
+### Delete webhook
+
+Deletes a webhook endpoint.
+
+**Endpoint:** `DELETE /webhooks/{id}`
+
+**Path parameters:**
+
+| Parameter | Type   | Required | Description                   |
+| --------- | ------ | -------- | ----------------------------- |
+| `id`      | string | Yes      | ID of the webhook (`wh_...`) |
+
+**Example response (204 No Content):** No response body.
+
+## Testing webhooks
+
+You can test your webhook endpoints using the API or `curl`.
+
+### Create a webhook for testing
+
+First, create a webhook endpoint pointing to a test receiver (e.g., using a service like [Webhook.site](https://webhook.site/) or a local tunnel like ngrok).
 
 ```bash
-# Start ngrok
-ngrok http 3000
-
-# Update webhook URL
-curl -X PATCH "https://api.lomi.africa/v1/webhooks/webhook_123" \
-  -H "X-API-KEY: your_api_key" \
-  -d '{"url": "https://your-ngrok-url/webhooks"}'
+# Replace API_KEY and URL
+curl -X POST "https://api.lomi.africa/v1/webhooks" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{
+    "url": "YOUR_TEST_WEBHOOK_URL",
+    "authorized_events": ["PAYMENT_SUCCEEDED", "test.webhook"],
+    "description": "Test Endpoint"
+  }'
 ```
 
-## Webhook Logs
+Note the `id` and `secret` from the response.
 
-View webhook delivery attempts and responses in the [Dashboard](https://dashboard.lomi.africa/webhooks):
-- Delivery status
-- Response codes
-- Response bodies
-- Retry attempts
-- Timing information 
+### Send a test event
+
+Use the `POST /webhooks/{id}/test` endpoint to send a predefined `test.webhook` event to your endpoint.
+
+```bash
+# Replace WEBHOOK_ID and API_KEY
+curl -X POST "https://api.lomi.africa/v1/webhooks/YOUR_WEBHOOK_ID/test" \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+
+Check your test receiver to confirm the event was received and verify the signature using the stored secret.
+
+## Delivery logs and retries
+
+Lomi logs webhook delivery attempts and provides endpoints to view these logs and manually retry failed deliveries.
+
+### Get webhook delivery logs
+
+Retrieves delivery logs for a specific webhook, showing success/failure status, timestamps, response codes, etc.
+
+**Endpoint:** `GET /webhooks/{id}/logs`
+
+**Path parameters:**
+
+| Parameter | Type   | Required | Description                   |
+| --------- | ------ | -------- | ----------------------------- |
+| `id`      | string | Yes      | ID of the webhook (`wh_...`) |
+
+**Query parameters (optional):**
+
+| Parameter | Type    | Description                        |
+| --------- | ------- | ---------------------------------- |
+| `limit`   | integer | Number of logs to return (max 100) |
+| `offset`  | integer | Number of logs to skip (pagination)|
+| `success` | boolean | Filter by successful deliveries    |
+| `failed`  | boolean | Filter by failed deliveries        |
+
+**Example request:**
+
+```bash
+# Replace WEBHOOK_ID and API_KEY
+curl -X GET "https://api.lomi.africa/v1/webhooks/YOUR_WEBHOOK_ID/logs?limit=10&failed=true" \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+
+### Retry webhook delivery
+
+Manually triggers a retry for a specific failed delivery log entry.
+
+**Endpoint:** `POST /webhooks/{webhook_id}/logs/{log_id}/retry`
+
+**Path parameters:**
+
+| Parameter    | Type   | Required | Description                         |
+| ------------ | ------ | -------- | ----------------------------------- |
+| `webhook_id` | string | Yes      | ID of the webhook (`wh_...`)       |
+| `log_id`     | string | Yes      | ID of the failed delivery log entry |
+
+**Example request:**
+
+```bash
+# Replace WEBHOOK_ID, LOG_ID and API_KEY
+curl -X POST "https://api.lomi.africa/v1/webhooks/YOUR_WEBHOOK_ID/logs/YOUR_LOG_ID/retry" \
+  -H "X-API-Key: YOUR_API_KEY"
+```
+
+**Automatic retries:** Lomi automatically retries failed deliveries using an exponential backoff strategy over approximately 6 hours before marking the delivery as permanently failed.
+
+## Best practices
+
+-   **Verify signatures:** Always verify the `X-Lomi-Signature` to ensure the request is from Lomi.
+-   **Respond quickly:** Your endpoint should return a `2xx` status code within a few seconds. Offload longer processing to background jobs.
+-   **Handle retries:** Be prepared for Lomi to retry sending events if your endpoint fails or times out.
+-   **Idempotency:** Design your event processing logic to handle duplicate events gracefully.
+-   **Secure your secret:** Store your webhook secret securely using environment variables or a secrets manager. 

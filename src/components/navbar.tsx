@@ -52,7 +52,7 @@ export const Navbar = () => {
             />
 
             <div className="hidden items-center gap-3 md:flex">
-              <Link
+              {/* <Link
                 href="https://twitter.com/lomiafrica"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -60,8 +60,8 @@ export const Navbar = () => {
               >
                 <XIcon className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
-              </Link>
-              <Link
+              </Link> */}
+              {/* <Link
                 href="https://www.producthunt.com/products/lomi"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -69,8 +69,8 @@ export const Navbar = () => {
               >
                 <PHIcon className="h-[22px] w-[22px]" />
                 <span className="sr-only">Product Hunt</span>
-              </Link>
-              <Link
+              </Link> */}
+              {/* <Link
                 href="https://www.linkedin.com/company/lomiafri"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -78,7 +78,7 @@ export const Navbar = () => {
               >
                 <LinkedInIcon className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
-              </Link>
+              </Link> */}
               <Link
                 href="https://github.com/lomiafrica/developers.lomi.africa"
                 target="_blank"

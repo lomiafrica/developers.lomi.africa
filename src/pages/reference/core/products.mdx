@@ -1,0 +1,173 @@
+# Products
+
+The Products API allows you to create, list, retrieve, update (active status only), and delete products associated with your merchant account.
+
+## Authentication
+
+Requests require authentication using your API key in the `X-API-Key` header. See the [Authentication](./authentication) guide.
+
+## The product object
+
+Represents a product or service offered by a merchant. See [Data Models](./data-models#product-object) for the full structure.
+
+## Endpoints
+
+### Create product
+
+Creates a new product for the authenticated merchant.
+
+**Endpoint:** `POST /products`
+
+**Request body parameters:**
+
+| Parameter               | Type           | Required | Description                                                  |
+| ----------------------- | -------------- | -------- | ------------------------------------------------------------ |
+| `name`                  | string         | Yes      | Name of the product.                                         |
+| `description`           | string         | No       | Optional description.                                        |
+| `price`                 | number         | Yes      | Price of the product (must be positive).                     |
+| `currency_code`         | string         | Yes      | Currency code (e.g., `"XOF"`, `"USD"`).                    |
+| `is_active`             | boolean        | No       | Whether the product is active (defaults to `true`).          |
+| `image_url`             | string         | No       | URL for the product image (must be a valid URL).             |
+| `display_on_storefront` | boolean        | No       | Whether to display on the storefront (defaults to `true`).   |
+| `fee_type_ids`        | array (string) | No       | Array of UUIDs for associated organization-level fee types. |
+
+**Example request:**
+
+```json
+{
+  "name": "Standard Subscription",
+  "description": "Monthly access to standard features.",
+  "price": 9900,
+  "currency_code": "XOF",
+  "is_active": true
+}
+```
+
+**Example response (201 Created):**
+
+```json
+{
+  "data": {
+    "product_id": "uuid-generated-for-product",
+    "merchant_id": "uuid-of-authenticated-merchant",
+    "organization_id": "uuid-of-merchants-org",
+    "name": "Standard Subscription",
+    "description": "Monthly access to standard features.",
+    "price": 9900,
+    "currency_code": "XOF",
+    "image_url": null,
+    "is_active": true,
+    "display_on_storefront": true,
+    "created_at": "2023-10-27T10:00:00Z",
+    "updated_at": "2023-10-27T10:00:00Z"
+    // fee_type_ids might also be included if provided in request
+  }
+}
+```
+
+### List products
+
+Retrieves a list of products for the authenticated merchant, with pagination and filtering.
+
+**Endpoint:** `GET /products`
+
+**Query parameters:**
+
+| Parameter   | Type    | Required | Default | Description                                           |
+| ----------- | ------- | -------- | ------- | ----------------------------------------------------- |
+| `limit`     | integer | No       | 20      | Maximum number of products to return.                 |
+| `offset`    | integer | No       | 0       | Number of products to skip for pagination.            |
+| `is_active` | boolean | No       | (all)   | Filter products by active status (`true` or `false`). |
+
+**Example response (200 OK):**
+
+```json
+{
+  "data": [
+    {
+      "product_id": "uuid-product-1",
+      // ... other product fields
+      "is_active": true,
+      // ...
+    },
+    {
+      "product_id": "uuid-product-2",
+      // ... other product fields
+      "is_active": false,
+      // ...
+    }
+    // ... more products
+  ],
+  "meta": {
+    "total_count": 55,
+    "limit": 20,
+    "offset": 0
+  }
+}
+```
+
+### Get product details
+
+Retrieves details for a specific product belonging to the authenticated merchant.
+
+**Endpoint:** `GET /products/{id}`
+
+**Path parameters:**
+
+| Parameter | Type   | Required | Description                                      |
+| --------- | ------ | -------- | ------------------------------------------------ |
+| `id`      | string | Yes      | The unique identifier (UUID) of the product (`product_id`). |
+
+**Example response (200 OK):**
+
+*(Response structure is the same as the `Create product` response)*
+
+### Update product
+
+Updates the `is_active` status of a specific product. Other product details (name, price, etc.) cannot be changed after creation.
+
+**Endpoint:** `PATCH /products/{id}`
+
+**Path parameters:**
+
+| Parameter | Type   | Required | Description                                      |
+| --------- | ------ | -------- | ------------------------------------------------ |
+| `id`      | string | Yes      | The unique identifier (UUID) of the product (`product_id`). |
+
+**Request body parameters:**
+
+| Parameter   | Type    | Required | Description                           |
+| ----------- | ------- | -------- | ------------------------------------- |
+| `is_active` | boolean | Yes      | Set `true` to activate, `false` to deactivate. |
+
+**Example request:**
+
+```json
+{
+  "is_active": false
+}
+```
+
+**Example response (200 OK):**
+
+*(Response structure is the same as the `Create product` response, showing the updated `is_active` value and `updated_at` timestamp)*
+
+### Delete product
+
+Deletes a specific product.
+
+**Endpoint:** `DELETE /products/{id}`
+
+**Path parameters:**
+
+| Parameter | Type   | Required | Description                                      |
+| --------- | ------ | -------- | ------------------------------------------------ |
+| `id`      | string | Yes      | The unique identifier (UUID) of the product (`product_id`). |
+
+**Example response (204 No Content):**
+
+*(No response body)*
+
+## Error handling
+
+Common errors include `400 Bad Request` for invalid input (e.g., negative price, invalid URL) or attempting to update immutable fields, `401 Unauthorized`, `404 Not Found` if the product ID doesn't exist or belong to the merchant, and `500 Internal Server Error`. Refer to the [Errors](./errors) guide. 

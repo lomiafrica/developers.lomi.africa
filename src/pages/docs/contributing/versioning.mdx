@@ -2,7 +2,7 @@
 
 We follow Semantic Versioning (SemVer) for all our packages and APIs.
 
-## Version Format
+## Version format
 
 ```bash
 MAJOR.MINOR.PATCH
@@ -13,9 +13,9 @@ MAJOR.MINOR.PATCH
 - **MINOR**: New features (backward compatible)
 - **PATCH**: Bug fixes (backward compatible)
 
-## Version Management
+## Version management
 
-### NPM Version
+### NPM version
 
 ```bash
 # Patch release
@@ -31,7 +31,7 @@ npm version major
 # 1.2.3 -> 2.0.0
 ```
 
-### Git Tags
+### Git tags
 
 ```bash
 # Create annotated tag
@@ -41,9 +41,9 @@ git tag -a v1.2.3 -m "Version 1.2.3"
 git push origin --tags
 ```
 
-## Release Process
+## Release process
 
-1. **Update Version**
+1. **Update version**
    ```bash
    # Update package.json
    npm version minor
@@ -56,7 +56,7 @@ git push origin --tags
    git commit -m "chore: update changelog"
    ```
 
-2. **Create Release**
+2. **Create release**
    ```bash
    # Create GitHub release
    gh release create v1.2.3 \
@@ -64,9 +64,9 @@ git push origin --tags
      --notes-file CHANGELOG.md
    ```
 
-## API Versioning
+## API versioning
 
-### URL Versioning
+### URL versioning
 
 ```bash
 # Current version
@@ -76,7 +76,7 @@ https://api.lomi.africa/v1/checkout/sessions
 https://api.lomi.africa/v2/checkout/sessions
 ```
 
-### Version Lifecycle
+### Version lifecycle
 
 1. **Active**
    - Latest version
@@ -93,7 +93,7 @@ https://api.lomi.africa/v2/checkout/sessions
    - Limited support
    - Migration required
 
-## Breaking Changes
+## Breaking changes
 
 1. **Notification**
    - Advance notice (minimum 6 months)
@@ -110,9 +110,9 @@ https://api.lomi.africa/v2/checkout/sessions
    - Legacy version support
    - Transition period
 
-## Version Control
+## Version control
 
-### Package Files
+### Package files
 
 ```json
 {
@@ -124,7 +124,7 @@ https://api.lomi.africa/v2/checkout/sessions
 }
 ```
 
-### Lock Files
+### Lock files
 
 ```bash
 # NPM
@@ -134,9 +134,9 @@ package-lock.json
 yarn.lock
 ```
 
-## Best Practices
+## Best practices
 
-1. **Version Numbers**
+1. **Version numbers**
    - Use semantic versioning
    - Document changes
    - Keep changelog updated
@@ -146,13 +146,13 @@ yarn.lock
    - Regular updates
    - Security audits
 
-3. **Release Notes**
+3. **Release notes**
    - Clear descriptions
    - Breaking changes
    - Upgrade guide
 
-## Next Steps
+## Next steps
 
-- [Contributing Guidelines](./contributing-guidelines)
-- [API Reference](/api-reference)
+- [Contributing guidelines](./contributing-guidelines)
+- [API reference](/api-reference)
 - [Changelog](https://github.com/lomi/api/blob/main/CHANGELOG.md) 

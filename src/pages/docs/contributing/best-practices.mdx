@@ -1,117 +1,191 @@
-# Best Practices
+# Best practices
 
-## Code Organization
+Following these best practices helps maintain code quality, consistency, and security across the lomi. project.
+
+## Code organization
+
+*(Guidance on structuring code within packages, modules, and components will be added here. Maintain a clear separation of concerns.)*
 
 ## Security
 
-### 1. Environment Variables
+Security is paramount. Follow these guidelines to protect user data and system integrity.
+
+### 1. Environment variables
+
+Never commit sensitive keys or secrets directly into the codebase. Use environment variables.
+
 ```bash
-# .env.example
+# .env.example - Provide a template for required variables
 LOMI_API_KEY=
 LOMI_WEBHOOK_SECRET=
 NODE_ENV=development
 
-# .gitignore
+# .gitignore - Ensure local environment files are not tracked
 .env
 .env.local
 *.log
 ```
 
-### 2. Sensitive Data
+Refer to the [API Environment documentation](../../developers-reference/api-environment) for managing API keys.
+
+### 2. Sensitive data handling
+
+Avoid logging sensitive information like API keys, passwords, or personal user data. If necessary, ensure it's properly redacted.
+
 ```typescript
-// Redact sensitive information in logs
+// Example: Redact sensitive information in logs
 const sanitizeData = (data: any) => {
   const masked = { ...data };
-  if (masked.apiKey) masked.apiKey = '[REDACTED]';
-  if (masked.phoneNumber) masked.phoneNumber = '[REDACTED]';
+  // Define sensitive keys specific to your context
+  const sensitiveKeys = ['apiKey', 'secretKey', 'password', 'authorization', 'phoneNumber'];
+  sensitiveKeys.forEach(key => {
+    if (masked[key]) masked[key] = '[REDACTED]';
+  });
   return masked;
 };
 ```
 
+Always validate and sanitize user input to prevent injection attacks.
+Consider practices like [Webhook Signature Verification](../../developers-reference/webhook-signature-verification) to ensure data integrity.
+
 ## Testing
 
+*(Details on testing strategies, frameworks (e.g., Jest, Vitest), and how to write and run tests for different parts of the monorepo will be added here. Aim for comprehensive unit, integration, and end-to-end tests.)*
 
-## Git Workflow
+## Git workflow
 
-### 1. Branch Management
+Adhere to our established Git workflow for smooth collaboration.
+
+### 1. Branch management
+
+Keep feature branches focused on a single task and relatively short-lived. Regularly rebase with the `develop` branch.
+
 ```bash
-# Keep branches focused and short-lived
+# Create a focused feature branch
+git checkout develop
+git pull upstream develop
 git checkout -b feature/add-wave-provider
+
+# Work on the feature...
+
+# Commit changes following guidelines
 git commit -m "feat(payments): implement Wave provider"
+
+# Push the branch
 git push origin feature/add-wave-provider
 ```
 
-### 2. Commit Messages
+See the full [Branching Strategy](./branching-strategy) for details.
+
+### 2. Commit messages
+
+Use conventional commit messages to provide clarity and enable automated changelog generation.
+
 ```bash
 # Format: <type>(<scope>): <description>
-feat(auth): add API key rotation
-fix(webhook): handle timeout errors
-docs(api): update authentication guide
+# Example types: feat, fix, docs, style, refactor, test, chore
+# Example scopes: payments, webhooks, api, auth, docs
+
+feat(auth): add API key rotation endpoint
+fix(webhook): handle signature verification errors gracefully
+docs(api): update authentication guide example
 ```
 
 ## Documentation
 
-### 1. Code Comments
+Good documentation is essential for maintainability and collaboration.
+
+### 1. Code comments
+
+Use comments to explain *why* something is done, not *what* it does (the code should explain the what). Use JSDoc or TSDoc for functions and complex logic.
+
 ```typescript
 /**
- * Process a payment request
- * @param request - Payment request details
- * @returns Promise resolving to payment result
- * @throws {ValidationError} If request is invalid
+ * Processes a payment request using the specified provider.
+ * Handles potential errors and ensures idempotency.
+ * @param request - The payment request details.
+ * @returns A promise resolving to the payment result.
+ * @throws {ValidationError} If the request payload is invalid.
+ * @throws {PaymentProcessingError} If the provider fails.
  */
 async function processPayment(
   request: PaymentRequest
 ): Promise<PaymentResult> {
-  // Implementation
+  // Implementation details...
 }
 ```
 
-### 2. README Files
+### 2. README files
+
+Ensure packages and significant components have README files explaining their purpose, usage, configuration, and how to run tests.
+
 ```markdown
-# Component Name
+# Package/Component Name
 
 ## Overview
-Brief description of the component's purpose
+A brief description of what this package/component does.
+
+## Installation
+`pnpm add @lomi/package-name`
 
 ## Usage
-Code examples and usage instructions
+Provide clear code examples and instructions.
 
 ## Configuration
-Available configuration options
+Detail any available configuration options.
 
 ## Testing
-How to run and write tests
+Explain how to run tests for this specific package/component.
+`pnpm --filter @lomi/package-name test`
 ```
 
 ## Deployment
 
+Follow standard procedures for deployment.
+
 ### 1. CI/CD
+
+Continuous Integration and Continuous Deployment pipelines automate testing and deployment. Ensure your changes pass all checks.
+
 ```yaml
-# .github/workflows/ci.yml
-name: CI
+# Example: .github/workflows/ci.yml (Simplified)
+name: CI Checks
 on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - run: npm ci
-      - run: npm test
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8 # Specify pnpm version
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Specify Node.js version
+          cache: 'pnpm'
+      - run: pnpm install
+      - run: pnpm lint
+      - run: pnpm test
 ```
 
-### 2. Version Control
+### 2. Version control
+
+Package versions are managed within their respective `package.json` files and updated according to our [Versioning](./versioning) guide.
+
 ```json
+// Example: packages/api/package.json
 {
   "name": "@lomi/api",
   "version": "1.2.3",
   "engines": {
-    "node": ">=14"
-  }
+    "node": ">=18"
+  },
+  "main": "dist/index.js"
 }
 ```
 
-## Next Steps
+## Next steps
 
-- [Code Reviews](./code-reviews)
-- [Contributing Guidelines](./contributing-guidelines)
-- [Security Best Practices](/advanced-guides/security-best-practices) 
+- [Code reviews](./code-reviews)
+- [Contributing guidelines](./contributing-guidelines)
+- [Getting support](../../docs/support/contact) 

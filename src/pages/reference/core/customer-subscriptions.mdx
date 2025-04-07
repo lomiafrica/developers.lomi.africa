@@ -1,0 +1,194 @@
+# Customer Subscriptions
+
+The Customer Subscriptions API allows you to manage the individual recurring payment subscriptions for your customers. Subscriptions link a specific customer to a [Subscription Plan](./subscriptions) and track the lifecycle of their recurring payments.
+
+## Authentication
+
+Requests require authentication using your API key in the `X-API-Key` header. The associated Merchant ID is usually inferred from the key. See the [Authentication](./authentication) guide.
+
+## The customer subscription object
+
+Represents an active or past subscription for a specific customer to a specific plan. See [Data Models](./data-models#customer-subscription-object) for the full structure (Note: This link assumes the object will be added to data-models.mdx).
+
+## Endpoints
+
+### List customer subscriptions
+
+Retrieves a list of customer subscriptions for your merchant account, with options for filtering and pagination.
+
+**Endpoint:** `GET /customer-subscriptions`
+
+**Query parameters:**
+
+| Parameter     | Type          | Required | Description                                                                                        |
+| ------------- | ------------- | -------- | -------------------------------------------------------------------------------------------------- |
+| `merchant_id` | string (UUID) | *Maybe*  | The unique identifier of the merchant. *(May be inferred from API key)*                              |
+| `customer_id` | string (UUID) | No       | Filter subscriptions by a specific customer ID.                                                    |
+| `status`      | string        | No       | Filter by subscription status. Valid statuses: `pending`, `active`, `paused`, `cancelled`, `expired`, `past_due`, `trial`. |
+| `limit`       | number        | No       | Maximum number of subscriptions to return (default: 20).                                           |
+| `offset`      | number        | No       | Number of subscriptions to skip for pagination (default: 0).                                       |
+
+**Example response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "subscription_id": "5f8e3c9d-f1b4-4c0a-8e8c-dc56c7e1dde4",
+      "merchant_id": "904d003c-3736-41d4-90a5-9de74d404fd7",
+      "organization_id": "0979ec77-9fb1-4c9a-8c55-d7fb6c182c9c",
+      "plan_id": "129208a9-23a0-4827-83f3-58f5dde344f6",
+      "plan_name": "Premium Monthly Plan",
+      "plan_amount": 10000,
+      "plan_currency_code": "XOF",
+      "plan_billing_frequency": "monthly",
+      "customer_id": "7210f6c9-a9c3-4a1e-9d9c-8e8f1e6b2c3d",
+      "customer_name": "John Doe",
+      "customer_email": "john.doe@example.com",
+      "status": "active",
+      "start_date": "2025-01-01T00:00:00.000Z",
+      "end_date": null,
+      "next_billing_date": "2025-02-01T00:00:00.000Z",
+      "metadata": { "source": "checkout_session" },
+      "created_at": "2025-01-01T00:00:00.000Z",
+      "updated_at": "2025-01-01T00:00:00.000Z"
+    }
+    // ... more subscriptions
+  ],
+  "meta": {
+    "limit": 20,
+    "offset": 0,
+    "total_returned": 1 // May include other pagination fields like total_count
+  }
+}
+```
+
+### Get subscription details
+
+Retrieves the details of a specific customer subscription.
+
+**Endpoint:** `GET /customer-subscriptions/{subscription_id}`
+
+**Path parameters:**
+
+| Parameter         | Type          | Required | Description                                                  |
+| ----------------- | ------------- | -------- | ------------------------------------------------------------ |
+| `subscription_id` | string (UUID) | Yes      | The unique identifier of the customer subscription (`subscription_id`). |
+
+**Query parameters:**
+
+| Parameter     | Type          | Required | Description                                                 |
+| ------------- | ------------- | -------- | ----------------------------------------------------------- |
+| `merchant_id` | string (UUID) | *Maybe*  | The unique identifier of the merchant. *(May be inferred from API key)* |
+
+**Example response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "subscription_id": "5f8e3c9d-f1b4-4c0a-8e8c-dc56c7e1dde4",
+    // ... all other fields as shown in the list example
+    "updated_at": "2025-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### Update subscription
+
+Updates the status, dates, or metadata of a specific customer subscription.
+
+**Endpoint:** `PATCH /customer-subscriptions/{subscription_id}`
+
+**Path parameters:**
+
+| Parameter         | Type          | Required | Description                                                  |
+| ----------------- | ------------- | -------- | ------------------------------------------------------------ |
+| `subscription_id` | string (UUID) | Yes      | The unique identifier of the customer subscription (`subscription_id`). |
+
+**Query parameters:**
+
+| Parameter     | Type          | Required | Description                                                 |
+| ------------- | ------------- | -------- | ----------------------------------------------------------- |
+| `merchant_id` | string (UUID) | *Maybe*  | The unique identifier of the merchant. *(May be inferred from API key)* |
+
+**Request body parameters:**
+
+*(Include at least one of the following optional fields)*
+
+| Parameter           | Type             | Description                                                                   |
+| ------------------- | ---------------- | ----------------------------------------------------------------------------- |
+| `status`            | string           | New status: `active`, `paused`, `cancelled`, `expired`, `past_due`, `trial`.    |
+| `start_date`        | string (ISO8601) | New start date for the subscription.                                          |
+| `end_date`          | string (ISO8601) | New end date for the subscription (often used when cancelling).               |
+| `next_billing_date` | string (ISO8601) | Manually set the next billing date.                                           |
+| `metadata`          | object           | Updates/adds key-value pairs. Merged with existing metadata.                  |
+
+**Example request (pause subscription):**
+
+```json
+{
+  "status": "paused",
+  "metadata": {
+    "reason": "Customer request via support ticket #123"
+  }
+}
+```
+
+**Example response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "subscription_id": "5f8e3c9d-f1b4-4c0a-8e8c-dc56c7e1dde4",
+    // ... other fields
+    "status": "paused",
+    "metadata": {
+      "source": "checkout_session",
+      "reason": "Customer request via support ticket #123"
+    },
+    "updated_at": "2025-01-15T10:30:00.000Z"
+  }
+}
+```
+
+### Cancel subscription
+
+Cancels a specific customer subscription by setting its status to `cancelled`.
+
+**Endpoint:** `DELETE /customer-subscriptions/{subscription_id}`
+
+**Path parameters:**
+
+| Parameter         | Type          | Required | Description                                                  |
+| ----------------- | ------------- | -------- | ------------------------------------------------------------ |
+| `subscription_id` | string (UUID) | Yes      | The unique identifier of the customer subscription (`subscription_id`). |
+
+**Query parameters:**
+
+| Parameter     | Type          | Required | Description                                                 |
+| ------------- | ------------- | -------- | ----------------------------------------------------------- |
+| `merchant_id` | string (UUID) | *Maybe*  | The unique identifier of the merchant. *(May be inferred from API key)* |
+
+**Example response (200 OK):**
+
+*(The source documentation shows a 200 OK with a body showing the cancelled object. While 204 No Content is common for DELETE, we follow the source here.)*
+
+```json
+{
+  "success": true,
+  "data": {
+    "subscription_id": "5f8e3c9d-f1b4-4c0a-8e8c-dc56c7e1dde4",
+    // ... other fields
+    "status": "cancelled",
+    "end_date": "2025-01-15T11:00:00.000Z", // Typically set upon cancellation
+    "updated_at": "2025-01-15T11:00:00.000Z"
+  }
+}
+```
+
+## Error handling
+
+Common errors include `400 Bad Request` for invalid input or missing fields, `401 Unauthorized`, `404 Not Found` if the subscription ID doesn't exist for the merchant, and `500 Internal Server Error`. Refer to the [Errors](./errors) guide for general structure and handling. 

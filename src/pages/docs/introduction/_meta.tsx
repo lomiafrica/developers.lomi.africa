@@ -4,7 +4,7 @@ const meta: Meta = {
     "what-is-lomi": "What is lomi.?",
     "manifesto": "Manifesto",
     "jumbo": "Jumbo",
-    "feedback-community": "Feedback and community"
+    "feedback-community": "Community"
 };
 
 export default meta;

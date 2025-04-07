@@ -1,0 +1,194 @@
+# Subscription Plans
+
+The Subscription Plans API allows you to create and manage reusable billing plans for your merchant account. These plans define the pricing, currency, and billing frequency for recurring payments.
+
+Customer subscriptions are created based on these plans. See the [Customer Subscriptions](./customer-subscriptions) API for managing individual customer subscriptions.
+
+## Authentication
+
+Requests require authentication using your API key in the `X-API-Key` header. The associated Merchant ID is inferred from the key. See the [Authentication](./authentication) guide.
+
+## The subscription plan object
+
+Represents a reusable subscription plan definition. See [Data Models](./data-models#subscription-plan-object) for the full structure.
+
+## Endpoints
+
+### Create subscription plan
+
+Creates a new subscription plan for your merchant account.
+
+**Endpoint:** `POST /merchants/{merchant_id}/subscriptions`
+
+**(Note:** The `{merchant_id}` in the path is typically handled by API gateway/middleware based on your `X-API-Key`; you usually don't need to include it explicitly if using the standard base URL.)*
+
+**Request body parameters:**
+
+| Parameter               | Type    | Required | Description                                                                                                |
+| ----------------------- | ------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+| `name`                  | string  | Yes      | The name of the plan (e.g., "Gold Tier Monthly").                                                            |
+| `amount`                | number  | Yes      | Amount to be charged per billing cycle, in the smallest currency unit (e.g., cents for USD). Must be positive. |
+| `currency_code`         | string  | Yes      | Three-letter ISO currency code (e.g., `"XOF"`, `"USD"`).                                                    |
+| `billing_frequency`     | string  | Yes      | How often the subscription renews. Valid values: `monthly`, `yearly`, `weekly`, `bi-weekly`, `quarterly`, `semi-annual`, `one-time`. |
+| `description`           | string  | No       | Optional description of the plan.                                                                          |
+| `failed_payment_action` | string  | No       | Action to take on failed recurring payments (e.g., `cancel`, `pause`). Defaults vary.                     |
+| `charge_day`            | integer | No       | Specific day for charging (e.g., day of month for `monthly`). Depends on `billing_frequency`.            |
+| `metadata`              | object  | No       | Key-value pairs for storing additional information.                                                      |
+| `is_active`             | boolean | No       | Whether the plan can be used to create new subscriptions (defaults to `true`).                               |
+| `first_payment_type`    | string  | No       | Type of the first payment (e.g., `initial`, `prorated`). Defaults vary.                                  |
+
+**Example request:**
+
+```json
+{
+  "name": "Pro Monthly Plan",
+  "amount": 15000,
+  "currency_code": "XOF",
+  "billing_frequency": "monthly",
+  "description": "Access to all pro features, billed monthly.",
+  "metadata": {
+    "internal_code": "PRO_M"
+  }
+}
+```
+
+**Example response (201 Created):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "plan_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "merchant_id": "904d003c-3736-41d4-90a5-9de74d404fd7",
+    "organization_id": "org_abc123...",
+    "name": "Pro Monthly Plan",
+    "description": "Access to all pro features, billed monthly.",
+    "amount": 15000,
+    "currency_code": "XOF",
+    "billing_frequency": "monthly",
+    "failed_payment_action": null,
+    "charge_day": null,
+    "metadata": {
+      "internal_code": "PRO_M"
+    },
+    "is_active": true,
+    "first_payment_type": "initial",
+    "created_at": "2023-10-27T10:00:00Z",
+    "updated_at": "2023-10-27T10:00:00Z"
+  }
+}
+```
+
+### List subscription plans
+
+Retrieves a list of subscription plans belonging to your merchant account.
+
+**Endpoint:** `GET /merchants/{merchant_id}/subscriptions`
+
+**(Note:** The `{merchant_id}` path parameter is typically handled based on your API key.)*
+
+**Query parameters:**
+
+| Parameter | Type    | Required | Default | Description                               |
+| --------- | ------- | -------- | ------- | ----------------------------------------- |
+| `limit`   | integer | No       | 20      | Maximum number of plans to return.        |
+| `offset`  | integer | No       | 0       | Number of plans to skip for pagination.   |
+
+**Example response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "plan_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "merchant_id": "904d003c-3736-41d4-90a5-9de74d404fd7",
+      // ... other plan fields
+    },
+    // ... more plans
+  ]
+}
+```
+
+### Get subscription plan details
+
+Retrieves details for a specific subscription plan.
+
+**Endpoint:** `GET /merchants/{merchant_id}/subscriptions/{plan_id}`
+
+**(Note:** The `{merchant_id}` path parameter is typically handled based on your API key.)*
+
+**Path parameters:**
+
+| Parameter | Type   | Required | Description                         |
+| --------- | ------ | -------- | ----------------------------------- |
+| `plan_id` | string | Yes      | The unique identifier of the plan (`plan_id`). |
+
+**Example response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "plan_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    // ... all other plan fields
+  }
+}
+```
+
+### Update subscription plan
+
+Updates the `is_active` status and/or `metadata` of a specific subscription plan. Core details like amount, currency, and frequency cannot be changed via the API after creation.
+
+**Endpoint:** `PATCH /merchants/{merchant_id}/subscriptions/{plan_id}`
+
+**(Note:** The `{merchant_id}` path parameter is typically handled based on your API key.)*
+
+**Path parameters:**
+
+| Parameter | Type   | Required | Description                         |
+| --------- | ------ | -------- | ----------------------------------- |
+| `plan_id` | string | Yes      | The unique identifier of the plan (`plan_id`). |
+
+**Request body parameters:**
+
+*(Include at least one of the following optional fields)*
+
+| Parameter   | Type    | Description                                                               |
+| ----------- | ------- | ------------------------------------------------------------------------- |
+| `is_active` | boolean | Set `true` to make the plan active, `false` to deactivate it.              |
+| `metadata`  | object  | Updates/adds key-value pairs to the plan's metadata. Existing keys are merged. |
+
+**Example request (deactivate):**
+
+```json
+{
+  "is_active": false
+}
+```
+
+**Example response (200 OK):**
+
+*(Response structure is the same as the `Get subscription plan details` response, showing updated values and `updated_at` timestamp)*
+
+### Delete subscription plan
+
+Deletes a subscription plan. This will fail if the plan is currently associated with any active customer subscriptions.
+
+**Endpoint:** `DELETE /merchants/{merchant_id}/subscriptions/{plan_id}`
+
+**(Note:** The `{merchant_id}` path parameter is typically handled based on your API key.)*
+
+**Path parameters:**
+
+| Parameter | Type   | Required | Description                         |
+| --------- | ------ | -------- | ----------------------------------- |
+| `plan_id` | string | Yes      | The unique identifier of the plan (`plan_id`). |
+
+**Example response (204 No Content):**
+
+*(No response body)*
+
+## Error handling
+
+Common errors include `400 Bad Request` for validation failures, `401 Unauthorized`, `404 Not Found` if the plan ID doesn't exist for the merchant, `409 Conflict` if attempting to delete a plan in use, and `500 Internal Server Error`. Refer to the [Errors](./errors) guide. 

@@ -1,3 +1,123 @@
-# **Processing Transactions**
+# **Processing transactions**
 
-## **Creating a Checkout Session**
+lomi. offers two primary ways to process transactions and accept payments via its API:
+
+1.  **Checkout sessions:** Ideal for single-use transactions where you dynamically generate a secure, hosted payment page for a specific customer order. Checkout Sessions expire after 60 minutes by default (you can adjust this setting, though we recommend keeping it at 60 minutes for enhanced security).
+
+2.  **Payment links:** Best for creating reusable links tied to specific products, subscription plans, or for collecting instant, fixed-amount payments. These links can be shared easily and can be configured to expire at a specific date in the future.
+
+This section guides you through the basics of both methods. For detailed API specifications, please refer to the [API Reference section](/api-reference).
+
+## **Creating a checkout session**
+
+To initiate a single payment for a dynamic product or service (like a specific shopping cart), create a Checkout Session. This generates a time-sensitive, secure, hosted payment page pre-filled with the details you provide.
+
+```typescript
+import { LomiSDK } from 'lomi.cli';
+
+const lomi = new LomiSDK({
+  apiKey: process.env.LOMI_API_KEY, // Ensure LOMI_API_KEY is set
+  baseUrl: process.env.LOMI_API_URL // Use sandbox URL for testing
+});
+
+async function createOneTimeCheckout() {
+  try {
+    const session = await lomi.checkoutSessions.create({
+      success_url: 'https://your-store.com/order/payment/success', // Recommended: Include session ID
+      cancel_url: 'https://your-store.com/order/payment/error',
+      allowed_providers: ['WAVE', 'ORANGE'], // Example providers for Côte d'Ivoire
+      amount: 10000, // e.g., 10.O00 XOF (15$)
+      currency_code: 'XOF',
+      title: 'Your Order - #ORD-12345', // Displayed on checkout page
+      public_description: 'Payment for the items in your cart.', // Displayed on checkout page
+      customer_email: 'customer@email.com', // Pre-fills email field if needed while this can be entered during checkout (optional)
+      customer_name: 'John Doe', // Pre-fills name field (optional)
+      customer_phone: '+2250102030405', // Pre-fills phone field (optional)
+      metadata: { 
+        cart_id: 'cart_abc123', 
+        internal_user_id: 'user_xyz789' (optional)
+      } // Store your internal identifiers
+    });
+
+    console.log('Checkout Session created successfully:');
+    console.log('ID:', session.data.checkout_session_id);
+    console.log('URL:', session.data.url);
+    console.log('Expires At:', session.data.expires_at);
+    
+    // In a web server context, you would redirect the user:
+    // res.redirect(303, session.data.url);
+
+  } catch (error) {
+    console.error('Failed to create checkout session:', error);
+    // Handle the error appropriately (e.g., show error message to user)
+  }
+}
+
+createOneTimeCheckout();
+```
+
+After creating the session, redirect your customer to the `url` provided in the response object (`session.data.url`). lomi. handles the payment process securely on that page.
+
+> **Why provide optional customer details?**
+> 
+> *   **Customer Convenience:** If the customer is logged into your website or app, you likely already have their name, email, and maybe phone number. Passing this information pre-fills these fields on the checkout page, saving the customer time and reducing friction.
+> *   **Optionality:** These fields (`customer_email`, `customer_name`, `customer_phone`) are optional. If you don't have the information or it doesn't fit your flow (e.g., a quick payment for an anonymous user), simply omit them. The lomi. checkout page will then require the customer to enter all necessary details.
+> 
+> Note that even if pre-filled, the customer will typically need to confirm or enter their **phone number** on the Lomi page as a double check measure.
+
+## **Creating a payment link**
+
+Payment Links are ideal for scenarios where you need a reusable link for a fixed offering, like a specific product, a subscription plan, or a standard service fee.
+
+Here's an example of creating a Payment Link for a specific product:
+
+```typescript
+import { LomiSDK } from 'lomi.cli';
+
+const lomi = new LomiSDK({
+  apiKey: process.env.LOMI_API_KEY, // Ensure LOMI_API_KEY is set
+  baseUrl: process.env.LOMI_API_URL // Use sandbox URL for testing
+});
+
+// Assume you have a Product ID created via the API or dashboard
+const YOUR_PRODUCT_ID = 'prod_xxxxxxxxxxxxxxxxxxxx'; 
+
+async function createProductPaymentLink() {
+  if (!YOUR_PRODUCT_ID || YOUR_PRODUCT_ID === 'prod_xxxxxxxxxxxxxxxxxxxx') {
+    console.error("Error: Please replace YOUR_PRODUCT_ID with an actual Product ID.");
+    return;
+  }
+
+  try {
+    const link = await lomi.paymentLinks.create({
+      link_type: 'product',
+      product_id: YOUR_PRODUCT_ID, 
+      // title and currency_code are inferred from the product,
+      // Optional parameters for customization:
+      public_description: 'Get our premium widget at a special price through this link.',
+      allowed_providers: ['WAVE', 'ORANGE'], 
+      allow_coupon_code: true,
+      success_url: 'https://your-store.com/product/purchase-success',
+      // expires_at: '2024-12-31T23:59:59Z', // Optionally set an expiration date
+      metadata: { campaign: 'q4_special_offer' }
+    });
+
+    console.log('Payment Link created successfully:');
+    console.log('ID:', link.data.link_id);
+    console.log('URL:', link.data.url); 
+    // Share this URL with customers
+
+  } catch (error) {
+    console.error('Failed to create payment link:', error);
+    // Handle error
+  }
+}
+
+createProductPaymentLink();
+```
+
+Once created, you can share the `url` from the response (`link.data.url`) with your customers via email, social media, or embed it on your website.
+
+**Important Note on Fees:** Currently, the ability to automatically include additional fees (like specific organizational or processing fees configured in your lomi. account) is primarily supported for **product-based payment links**. Checkout Sessions do not automatically apply these types of pre-configured additional fees as they are tied to specific products; the `amount` you specify in a Checkout Session is the total amount presented and paid by the customer.
+
+For detailed information on all parameters and options for both methods, see the [Checkout Sessions API Docs](/api-reference/checkout-sessions) and [Payment Links API Docs](/api-reference/payment-links).

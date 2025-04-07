@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Info, Lightbulb } from "lucide-react"
+import { Info, Rabbit } from "lucide-react"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 
@@ -11,7 +11,7 @@ interface InfoBoxProps {
     title?: string
     mini?: boolean
     link?: string
-    variant?: 'blue' | 'green' | 'red' | 'tip'
+    variant?: 'blue' | 'green' | 'red' | 'yellow'
     type?: 'info' | 'tip'
 }
 
@@ -40,16 +40,16 @@ export default function InfoBox({
             icon: "text-red-400",
             text: "text-red-300",
         },
-        tip: {
-            box: "border-green-200/30 bg-green-950/30",
-            icon: "text-green-400",
-            text: "text-green-300",
+        yellow: {
+            box: "border-yellow-200/30 bg-yellow-950/30",
+            icon: "text-yellow-400",
+            text: "text-yellow-300",
         }
     } as const;
 
     // Ensure we use a valid variant
     const safeVariant = variant in variantStyles ? variant : 'blue';
-    const Icon = type === 'tip' ? Lightbulb : Info;
+    const Icon = type === 'tip' ? Rabbit : Info;
 
     const content = (
         <div

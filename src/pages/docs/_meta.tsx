@@ -7,8 +7,8 @@ const meta: Meta = {
     "get-started": "Getting started",
     "lomi-cli": "lomi. with CLI",
     "advanced-guides": "Advanced guides",
-    "support": "Support",
-    "contributing": "Contributing"
+    "contributing": "Contributing",
+    "support": "Support"
 };
 
 export default meta;

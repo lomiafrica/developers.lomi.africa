@@ -1,77 +1,105 @@
-# **Payment Methods**
+# **Setup payment methods**
 
-## **Available Providers**
+lomi. allows you to accept payments through various providers like mobile money operators and cryptocurrency processors. This guide explains how to check which providers are available and active for your account via the API.
+
+## **Connecting providers**
+
+Before using a payment provider via the API, you must first connect and enable it for your merchant account via the lomi. Dashboard. The Dashboard is where you manage your provider credentials and configurations.
+
+## **Listing available providers via API**
+
+Once providers are configured in the Dashboard, you can use the API to fetch a list of all providers associated with your account and check their connection status.
 
 ```typescript
-// List available payment providers
-const providers = await lomi.providers.list();
-```
+import { LomiSDK } from 'lomi.cli';
 
-Response example:
-```json
-{
-  "providers": [
-    {
-      "code": "ORANGE_MONEY",
-      "name": "Orange Money",
-      "currencies": ["XOF"],
-      "status": "active"
-    },
-    {
-      "code": "WAVE",
-      "name": "Wave",
-      "currencies": ["XOF"],
-      "status": "active"
-    },
-    {
-      "code": "MTN",
-      "name": "MTN Mobile Money",
-      "currencies": ["XOF"],
-      "status": "active"
-    }
-  ]
+const lomi = new LomiSDK({
+  apiKey: process.env.LOMI_API_KEY, 
+  baseUrl: process.env.LOMI_API_URL // Ensure this points to the correct environment
+});
+
+async function checkAvailableProviders() {
+  try {
+    const response = await lomi.providers.list();
+    console.log('Available Providers:', JSON.stringify(response.data, null, 2));
+
+    // Filter for providers actually connected and ready to use
+    const connectedProviders = response.data.filter(provider => provider.is_connected);
+    console.log('\nConnected Providers:', connectedProviders);
+    
+    // You can use connectedProviders to populate your checkout UI
+
+  } catch (error) {
+    console.error('Failed to list providers:', error);
+  }
 }
+
+checkAvailableProviders();
 ```
 
-## **Using Providers in Checkout**
+**Example API Response (`response.data`):**
+
+Based on `GET /providers` from the API reference:
+
+```json
+[
+  {
+    "code": "ORANGE",
+    "name": "Orange Money",
+    "description": "Mobile money provider",
+    "payment_methods": ["MOBILE_MONEY"],
+    "is_connected": true
+  },
+  {
+    "code": "WAVE",
+    "name": "Wave",
+    "description": "eWallet provider",
+    "payment_methods": ["E_WALLET"],
+    "is_connected": true
+  },
+  {
+    "code": "MTN",
+    "name": "MTN",
+    "description": "MOBILE_MONEY",
+    "payment_methods": ["MOBILE_MONEY"],
+    "is_connected": false
+  }
+  // ... other potential providers
+]
+```
+
+**Key fields:**
+
+*   `code`: The unique identifier (e.g., `ORANGE`, `WAVE`) used in API calls.
+*   `name`: The display name for the provider.
+*   `description`: A brief description.
+*   `payment_methods`: The type of payment (e.g., `mobile_money`, `crypto`).
+*   `is_connected`: **Crucial.** Indicates if the provider is properly configured and active for your merchant account (`true`) or not (`false`).
+
+**Important:** Only providers where `is_connected` is `true` can be successfully used to process payments. You should typically only display these connected providers as options to your customers.
+
+## **Using providers in checkout/payment links**
+
+When creating a Checkout Session or a Payment Link, you specify which payment providers the customer can use via the `allowed_providers` array, using the `code` values retrieved from the list endpoint.
 
 ```typescript
+// Example for creating a Checkout Session
 const session = await lomi.checkoutSessions.create({
-  merchant_id: 'your_merchant_id',
-  provider_codes: ['ORANGE_MONEY', 'WAVE'], // Specify available methods
-  amount: 1000,
-  currency: 'XOF',
+  // Only include codes for providers where is_connected was true
+  allowed_providers: ['ORANGE', 'WAVE'], 
+  amount: 10000, // 100.00 XOF
+  currency_code: 'XOF',
   success_url: 'https://your-site.com/success',
   cancel_url: 'https://your-site.com/cancel',
-  metadata: {
-    order_id: '123'
-  }
+  // ... other parameters
 });
 ```
 
-## **Provider Requirements**
+By fetching the provider list and filtering by `is_connected`, you ensure you only offer valid payment methods to your users.
 
-### Mobile Money
-- **Orange Money**: Requires customer phone number
-- **Wave**: Requires customer phone number
+## **Next steps**
 
-All mobile money providers:
-- Support XOF currency
-- Require valid phone numbers
-- Process payments in real-time
-
-## **Testing**
-
-Use these test credentials:
-
-xxxxxx
-
-## **Error Handling**
-
-xxxxxx
-
-## **Next Steps**
-
-- [Process Transactions](./process-transactions)
-- [Testing Guide](/testing)
-- [API Reference](/api-reference)
+*   [Process Transactions](./process-transactions)
+*   [API Reference: Providers](/api-reference/providers)
+*   [API Reference: Checkout Sessions](/api-reference/checkout-sessions)
+*   [API Reference: Payment Links](/api-reference/payment-links)

@@ -1,20 +1,42 @@
-# Open Source
+import InfoBox from '@/components/ui/info-box'
 
-lomi. is committed to enable fast, adapted and accessible payments for everyone. As part of this commitment, our technology is entirely public and available online.
+# **Open Source**
 
-lomi. offers both an open-source solution and a hosted platform to cater to the diverse needs of our users. This section provides an overview of the deployment options available and how to get started.
+**lomi.** is committed to enabling fast, adapted, and accessible payments for everyone. As part of this commitment, our technology is entirely public and available online.
 
-## Self-hosting
+We offer both an open-source solution and a hosted platform to cater to the diverse needs of our merchants. In line with our vision of transparency and community collaboration, we follow a **dual-license approach**.
 
-If you would like to host the platform yourself and never pay our technology fees, you can easily get started by cloning our main repository on Github. You'll get access to the latest version of our solution and be able to customize it to your needs. However you'll have to get commercial agreements with some of our payment providers to fully leverage our products in self service.
+Our project is primarily licensed under the **GNU Affero General Public License (AGPL)**, allowing the open-source community to freely use, modify, and redistribute our software. However, the AGPL requires that anyone using the software — especially when providing it as a service — **must also make the source code available to the public**. If you wish to use **lomi.** without sharing your changes, or as part of closed-source products, **a commercial license is required**.
 
-Merchants looking for an easy way to accept payments, do not need to worry about this — anyone can simply start using lomi. on our website without any restrictions and/or additional setup. While self hosting is possible, it is not something we recommend for most merchants as you'll lose the benefits of having a dedicated merchant of record and the speed and ease of use lomi. can provide to your business.
+**Failure to comply with this will ultimately result in a cease-and-desist notice and legal procedures to enforce our rights.**
 
-### Quick Start Guide
+Certain components of our system are covered exclusively by our second license, referred to as the **commercial license**, designed to meet the needs of businesses requiring additional features or usage flexibility. This **dual-licensing model** ensures we serve both the open-source community and enterprise partners.
+
+This section provides an overview of the deployment options available and how to get started.
+
+&nbsp;
+
+<InfoBox mini type="tip" variant="yellow">
+    *See the monorepo [LICENSE](https://github.com/lomiafrica/lomi.?tab=License-1-ov-file) file for the complete terms of both licenses.*
+</InfoBox>
+
+## **Self-hosting**
+
+If you would like to host the platform yourself and never pay our technology fees, you can easily get started by cloning our main repository on GitHub. You'll get access to the latest version of our solution and be able to customize it to your needs. However, you'll have to get commercial agreements and API keys directly from payment providers to fully leverage our products in self-service.
+
+For details on the codebase layout, see the [Codebase Structure](./codebase-structure) page.
+
+Merchants looking for an easy way to accept payments do not need to worry about this — anyone can simply start using lomi. on our website without any restrictions and/or additional setup. While self-hosting is possible, it is not something we recommend for most merchants, as you'll lose the benefits of having a dedicated Merchant of Record and the speed and ease of use lomi. can provide to your business.
+
+## Documentation and Self-hosting
+
+For comprehensive documentation and more information on how to self-host lomi., visit [developers.lomi.africa](https://developers.lomi.africa).
+
+### **Quick start**
 
 ```bash copy
 # Clone the repository
-git clone https://github.com/lomi-africa/lomi.
+git clone https://github.com/lomi-africa/lomi./
 cd lomi.
 
 # Install dependencies
@@ -26,52 +48,48 @@ cp .env.example .env
 # Set up database
 supabase link
 
-# Start database migrations
+# Apply database migrations
 supabase db push
 
 # Start development server
 bun run dev
 ```
 
+## **Hosted platform**
 
-## Hosted platform — https://portal.lomi.africa
+For businesses that prefer a fully managed solution, we offer a hosted platform on our website. The hosted platform provides additional features, dedicated support, and benefits tailored to the needs of growing businesses.
 
-For businesses that prefer a fully-managed solution, we offer a hosted platform on our website. The hosted platform provides additional features, dedicated support, and benefits tailored to the needs of growing businesses.
+To get started with the hosted platform, simply create an account on [lomi.africa](https://lomi.africa/sign-up) and follow the setup instructions. Our team will be available to assist you throughout the process and provide guidance on optimizing your payment orchestration setup.
 
-To get started with the hosted platform, simply create an account on [portal.lomi.africa](https://portal.lomi.africa/sign-up) and follow the setup instructions. Our team will be available to assist you throughout the process and provide guidance on optimizing your payment orchestration setup.
+### **Quick comparison**
 
+| Feature                   | Open Source | Hosted Platform |
+| :------------------------ | :---------: | :-------------: |
+| Core Payment Processing   |      ✓      |        ✓        |
+| Built-in Payment Channels |      -      |        ✓        |
+| Advanced Analytics        |      ✓      |        ✓        |
+| Self-hosting              |      ✓      |        -        |
+| Custom Deployment         |      ✓      |        -        |
+| Automatic Updates         |      -      |        ✓        |
+| Dedicated Support         |      -      |        ✓        |
 
-### Quick comparison
-
-| Feature | Open Source | Hosted Platform |
-|---------|------------|-----------------|
-| Core Payment Processing | ✓ | ✓ |
-| Built-in Payment Channels | - | ✓ |
-| Advanced Analytics | ✓ | ✓ |
-| Self-hosting | ✓ | - |
-| Custom Deployment | ✓ | - |
-| Automatic Updates | - | ✓ |
-| Dedicated Support | - | ✓ |
-
-### Support options
+### **Support options**
 
 The hosted platform includes:
-- 24/7 Technical Support
-- Priority Issue Resolution
-- Implementation Assistance
+- 24/7 technical support
+- Priority issue resolution
+- Implementation assistance
 
-
-### Resources
-- [Main GitHub Repository](https://github.com/lomiafrica/)
-- [Discord Community](https://discord.gg/33syDfh9)
+### **Resources**
+- [Monorepo and main GitHub repository](https://github.com/lomiafrica/)
 - [Status](https://status.lomi.africa)
 
-## Need help deciding?
+## **Need help deciding?**
 
 If you have any questions about the differences between the open-source and hosted versions of lomi., or if you need help deciding which option is best suited for your needs, please don't hesitate to reach out to our team at [hello@lomi.africa](mailto:hello@lomi.africa).
 
-To learn more about our vision and why lomi. is open-source, please visit our [blog](https://lomi.africa/blog), and learn more about our [story](https://lomi.africa/story).
+To learn more about our vision and why lomi. is open-source, please visit our [blog](https://lomi.africa/blog) to learn more about us.
 
 You can also:
-- Schedule a demo and chat with our team: [Book Now](https://cal.com/babacar-diop-umkvq2/30min)
-- Play with our pricing tool: [Pricing](https://lomi.africa/pricing)
+- Schedule a demo and chat with our team: [Book a call](https://cal.com/babacar-diop-umkvq2/30min)
+- Interact with our [pricing tool](https://lomi.africa/pricing)

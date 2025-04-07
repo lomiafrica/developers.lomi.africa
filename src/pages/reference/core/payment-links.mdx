@@ -1,0 +1,232 @@
+# Payment Links
+
+The Payment Links API allows you to create and manage shareable, hosted payment pages for collecting one-time payments or initiating subscriptions.
+
+## Authentication
+
+Requests require authentication using your API key in the `X-API-Key` header. The associated Merchant ID is typically inferred from the key. See the [Authentication](./authentication) guide.
+
+## The payment link object
+
+Represents a configured payment link, including its type, target product/plan/amount, settings, and the shareable URL. See [Data Models](./data-models#payment-link-object) for the full structure (Note: This link assumes the object will be added to data-models.mdx).
+
+## Link types
+
+There are three types of payment links:
+
+-   `instant`: Collects a specific, one-time amount.
+-   `product`: Collects payment for a specific [Product](./products).
+-   `plan`: Initiates a [Subscription Plan](./subscriptions) for a customer.
+
+## Endpoints
+
+### Create payment link
+
+Creates a new payment link of the specified type.
+
+**Endpoint:** `POST /payment-links`
+
+**Request body parameters:**
+
+| Parameter             | Type           | Required                               | Description                                                                                              |
+| --------------------- | -------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `link_type`           | string         | Yes                                    | Type of link: `product`, `plan`, or `instant`.                                                           |
+| `title`               | string         | Yes                                    | Title displayed on the payment page.                                                                     |
+| `currency_code`       | string         | Yes                                    | 3-letter ISO currency code (e.g., `XOF`).                                                                |
+| `product_id`        | string (UUID)  | Yes, if `link_type` is `product`       | ID of the Lomi [Product](./products) to link.                                                          |
+| `plan_id`           | string (UUID)  | Yes, if `link_type` is `plan`          | ID of the Lomi [Subscription Plan](./subscriptions) to link.                                             |
+| `price`               | number         | Yes, if `link_type` is `instant`       | Amount to collect (smallest currency unit) for an `instant` link.                                        |
+| `public_description`  | string         | No                                     | Public description displayed on the payment page.                                                        |
+| `private_description` | string         | No                                     | Internal description for merchant reference (not shown to customer).                                     |
+| `allowed_providers`   | array (string) | No                                     | Array of payment provider codes (e.g., `["WAVE", "ORANGE"]`). If omitted, uses merchant defaults.     |
+| `allow_coupon_code`   | boolean        | No                                     | Allow coupon codes to be applied (default: `false`).                                                     |
+| `is_active`           | boolean        | No                                     | Set to `false` to create an inactive link (default: `true`).                                            |
+| `expires_at`          | string (ISO8601) | No                                     | Optional timestamp for when the link automatically deactivates.                                           |
+| `success_url`         | string (URL)   | No                                     | Custom URL to redirect to after successful payment.                                                      |
+| `cancel_url`          | string (URL)   | No                                     | Custom URL to redirect to after cancelled payment.                                                       |
+| `metadata`            | object         | No                                     | Key-value pairs for storing additional information.                                                      |
+
+**Example request (Instant link):**
+
+```json
+{
+  "link_type": "instant",
+  "title": "Donation",
+  "price": 5000,
+  "currency_code": "XOF",
+  "public_description": "Support our cause!",
+  "success_url": "https://example.com/thank-you"
+}
+```
+
+**Example response (201 Created):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "link_id": "d7e8f0a1-b2c3-4d5e-8f9a-0b1c2d3e4f5a",
+    "merchant_id": "904d003c-3736-41d4-90a5-9de74d404fd7",
+    "organization_id": "0979ec77-9fb1-4c9a-8c55-d7fb6c182c9c",
+    "link_type": "instant",
+    "url": "https://pay.lomi.africa/instant/d7e8f0a1-b2c3-4d5e-8f9a-0b1c2d3e4f5a", // The shareable URL
+    "product_id": null,
+    "product_name": null,
+    "product_price": null,
+    "plan_id": null,
+    "plan_name": null,
+    "plan_amount": null,
+    "title": "Donation",
+    "public_description": "Support our cause!",
+    "private_description": null,
+    "price": 5000.00,
+    "currency_code": "XOF",
+    "allowed_providers": null, // Would show defaults if not specified
+    "allow_coupon_code": false,
+    "is_active": true,
+    "expires_at": null,
+    "success_url": "https://example.com/thank-you",
+    "cancel_url": null, // Would show default if not specified
+    "metadata": null,
+    "created_at": "2023-10-27T10:00:00.000Z",
+    "updated_at": "2023-10-27T10:00:00.000Z"
+  }
+}
+```
+
+### List payment links
+
+Retrieves a list of payment links for your merchant account, with options for filtering and pagination.
+
+**Endpoint:** `GET /payment-links`
+
+**Query parameters:**
+
+| Parameter         | Type    | Required | Default | Description                                              |
+| ----------------- | ------- | -------- | ------- | -------------------------------------------------------- |
+| `link_type`       | string  | No       | (all)   | Filter by link type: `product`, `plan`, or `instant`.    |
+| `currency_code`   | string  | No       | (all)   | Filter by 3-letter ISO currency code.                   |
+| `is_active`       | boolean | No       | (all)   | Filter by active status (`true` or `false`).             |
+| `page`            | number  | No       | 1       | Page number for pagination.                              |
+| `page_size`       | number  | No       | 50      | Number of links per page (max: 100).                     |
+| `include_expired` | boolean | No       | false   | Set to `true` to include expired links in the results. |
+
+**Example response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "link_id": "d7e8f0a1-b2c3-4d5e-8f9a-0b1c2d3e4f5a",
+      "link_type": "instant",
+      "url": "https://pay.lomi.africa/instant/d7e8f0a1-b2c3-4d5e-8f9a-0b1c2d3e4f5a",
+      "title": "Donation",
+      "price": 5000.00,
+      "currency_code": "XOF",
+      "is_active": true,
+      "expires_at": null,
+      // ... other fields
+    }
+    // ... more payment link objects
+  ],
+  "meta": {
+    "page": 1,
+    "pageSize": 50,
+    "totalCount": 120 // Example
+  }
+}
+```
+
+### Get payment link details
+
+Retrieves the details of a specific payment link by its ID.
+
+**Endpoint:** `GET /payment-links/{link_id}`
+
+**Path parameters:**
+
+| Parameter | Type          | Required | Description                                             |
+| --------- | ------------- | -------- | ------------------------------------------------------- |
+| `link_id` | string (UUID) | Yes      | The unique identifier of the payment link (`link_id`). |
+
+**Example response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "link_id": "d7e8f0a1-b2c3-4d5e-8f9a-0b1c2d3e4f5a",
+    // ... all other fields as shown in the create example
+  }
+}
+```
+
+### Update payment link
+
+Updates certain configurable fields of a specific payment link. Core details like the type, title, price/product/plan association, and active status cannot be changed after creation.
+
+**Endpoint:** `PATCH /payment-links/{link_id}`
+
+**Path parameters:**
+
+| Parameter | Type          | Required | Description                                             |
+| --------- | ------------- | -------- | ------------------------------------------------------- |
+| `link_id` | string (UUID) | Yes      | The unique identifier of the payment link (`link_id`). |
+
+**Request body parameters:**
+
+*(Include only the fields you want to update)*
+
+| Parameter           | Type           | Description                                                                  |
+| ------------------- | -------------- | ---------------------------------------------------------------------------- |
+| `expires_at`        | string (ISO8601) | New expiration timestamp. Set to `null` to remove expiration.                |
+| `success_url`       | string (URL)   | Update the success redirect URL.                                             |
+| `cancel_url`        | string (URL)   | Update the cancellation redirect URL.                                        |
+| `allowed_providers` | array (string) | Replace the list of allowed payment provider codes.                            |
+| `allow_coupon_code` | boolean        | Enable or disable coupon code usage.                                         |
+| `metadata`          | object         | Replace the existing metadata object with the provided one.                  |
+
+**Example request:**
+
+```json
+{
+  "allowed_providers": ["WAVE"],
+  "metadata": { "updated_via": "api" }
+}
+```
+
+**Example response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "link_id": "d7e8f0a1-b2c3-4d5e-8f9a-0b1c2d3e4f5a",
+    // ... other fields showing updated values
+    "allowed_providers": ["WAVE"],
+    "metadata": { "updated_via": "api" },
+    "updated_at": "2023-10-27T11:00:00.000Z"
+  }
+}
+```
+
+### Delete payment link
+
+Deletes a specific payment link.
+
+**Endpoint:** `DELETE /payment-links/{link_id}`
+
+**Path parameters:**
+
+| Parameter | Type          | Required | Description                                             |
+| --------- | ------------- | -------- | ------------------------------------------------------- |
+| `link_id` | string (UUID) | Yes      | The unique identifier of the payment link (`link_id`). |
+
+**Example response (204 No Content):**
+
+*(No response body)*
+
+## Error handling
+
+Common errors include `400 Bad Request` for validation failures (invalid type, missing conditional fields, invalid URL), `401 Unauthorized`, `404 Not Found` if the link ID or associated product/plan doesn't exist, and `500 Internal Server Error`. Refer to the [Errors](./errors) guide for general structure and handling. 

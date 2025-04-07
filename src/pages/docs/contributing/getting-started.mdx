@@ -1,0 +1,389 @@
+# **Getting Started**
+
+Ready to make your first contribution to lomi.? This guide will walk you through finding an issue, setting up your development environment, making changes, and submitting them.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **[Git](https://git-scm.com/)**: For version control.
+- **[Node.js](https://nodejs.org/)**: We recommend the latest LTS version.
+- **[bun](https://bun.sh/)**: Our preferred package manager for managing dependencies in the monorepo.
+
+## 0. Find an issue to work on (optional, but recommended)
+
+Before diving into code, it's helpful to find an existing issue or propose a new one:
+
+- Browse [open issues](https://github.com/lomiafrica/lomi./issues) on the main repository.
+- Look for issues tagged with `good first issue` if you're new.
+- If you have a new idea or bug fix, consider creating a new issue to discuss it first.
+- Don't hesitate to ask questions in the issue comments if anything is unclear.
+
+## 1. Fork the repository
+
+Start by forking the main lomi. repository on GitHub:
+
+1. Go to the [lomi. repository](https://github.com/lomiafrica/lomi.).
+2. Give us a star !
+2. Click the "Fork" button in the top-right corner.
+
+## 2. Clone your fork
+
+Clone your forked repository to your local machine:
+
+```bash
+git clone https://github.com/beloved_anon/lomi.git
+cd lomi.
+```
+
+Replace `<beloved_anon>` with you real GitHub username.
+
+## 3. Set upstream remote
+
+Add the original lomi. repository as the `upstream` remote. This allows you to keep your fork synchronized with the main project.
+
+```bash
+git remote add upstream https://github.com/lomiafrica/lomi./
+```
+
+Verify the remotes:
+
+```bash
+git remote -v
+# origin  https://github.com/<YOUR_USERNAME>/lomi./ (fetch)
+# origin  https://github.com/<YOUR_USERNAME>/lomi./ (push)
+# upstream https://github.com/lomiafrica/lomi./ (fetch)
+# upstream https://github.com/lomiafrica/lomi./ (push)
+```
+
+## 4. Install dependencies & set up environment
+
+Install the project dependencies using bun from the root of the monorepo:
+
+```bash
+bun install
+```
+
+Set up your local environment variables by copying the example file:
+
+```bash
+cp .env.example .env
+# Review the .env file and add any necessary secrets or configurations
+```
+
+## 5. Local development commands
+
+Here are some common commands you'll use during development:
+
+```bash
+# Start the main development server (specific app may vary)
+# Check the package.json in the specific app/package directory
+bun run dev
+
+# Build and serve the documentation site locally
+bun run docs:dev
+
+# Run linting checks across the project
+bun run lint
+
+# Run linters and automatically fix issues
+bun run lint:fix
+```
+
+## 6. Create a branch
+
+Before making changes, create a new branch based on the `develop` branch. Follow our [Branching strategy](./branching-strategy) for naming conventions.
+
+```bash
+# Fetch the latest changes from upstream
+git fetch upstream
+
+# Check out the develop branch
+git checkout develop
+
+# Pull the latest changes for develop
+git pull upstream develop
+
+# Create your feature or bugfix branch
+git checkout -b <BRANCH_TYPE>/<SHORT_DESCRIPTION>
+# Example: git checkout -b feature/add-cool-new-thing
+# Example: git checkout -b fix/resolve-that-bug
+```
+
+## 7. Make your changes
+
+Now you can start making your code or documentation changes within the appropriate package or app in the `packages/` or `apps/` directory.
+
+- **Code changes**: Write your code, ensuring it adheres to our [Code standards](#code-standards) and [Best practices](#best-practices).
+- **Documentation changes**: Update or add documentation in the relevant `apps/developers/src/pages/docs/` directory. Use Markdown (`.mdx`).
+
+**Keep your branch updated:**
+
+Periodically, keep your branch up-to-date with the latest changes from the upstream `develop` branch:
+
+```bash
+# Fetch the latest changes from upstream
+git fetch upstream
+
+# Rebase your branch onto the latest develop branch
+# Make sure you have committed or stashed your local changes first!
+git rebase upstream/develop
+
+# You might need to resolve conflicts during the rebase process.
+# After resolving conflicts: git add . ; git rebase --continue
+# If you get stuck: git rebase --abort
+```
+
+## 8. Test your changes
+
+Ensure your changes pass all relevant tests and meet our quality standards.
+
+```bash
+# Example: Running tests for a specific package
+# Replace <package_name> with the actual package, e.g., @lomi/api
+bun --filter <package_name> test
+
+# Run specific tests using a pattern (e.g., tests related to 'payment')
+bun test -- --grep "payment"
+
+# Run all tests across the monorepo
+bun test
+
+# Run tests and generate a coverage report
+bun run test:coverage
+```
+
+Write tests for your changes. See the [Code standards](#code-standards) section for an example.
+
+## 9. Commit your changes
+
+Commit your changes using a descriptive message that follows our [Commit message guidelines](./branching-strategy#commit-messages). Adhering to the format helps automate releases and changelogs.
+
+**Commit message format:**
+
+```
+<type>(<scope>): <description>
+
+# Examples:
+# feat(api): add support for webhook signature verification
+# fix(docs): correct typo in getting started guide
+# chore(deps): update dependency xyz
+```
+
+**Example commit:**
+
+```bash
+git add .
+git commit -m "feat(payments): implement new payment provider"
+```
+
+See [Best practices](#best-practices) for good vs. bad commit message examples.
+
+## 10. Push your changes
+
+Push your branch to your fork on GitHub:
+
+```bash
+git push origin <BRANCH_NAME>
+```
+
+## 11. Submit a pull request (PR)
+
+1.  Go to your fork on GitHub (`https://github.com/<YOUR_USERNAME>/lomi.`).
+2.  You should see a prompt to create a Pull Request from your recently pushed branch. Click "Compare & pull request".
+3.  Ensure the base repository is `lomiafrica/lomi.` and the base branch is `develop`.
+4.  The head repository should be your fork, and the compare branch should be your feature/fix branch.
+5.  **Write a clear PR title:** Use the same format as commit messages (`<type>(<scope>): <description>`).
+6.  **Fill out the PR template:** Provide a clear description of your changes, including:
+    *   **Changes:** What did you change and why?
+    *   **Testing:** How did you test your changes? (e.g., unit tests added, manual testing steps). Link to CI checks.
+    *   **Related Issues:** Link any issues this PR resolves (e.g., `Closes #123`, `Fixes #456`).
+7.  **Checklist before submitting:**
+    *   [ ] My code follows the style guidelines of this project.
+    *   [ ] I have performed a self-review of my own code.
+    *   [ ] I have commented my code, particularly in hard-to-understand areas.
+    *   [ ] I have made corresponding changes to the documentation.
+    *   [ ] My changes generate no new warnings.
+    *   [ ] I have added tests that prove my fix is effective or that my feature works.
+    *   [ ] New and existing unit tests pass locally with my changes (`bun test`).
+    *   [ ] Any dependent changes have been merged and published in downstream modules.
+    *   [ ] Commits are squashed appropriately (if needed) and have meaningful messages.
+8.  Submit the Pull Request.
+
+## Code standards
+
+Maintain high code quality by following these standards:
+
+### 1. TypeScript
+
+Use TypeScript for type safety and clarity.
+
+```typescript
+// Good: Clear interface and types
+interface PaymentRequest {
+  amount: number; // Amount in smallest currency unit (e.g., cents)
+  currency: string; // ISO 4217 currency code (e.g., 'XOF')
+  providerCode: string; // Unique identifier for the payment provider
+}
+
+async function processPayment(request: PaymentRequest): Promise<PaymentResult> {
+  // Implementation...
+  // Use types for return values as well
+}
+```
+
+### 2. Testing
+
+Write meaningful tests using Vitest (`describe`, `it`, `expect`).
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { processPayment } from '../src/payment-processor'; // Adjust path
+
+describe('Payment Processing', () => {
+  it('should process a valid payment request', async () => {
+    const request: PaymentRequest = {
+      amount: 10000, // e.g., 100.00 XOF
+      currency: 'XOF',
+      providerCode: 'PROVIDER_X',
+    };
+
+    // Mock dependencies if necessary
+    // vi.mock(...)
+
+    const result = await processPayment(request);
+    expect(result).toBeDefined();
+    expect(result.status).toBe('completed');
+    // Add more specific assertions
+  });
+
+  it('should throw validation error for invalid amount', async () => {
+    const request: PaymentRequest = {
+      amount: -500,
+      currency: 'XOF',
+      providerCode: 'PROVIDER_X',
+    };
+
+    await expect(processPayment(request)).rejects.toThrow(ValidationError);
+  });
+});
+```
+
+### 3. Documentation (TSDoc)
+
+Document exported functions, classes, and types using TSDoc comments.
+
+```typescript
+/**
+ * Processes a payment request using the specified provider.
+ *
+ * @param request - The payment request details.
+ * @returns A promise that resolves with the payment result.
+ * @throws {ValidationError} If the request data is invalid.
+ * @throws {PaymentProviderError} If the payment provider encounters an error.
+ * @throws {Error} For unexpected errors during processing.
+ * @example
+ * ```typescript
+ * const result = await processPayment({ amount: 5000, currency: 'XOF', providerCode: 'WAVE' });
+ * console.log(result.transactionId);
+ * ```
+ */
+async function processPayment(request: PaymentRequest): Promise<PaymentResult> {
+  // Validate input
+  // Call provider-specific logic
+  // Handle errors
+  // Return result
+}
+```
+
+## Best practices
+
+Follow these best practices for maintainable and collaborative code.
+
+### 1. Commit messages
+
+Write clear, concise, and informative commit messages.
+
+```bash
+# Good: Specific type, scope, and description
+git commit -m "feat(auth): implement API key generation endpoint"
+git commit -m "fix(webhooks): handle duplicate event processing"
+git commit -m "docs(contributing): clarify rebase workflow"
+
+# Bad: Vague, uninformative
+git commit -m "fixed stuff"
+git commit -m "wip"
+git commit -m "more changes"
+```
+
+### 2. Code style
+
+Write clean, readable code. We use Prettier and ESLint for automatic formatting and linting (`bun run lint:fix`).
+
+```typescript
+// Good: Readable, consistent formatting, meaningful names
+function isValidAmount(amount: number, maxAmount: number = 1000000): boolean {
+  return amount > 0 && amount <= maxAmount;
+}
+
+// Bad: Poor formatting, short unclear names, magic numbers
+function validate(a){return a>0&&a<=1000000}
+```
+
+### 3. Error handling
+
+Handle errors gracefully and provide context.
+
+```typescript
+// Good: Catch specific errors, provide context, log appropriately
+import { logger } from './logger'; // Assuming a logger utility
+
+try {
+  const result = await processPayment(request);
+  logger.info({ transactionId: result.id }, 'Payment successful');
+} catch (error) {
+  if (error instanceof ValidationError) {
+    logger.warn({ error, request }, 'Invalid payment request');
+    // Return specific error response to client
+  } else if (error instanceof PaymentProviderError) {
+    logger.error({ error, request }, 'Payment provider failed');
+    // Handle provider-specific failure (e.g., retry logic, alert)
+  } else {
+    logger.error({ error, request }, 'Unexpected error during payment processing');
+    // Handle unknown error
+  }
+}
+
+// Bad: Ignores error, logs vaguely
+try {
+  await processPayment(request);
+} catch (error) {
+  console.error("Something went wrong"); // Lacks context
+}
+```
+
+## Review process
+
+Your PR will be reviewed by maintainers.
+
+### During review:
+
+- **Respond to Feedback:** Address comments and questions promptly.
+- **Make Changes:** Push new commits to your PR branch to incorporate requested changes. Avoid force-pushing unless asked.
+- **Keep Updated:** If `develop` advances significantly, rebase your branch to resolve conflicts.
+
+### After merge:
+
+- **Celebrate!** 🎉 Thank you for your contribution.
+- **Clean Up:** You can safely delete your feature branch from your fork.
+- **Stay involved:** Keep an eye on related issues or follow up if needed. Monitor the deployment if applicable.
+
+## Next steps
+
+- Familiarize yourself with our [Code of conduct](./code-of-conduct).
+- Understand our [Branching strategy](./branching-strategy).
+- Learn about the [Code review](./code-reviews) process in more detail.
+
+Your PR will be reviewed by maintainers according to our [Code Review](./code-reviews) process. Be prepared to respond to feedback and make further changes if necessary. We'll be fast to respond to you, don't you worry!
+
+Thank you so much.

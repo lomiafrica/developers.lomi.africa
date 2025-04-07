@@ -1,69 +1,40 @@
-# API Overview
+# API overview
 
-The lomi.africa Payments API is a powerful payment orchestration platform that enables businesses to accept payments across multiple providers and payment methods in Africa.
+Welcome to the Lomi REST API documentation. This API allows you to integrate Lomi's payment capabilities directly into your applications.
 
-## Base URL
+You can use the API to manage resources like payment providers and configure webhooks to receive real-time event notifications.
 
-All API requests should be made to:
+## Environments and Authentication
 
-```bash
-https://api.lomi.africa/v1
-```
+Lomi provides separate **Test** and **Live** environments, each with its own base URL and API keys. All API requests must be authenticated using your secret API key passed in the `X-API-Key` header.
 
-## Key Features
+For full details on environments, base URLs, obtaining API keys, and security best practices, see the [Authentication](./authentication) guide.
 
-- **Multiple Payment Providers**: Support for major payment providers including Orange Money, Wave, MTN, Moov, Airtel, M-Pesa, and more
-- **Various Payment Methods**: Accept payments via Mobile Money, Cards, Bank Transfers, USSD, QR Codes, and Digital Wallets
-- **Subscription Management**: Create and manage recurring billing plans with flexible frequencies
-- **Payment Links**: Generate shareable payment links for quick collection
-- **Webhook Integration**: Real-time notifications for payment events
-- **Comprehensive Reporting**: Detailed transaction history and analytics
-- **Multi-Currency Support**: Handle transactions in XOF, USD, and EUR
+## Requests and responses
 
-## API Versioning
+All API requests should be made over HTTPS to the appropriate base URL. Request bodies (for `POST`, `PATCH` methods) should be sent as JSON.
 
-The current version is `v1`. We maintain backward compatibility and notify of any breaking changes in advance.
+Responses are returned in JSON format. Successful requests return `2xx` status codes. Failed requests return `4xx` or `5xx` status codes with a standardized error object in the response body.
 
-## Rate Limiting
+Learn more about the structure of success and error responses in the [Errors](./errors) guide.
 
-The API implements rate limiting to ensure stability. Rate limits are applied on a per-API-key basis. Contact support for custom limits.
+## API resources
 
-## Response Format
+This core reference section covers the following API resources:
 
-All responses are returned in JSON format. Successful responses include the requested data, while error responses include error details and messages.
+-   **[Authentication](./authentication):** How to authenticate your API requests.
+-   **[Errors](./errors):** Understanding API error responses.
+-   **[Data Models](./data-models):** Structure of key API objects.
+-   **[Merchants](./merchants):** Managing merchant account details and metrics.
+-   **[Customers](./customers):** Creating and managing customer profiles.
+-   **[Products](./products):** Managing product definitions.
+-   **[Transactions](./transactions):** Retrieving payment transaction details.
+-   **[Subscription Plans](./subscriptions):** Managing reusable subscription plan definitions.
+-   **[Providers](./providers):** Retrieving connected payment provider information.
+-   **[Webhooks](./webhooks):** Managing webhook endpoints for event notifications.
 
-Example success response:
-```json
-{
-  "data": {
-    "transaction_id": "123e4567-e89b-12d3-a456-426614174000",
-    "status": "completed"
-  }
-}
-```
+*(Support for Customer Subscriptions, Payment Links, Checkout Sessions, and Refunds is coming soon.)*
 
-Example error response:
-```json
-{
-  "code": "invalid_request",
-  "message": "Invalid currency code provided",
-  "details": {
-    "field": "currency_code",
-    "value": "XXX"
-  }
-}
-```
+## Versioning
 
-## SDK Support
-
-We provide official SDKs for:
-- Node.js/TypeScript
-- Python (coming soon)
-- PHP (coming soon)
-- Go (coming soon)
-
-## Need Help?
-
-- Join our [Developer Community](https://community.lomi.africa)
-- Contact [Support](mailto:support@lomi.africa)
-- Read our [API Status](https://status.lomi.africa) 
+The current API version is `v1`, included in the base URL path (`/v1/`). We strive to maintain backward compatibility for this version. Significant breaking changes would be introduced under a new version path. 

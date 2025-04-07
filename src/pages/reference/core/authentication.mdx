@@ -1,78 +1,64 @@
 # Authentication
 
-The lomi.africa API uses API keys for authentication. All API requests must include your API key in the headers.
+Lomi authenticates your API requests using API keys. Any request that doesn't include a valid API key will return an authentication error.
 
-## API Keys
+There are two types of API keys corresponding to Lomi's two environments: Test and Live.
 
-Your API key should be included in the `X-API-KEY` header of all requests:
+## API keys
 
-```bash
-X-API-KEY: your_api_key_here
+All API requests must be made over HTTPS. Requests made over plain HTTP will fail. API requests without authentication will also fail.
+
+You must include an API key in the `X-API-Key` header for every request.
+
+```http
+GET /v1/providers HTTP/1.1
+Host: api.lomi.africa
+X-API-Key: your_api_key
 ```
 
-## Example Request
+Replace `your_api_key` with your specific secret API key.
 
-```bash
-curl -X GET "https://api.lomi.africa/v1/merchants/123" \
-  -H "X-API-KEY: your_api_key_here" \
-  -H "Content-Type: application/json"
-```
+## Test vs. Live environments
 
-```typescript
-import { LomiClient } from '@lomi/sdk';
+Lomi provides two distinct environments to separate development and testing from production operations.
 
-const lomi = new LomiClient({
-  apiKey: 'your_api_key_here'
-});
-```
+### Test environment
 
-## Security Best Practices
+Use the test environment to develop and test your integration without processing real transactions or affecting live data. It mirrors the functionality of the live environment.
 
-1. **Keep Keys Secure**
-   - Never expose API keys in client-side code
-   - Don't commit API keys to version control
-   - Use environment variables to store keys
+-   **API Keys:** Test API keys start with `lomi_sk_test_`.
+-   **Base URL:** `https://sandbox.api.lomi.africa/v1`
+-   **Rate Limits:** 120 requests per minute / 20,000 requests per day.
+-   **Data:** Uses simulated data. Responses may include environment flags like `"environment": "test"`.
 
-2. **Key Rotation**
-   - Rotate keys periodically
-   - Immediately rotate compromised keys
-   - Use different keys for development and production
+### Live environment
 
-3. **Access Control**
-   - Use test keys for development
-   - Limit key access to necessary team members
-   - Monitor key usage regularly
+Use the live environment for production operations involving real transactions.
 
-## Test vs Production Keys
+-   **API Keys:** Live API keys start with `lomi_sk_live_`.
+-   **Base URL:** `https://api.lomi.africa/v1`
+-   **Rate Limits:** 60 requests per minute / 10,000 requests per day.
+-   **Data:** Processes real data. Responses may include environment flags like `"environment": "live"`.
 
-- **Test Keys**: Start with `test_` prefix
-  - Use for development and testing
-  - No real transactions processed
-  - Test provider integrations available
+To switch between environments, simply use the appropriate API key and base URL.
 
-- **Production Keys**: Start with `live_` prefix
-  - Use for real transactions
-  - Actual money movement
-  - Real provider integrations
+## Obtaining API keys
 
-## Getting API Keys
+You can obtain your API keys after signing up and completing verification:
 
-1. [Sign up](https://dashboard.lomi.africa/signup) for a lomi.africa account
-2. Complete the merchant verification process
-3. Navigate to API Settings in your dashboard
-4. Generate API keys for test and production environments
+1.  Log in to your [Lomi Dashboard](https://dashboard.lomi.africa/).
+2.  Navigate to the **Developers** or **API Settings** section.
+3.  Generate separate API keys for the **Test** and **Live** environments.
 
-## Key Management
+## Key management and security
 
-You can manage your API keys from the [Dashboard](https://dashboard.lomi.africa/settings/api):
-- Generate new keys
-- Revoke existing keys
-- View key usage statistics
-- Set key permissions and restrictions
+Treat your API keys as sensitive credentials. You can manage them (generate, revoke, view usage) in the Lomi Dashboard.
 
-## Rate Limiting
+**Best practices:**
 
-API keys are subject to rate limiting:
-- Test keys: 100 requests per minute
-- Production keys: 1000 requests per minute
-- Custom limits available for enterprise plans 
+-   **Keep keys confidential:** Do not share your secret keys. Store them securely (e.g., environment variables, secrets management service).
+-   **Never expose keys client-side:** Do not embed API keys in frontend code.
+-   **Avoid version control:** Do not commit keys to your codebase.
+-   **Use test keys for development:** Only use live keys for production applications.
+-   **Rotate keys:** Consider rotating keys periodically or if you suspect a compromise.
+-   **Limit access:** Restrict access to API keys within your organization. 
