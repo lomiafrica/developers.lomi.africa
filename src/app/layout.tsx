@@ -84,15 +84,15 @@ export const metadata: Metadata = {
     ],
     apple: [
       {
-        url: "/lomi-icon.png",
+        url: "/favicon.ico",
         sizes: "180x180",
-        type: "image/png",
+        type: "image/x-icon",
       },
     ],
     other: [
       {
         rel: "mask-icon",
-        url: "/lomi-icon.png",
+        url: "/favicon.ico",
       },
     ],
   },
