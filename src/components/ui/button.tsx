@@ -16,7 +16,7 @@ interface IconRefProps {
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-  VariantProps<typeof buttonVariants> {
+    VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 
@@ -36,7 +36,7 @@ const Button = React.forwardRef<
       iconPlacement,
       ...props
     },
-    ref
+    ref,
   ) => {
     const Comp = asChild ? Slot : "button";
     return (
@@ -58,7 +58,7 @@ const Button = React.forwardRef<
         )}
       </Comp>
     );
-  }
+  },
 );
 Button.displayName = "Button";
 

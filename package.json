@@ -13,7 +13,8 @@
     "generate:sitemap": "python scripts/generate_sitemap.py",
     "convert:meta": "node scripts/convert-meta-files.js",
     "verify:meta": "node scripts/verify-meta-files.js",
-    "clean": "rm -rf .next && rm -rf node_modules/.cache"
+    "clean": "rm -rf .next && rm -rf node_modules/.cache",
+    "format": "bunx --bun prettier --write \"src/**/*.{ts,tsx,js,jsx,css,md,json}\""
   },
   "dependencies": {
     "@mdx-js/loader": "^3.0.0",

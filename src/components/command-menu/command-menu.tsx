@@ -25,38 +25,76 @@ const defaultSuggestions = [
   {
     title: "Popular topics",
     items: [
-      { name: "Authentication", path: "https://developers.lomi.africa/reference/core/authentication", description: "Learn how to authenticate with the lomi. API" },
-      { name: "Webhooks", path: "https://developers.lomi.africa/reference/core/webhooks", description: "Set up and manage webhooks for real-time updates" },
-      { name: "Error Handling", path: "https://developers.lomi.africa/reference/core/errors", description: "Common errors and how to handle them" },
-    ]
+      {
+        name: "Authentication",
+        path: "https://developers.lomi.africa/reference/core/authentication",
+        description: "Learn how to authenticate with the lomi. API",
+      },
+      {
+        name: "Webhooks",
+        path: "https://developers.lomi.africa/reference/core/webhooks",
+        description: "Set up and manage webhooks for real-time updates",
+      },
+      {
+        name: "Error Handling",
+        path: "https://developers.lomi.africa/reference/core/errors",
+        description: "Common errors and how to handle them",
+      },
+    ],
   },
   {
     title: "Getting started",
     items: [
-      { name: "Introduction", path: "https://developers.lomi.africa/docs/introduction/what-is-lomi", description: "Get started with lomi.'s payment platform" },
-      { name: "API Overview", path: "https://developers.lomi.africa/reference/core/overview", description: "High-level overview of the lomi. API" },
-      { name: "Data Models", path: "https://developers.lomi.africa/reference/core/data-models", description: "Understanding lomi.'s data structures" },
-    ]
+      {
+        name: "Introduction",
+        path: "https://developers.lomi.africa/docs/introduction/what-is-lomi",
+        description: "Get started with lomi.'s payment platform",
+      },
+      {
+        name: "API Overview",
+        path: "https://developers.lomi.africa/reference/core/overview",
+        description: "High-level overview of the lomi. API",
+      },
+      {
+        name: "Data Models",
+        path: "https://developers.lomi.africa/reference/core/data-models",
+        description: "Understanding lomi.'s data structures",
+      },
+    ],
   },
   {
     title: "Dev' tools",
     items: [
-      { name: "lomi. CLI", path: "https://developers.lomi.africa/docs/lomi-cli/overview", description: "Command-line tools for lomi. developers" },
-      { name: "License Management", path: "https://developers.lomi.africa/docs/freedom/open-source", description: "Manage your lomi. licenses" },
-    ]
-  }
+      {
+        name: "lomi. CLI",
+        path: "https://developers.lomi.africa/docs/lomi-cli/overview",
+        description: "Command-line tools for lomi. developers",
+      },
+      {
+        name: "License Management",
+        path: "https://developers.lomi.africa/docs/freedom/open-source",
+        description: "Manage your lomi. licenses",
+      },
+    ],
+  },
 ];
 
-const CommandDialog = ({ children, expanded = false, ...props }: CommandDialogProps) => {
+const CommandDialog = ({
+  children,
+  expanded = false,
+  ...props
+}: CommandDialogProps) => {
   return (
     <Dialog {...props}>
-      <DialogContent className={cn(
-        "overflow-hidden p-0 shadow-lg rounded-sm border",
-        expanded ? "max-w-4xl" : "max-w-2xl"
-      )}>
+      <DialogContent
+        className={cn(
+          "overflow-hidden p-0 shadow-lg rounded-sm border",
+          expanded ? "max-w-4xl" : "max-w-2xl",
+        )}
+      >
         <Command
           className={cn(
-            "bg-popover [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
+            "bg-popover [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5",
           )}
         >
           {children}
@@ -99,27 +137,26 @@ export const CommandMenu = ({
     }
 
     // Listen for storage changes
-    window.addEventListener('storage', updateHistory);
-    return () => window.removeEventListener('storage', updateHistory);
+    window.addEventListener("storage", updateHistory);
+    return () => window.removeEventListener("storage", updateHistory);
   }, [open]);
 
   useEffect(() => {
     // Filter fileCache based on the searchValue
-    const filteredFiles = Object.values(fileCache).filter(
-      (file) => {
-        // Exclude _meta files and ensure there's a match
-        const isNotMetaFile = !file.path?.includes('_meta');
-        const hasMatch = file.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-          file.content.toLowerCase().includes(searchValue.toLowerCase());
+    const filteredFiles = Object.values(fileCache).filter((file) => {
+      // Exclude _meta files and ensure there's a match
+      const isNotMetaFile = !file.path?.includes("_meta");
+      const hasMatch =
+        file.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        file.content.toLowerCase().includes(searchValue.toLowerCase());
 
-        return isNotMetaFile && hasMatch;
-      }
-    );
+      return isNotMetaFile && hasMatch;
+    });
 
     const groupedFiles = filteredFiles.reduce(
       (acc, file) => {
         const { parentName, ...rest } = file;
-        const section = parentName || 'Other';
+        const section = parentName || "Other";
 
         if (!acc[section]) {
           acc[section] = [{ ...rest, parentName }];
@@ -133,7 +170,10 @@ export const CommandMenu = ({
     setResults(groupedFiles);
   }, [searchValue, fileCache]);
 
-  const handleSuggestionClick = (suggestion: { name: string; path: string }) => {
+  const handleSuggestionClick = (suggestion: {
+    name: string;
+    path: string;
+  }) => {
     // Add to history
     const newHistory = {
       ...history,
@@ -180,7 +220,7 @@ export const CommandMenu = ({
           "overflow-y-auto transition-all duration-200",
           expanded
             ? "min-h-[85vh] h-[85vh] w-full max-w-[1400px] p-6"
-            : "min-h-[65vh] h-[65vh] w-full max-w-2xl p-4"
+            : "min-h-[65vh] h-[65vh] w-full max-w-2xl p-4",
         )}
       >
         {searchValue.length === 0 ? (
@@ -193,7 +233,9 @@ export const CommandMenu = ({
             >
               <div className="space-y-1">
                 <div className="flex items-center justify-between px-2">
-                  <h2 className="text-sm font-medium text-muted-foreground">Recent searches</h2>
+                  <h2 className="text-sm font-medium text-muted-foreground">
+                    Recent searches
+                  </h2>
                   <Badge
                     variant="secondary"
                     className="flex items-center justify-between px-2 py-1 text-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/40 text-blue-700 dark:text-blue-300 cursor-pointer rounded-sm"
@@ -213,10 +255,14 @@ export const CommandMenu = ({
                 />
               </div>
               <div className="border-t pt-4 mt-4">
-                <h2 className="px-2 mb-2 text-sm font-medium text-muted-foreground">Suggested</h2>
+                <h2 className="px-2 mb-2 text-sm font-medium text-muted-foreground">
+                  Suggested
+                </h2>
                 {defaultSuggestions.map((section) => (
                   <div key={section.title} className="mb-4">
-                    <h3 className="px-2 mb-1 text-xs font-medium text-muted-foreground/70">{section.title}</h3>
+                    <h3 className="px-2 mb-1 text-xs font-medium text-muted-foreground/70">
+                      {section.title}
+                    </h3>
                     <div className="space-y-1">
                       {section.items.map((item) => (
                         <button
@@ -225,7 +271,9 @@ export const CommandMenu = ({
                           onClick={() => handleSuggestionClick(item)}
                         >
                           <div className="font-medium">{item.name}</div>
-                          <div className="text-xs text-muted-foreground line-clamp-1">{item.description}</div>
+                          <div className="text-xs text-muted-foreground line-clamp-1">
+                            {item.description}
+                          </div>
                         </button>
                       ))}
                     </div>
@@ -237,7 +285,9 @@ export const CommandMenu = ({
             <div className="space-y-6">
               {defaultSuggestions.map((section) => (
                 <div key={section.title} className="px-2">
-                  <h2 className="mb-2 text-sm font-medium text-muted-foreground">{section.title}</h2>
+                  <h2 className="mb-2 text-sm font-medium text-muted-foreground">
+                    {section.title}
+                  </h2>
                   <div className="space-y-1">
                     {section.items.map((item) => (
                       <button
@@ -246,7 +296,9 @@ export const CommandMenu = ({
                         onClick={() => handleSuggestionClick(item)}
                       >
                         <span className="font-medium">{item.name}</span>
-                        <span className="text-xs text-muted-foreground line-clamp-1">{item.description}</span>
+                        <span className="text-xs text-muted-foreground line-clamp-1">
+                          {item.description}
+                        </span>
                       </button>
                     ))}
                   </div>
@@ -305,13 +357,15 @@ export const CommandMenuTrigger = ({
       <Button
         className={cn(
           "flex items-center gap-2 h-9 px-3 rounded-sm border border-input bg-transparent",
-          className
+          className,
         )}
         variant="outline"
         onClick={() => setOpen((open) => !open)}
       >
         <Search className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm text-muted-foreground hidden sm:inline-flex">Search docs</span>
+        <span className="text-sm text-muted-foreground hidden sm:inline-flex">
+          Search docs
+        </span>
         <Badge variant="secondary" className="ml-auto rounded-sm px-1">
           <span className="text-xs">⌘D</span>
         </Badge>

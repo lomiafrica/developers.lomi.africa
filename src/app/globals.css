@@ -68,9 +68,10 @@
   [data-theme] {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    transition: background-color 300ms ease-in-out,
-                color 300ms ease-in-out,
-                border-color 300ms ease-in-out;
+    transition:
+      background-color 300ms ease-in-out,
+      color 300ms ease-in-out,
+      border-color 300ms ease-in-out;
   }
 
   html {
@@ -79,7 +80,7 @@
     overscroll-behavior-y: none;
     scroll-snap-type: y mandatory;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     height: 100vh;

@@ -11,16 +11,17 @@ import { AuthProvider } from "@/lib/contexts/auth-context";
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
-  display: 'swap',
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://developers.lomi.africa'),
+  metadataBase: new URL("https://developers.lomi.africa"),
   title: {
     default: "lomi. | Developers Documentation",
-    template: "%s | lomi. | Developers docs"
+    template: "%s | lomi. | Developers docs",
   },
-  description: "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
+  description:
+    "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
   keywords: [
     "lomi",
     "payment orchestration",
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
     "developer documentation",
     "api documentation",
     "fintech",
-    "african payments"
+    "african payments",
   ],
   authors: [{ name: "lomi.", url: "https://lomi.africa" }],
   creator: "lomi.",
@@ -41,33 +42,37 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://developers.lomi.africa',
-    title: 'lomi. | Developer Documentation',
-    description: "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
-    siteName: 'lomi. | Developer Documentation',
-    images: [{
-      url: 'https://developers.lomi.africa/lomi-icon.png',
-      width: 1200,
-      height: 630,
-      alt: 'lomi. Documentation',
-      type: 'image/png',
-    }],
+    type: "website",
+    locale: "en_US",
+    url: "https://developers.lomi.africa",
+    title: "lomi. | Developer Documentation",
+    description:
+      "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
+    siteName: "lomi. | Developer Documentation",
+    images: [
+      {
+        url: "https://developers.lomi.africa/lomi-icon.png",
+        width: 1200,
+        height: 630,
+        alt: "lomi. Documentation",
+        type: "image/png",
+      },
+    ],
   },
   twitter: {
-    card: 'summary_large_image',
-    title: 'lomi. | Developer Documentation',
-    description: "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
-    images: ['https://developers.lomi.africa/lomi-icon.png'],
-    creator: '@lomiafrica',
-    site: '@lomiafrica',
+    card: "summary_large_image",
+    title: "lomi. | Developer Documentation",
+    description:
+      "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
+    images: ["https://developers.lomi.africa/lomi-icon.png"],
+    creator: "@lomiafrica",
+    site: "@lomiafrica",
   },
   icons: {
     icon: [
@@ -91,12 +96,13 @@ export const metadata: Metadata = {
       },
     ],
   },
-  manifest: '/manifest.json',
+  manifest: "/manifest.json",
   alternates: {
-    canonical: 'https://developers.lomi.africa'
+    canonical: "https://developers.lomi.africa",
   },
   verification: {
-    google: 'google-site-verification=fD_UOOSaZDjO5rdngNSUYtYQK-sfA5DhMyiUNW7GyAs',
+    google:
+      "google-site-verification=fD_UOOSaZDjO5rdngNSUYtYQK-sfA5DhMyiUNW7GyAs",
   },
 };
 

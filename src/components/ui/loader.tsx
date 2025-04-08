@@ -1,25 +1,25 @@
-import { motion } from 'framer-motion'
-import { useTheme } from '@/lib/hooks/use-theme'
+import { motion } from "framer-motion";
+import { useTheme } from "@/lib/hooks/use-theme";
 
 export default function AnimatedLogoLoader() {
-  const { theme } = useTheme()
+  const { theme } = useTheme();
 
-  const logoColor = theme === 'dark' ? '#60a5fa' : '#FF0000'
+  const logoColor = theme === "dark" ? "#60a5fa" : "#FF0000";
 
   const draw = {
     hidden: { pathLength: 0, opacity: 0 },
     visible: (i: number) => {
-      const delay = 0.2 + i * 0.3
+      const delay = 0.2 + i * 0.3;
       return {
         pathLength: 1,
         opacity: 1,
         transition: {
           pathLength: { delay, type: "spring", duration: 1, bounce: 0 },
-          opacity: { delay, duration: 0.01 }
-        }
-      }
-    }
-  }
+          opacity: { delay, duration: 0.01 },
+        },
+      };
+    },
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-transparent dark:bg-transparent">
@@ -61,8 +61,7 @@ export default function AnimatedLogoLoader() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 1 }}
-      >
-      </motion.span>
+      ></motion.span>
     </div>
-  )
+  );
 }

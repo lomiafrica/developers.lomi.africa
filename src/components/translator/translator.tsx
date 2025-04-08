@@ -7,22 +7,21 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { toast } from "sonner"
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
 import { ToolBar } from "@/components/translator/toolbar";
 import { EditorLayout } from "@/components/translator/editor-layout";
 import { useTheme } from "next-themes";
 
-
 export const Translator = () => {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme();
   const [defaultTheme, setDefaultTheme] = useState(theme);
   const [layoutMode, setLayoutMode] = useState<"col" | "row">("col");
-  const [openDialog, setOpenDialog] = useState(false)
-  const [editorTheme, setEditorTheme] = useState('vs-dark');
-  const [editorBg, setEditorBg] = useState('#1E1E1E');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editorTheme, setEditorTheme] = useState("vs-dark");
+  const [editorBg, setEditorBg] = useState("#1E1E1E");
   const [pmCode, setPmCode] = useState<string[]>([
-    '// translate your awesome code',
+    "// translate your awesome code",
   ]);
   const computedTranslation = useMemo(() => {
     return pmCode.map((line, index) => {
@@ -31,30 +30,33 @@ export const Translator = () => {
   }, [pmCode]);
   const copyClipboard = () => {
     navigator.clipboard.writeText(computedTranslation.join("\n")).then(() => {
-      toast('Copied to clipboard !')
-    })
-  }
+      toast("Copied to clipboard !");
+    });
+  };
   const savePmCode = (code: string[]) => {
-    localStorage.setItem('pmCode', JSON.stringify(code));
+    localStorage.setItem("pmCode", JSON.stringify(code));
     setPmCode(code);
-  }
+  };
   useEffect(() => {
-    const savedPmCode = localStorage.getItem('pmCode');
+    const savedPmCode = localStorage.getItem("pmCode");
     if (savedPmCode) {
       setPmCode(JSON.parse(savedPmCode));
     }
   }, []);
   useEffect(() => {
     if (openDialog) {
-      setTheme('dark')
+      setTheme("dark");
     } else {
-      setTheme(defaultTheme ?? 'system')
+      setTheme(defaultTheme ?? "system");
     }
   }, [defaultTheme, openDialog, setTheme]);
   return (
     <div className="flex flex-col items-start w-full mt-2">
       <div className="flex items-center justify-between w-full">
-        <Dialog open={openDialog} onOpenChange={() => setOpenDialog(!openDialog)}>
+        <Dialog
+          open={openDialog}
+          onOpenChange={() => setOpenDialog(!openDialog)}
+        >
           <DialogContent className="max-w-[calc(100dvw)] w-full h-full max-h-[calc(100dvh)] bg-transparent p-0 border-0">
             <DialogHeader>
               <DialogDescription className="p-0">
@@ -108,5 +110,5 @@ export const Translator = () => {
         </>
       )}
     </div>
-  )
-}
+  );
+};

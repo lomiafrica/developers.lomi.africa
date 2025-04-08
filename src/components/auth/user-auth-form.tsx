@@ -1,115 +1,118 @@
-"use client"
+"use client";
 
-import { HTMLAttributes, useState } from 'react'
-import Link from 'next/link'
-import { z } from 'zod'
-import { IconBrandGithub } from '@tabler/icons-react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { PasswordInput } from '@/components/ui/password-input'
-import { cn } from '@/lib/utils'
-import { supabase } from '@/lib/supabase/client'
-import { toast } from '@/lib/hooks/use-toast'
-import { AlertCircle } from "lucide-react"
-import { Spinner } from '@/components/ui/spinner'
+import { HTMLAttributes, useState } from "react";
+import Link from "next/link";
+import { z } from "zod";
+import { IconBrandGithub } from "@tabler/icons-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { PasswordInput } from "@/components/ui/password-input";
+import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase/client";
+import { toast } from "@/lib/hooks/use-toast";
+import { AlertCircle } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 
-type UserAuthFormProps = HTMLAttributes<HTMLDivElement>
+type UserAuthFormProps = HTMLAttributes<HTMLDivElement>;
 
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(7),
-})
+});
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
-  const [isGithubLoading, setIsGithubLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState('')
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isValidEmail, setIsValidEmail] = useState(false)
-  const [isValidPassword, setIsValidPassword] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isValidEmail, setIsValidEmail] = useState(false);
+  const [isValidPassword, setIsValidPassword] = useState(false);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value)
-    setIsValidEmail(formSchema.shape.email.safeParse(e.target.value).success)
-  }
+    setEmail(e.target.value);
+    setIsValidEmail(formSchema.shape.email.safeParse(e.target.value).success);
+  };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value)
-    setIsValidPassword(formSchema.shape.password.safeParse(e.target.value).success)
-  }
+    setPassword(e.target.value);
+    setIsValidPassword(
+      formSchema.shape.password.safeParse(e.target.value).success,
+    );
+  };
 
   async function onSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault();
     if (isValidEmail && isValidPassword) {
-      setIsLoading(true)
-      setErrorMessage('')
+      setIsLoading(true);
+      setErrorMessage("");
       try {
-        const { data: signInData, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
+        const { data: signInData, error } =
+          await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
 
         if (error) {
-          let message = 'An error occurred during sign in'
-          if (error.message.includes('Invalid login credentials')) {
-            message = 'Invalid email or password'
-          } else if (error.message.includes('Email not confirmed')) {
-            message = 'Please confirm your email address'
+          let message = "An error occurred during sign in";
+          if (error.message.includes("Invalid login credentials")) {
+            message = "Invalid email or password";
+          } else if (error.message.includes("Email not confirmed")) {
+            message = "Please confirm your email address";
           }
-          setErrorMessage(message)
+          setErrorMessage(message);
         } else if (signInData.user) {
           toast({
-            title: 'Success',
-            description: 'You have successfully signed in',
-          })
+            title: "Success",
+            description: "You have successfully signed in",
+          });
 
           // Refresh the page to update the authentication state
           window.location.reload();
         }
       } catch (error) {
-        console.error('Error during sign in:', error)
-        setErrorMessage('An unexpected error occurred')
+        console.error("Error during sign in:", error);
+        setErrorMessage("An unexpected error occurred");
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
   }
 
-  const handleOAuthSignIn = async (provider: 'github' | 'google') => {
+  const handleOAuthSignIn = async (provider: "github" | "google") => {
     try {
-      if (provider === 'google') setIsGoogleLoading(true)
-      if (provider === 'github') setIsGithubLoading(true)
+      if (provider === "google") setIsGoogleLoading(true);
+      if (provider === "github") setIsGithubLoading(true);
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: `${window.location.origin}/callback`,
           queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
+            access_type: "offline",
+            prompt: "consent",
           },
         },
-      })
-      if (error) throw error
-      if (!data.url) throw new Error('No URL returned from Supabase')
+      });
+      if (error) throw error;
+      if (!data.url) throw new Error("No URL returned from Supabase");
 
       // Use window.location.href to ensure a full page reload
       window.location.href = data.url;
     } catch (error) {
-      console.error(`Error signing in with ${provider}:`, error)
-      setErrorMessage(`Error signing in with ${provider}`)
-      if (provider === 'google') setIsGoogleLoading(false)
-      if (provider === 'github') setIsGithubLoading(false)
+      console.error(`Error signing in with ${provider}:`, error);
+      setErrorMessage(`Error signing in with ${provider}`);
+      if (provider === "google") setIsGoogleLoading(false);
+      if (provider === "github") setIsGithubLoading(false);
     }
-  }
+  };
 
   return (
-    <div className={cn('grid gap-6 w-[300px] sm:w-full', className)} {...props}>
+    <div className={cn("grid gap-6 w-[300px] sm:w-full", className)} {...props}>
       <form onSubmit={onSubmit}>
-        <div className='grid gap-2'>
+        <div className="grid gap-2">
           <Input
             id="email"
             type="email"
@@ -117,19 +120,21 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             value={email}
             onChange={handleEmailChange}
             className={cn(
-              'h-12 border rounded-none focus:border-blue-500 focus:ring-blue-500 bg-white text-black dark:bg-gray-800 dark:text-white',
+              "h-12 border rounded-none focus:border-blue-500 focus:ring-blue-500 bg-white text-black dark:bg-gray-800 dark:text-white",
               {
-                'border-gray-300 dark:border-gray-600': !isValidEmail && email === '',
-                'border-red-500 dark:border-red-500': !isValidEmail && email !== '',
-                'border-green-500 dark:border-green-500': isValidEmail,
-              }
+                "border-gray-300 dark:border-gray-600":
+                  !isValidEmail && email === "",
+                "border-red-500 dark:border-red-500":
+                  !isValidEmail && email !== "",
+                "border-green-500 dark:border-green-500": isValidEmail,
+              },
             )}
             autoComplete="username"
           />
-          <div className='flex justify-end mb-1'>
+          <div className="flex justify-end mb-1">
             <Link
-              href='/forgot-password'
-              className='text-sm font-medium text-blue-600 hover:text-blue-600 whitespace-nowrap'
+              href="/forgot-password"
+              className="text-sm font-medium text-blue-600 hover:text-blue-600 whitespace-nowrap"
             >
               Forgot password?
             </Link>
@@ -140,12 +145,14 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             value={password}
             onChange={handlePasswordChange}
             className={cn(
-              'h-12 border rounded-none focus:border-blue-500 focus:ring-blue-500 bg-white text-black dark:bg-gray-800 dark:text-white',
+              "h-12 border rounded-none focus:border-blue-500 focus:ring-blue-500 bg-white text-black dark:bg-gray-800 dark:text-white",
               {
-                'border-gray-300 dark:border-gray-600': !isValidPassword && password === '',
-                'border-red-500 dark:border-red-500': !isValidPassword && password !== '',
-                'border-green-500 dark:border-green-500': isValidPassword,
-              }
+                "border-gray-300 dark:border-gray-600":
+                  !isValidPassword && password === "",
+                "border-red-500 dark:border-red-500":
+                  !isValidPassword && password !== "",
+                "border-green-500 dark:border-green-500": isValidPassword,
+              },
             )}
             autoComplete="current-password"
           />
@@ -156,8 +163,8 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
             </div>
           )}
           <Button
-            className='w-full h-12'
-            type='submit'
+            className="w-full h-12"
+            type="submit"
             disabled={isLoading || !isValidEmail || !isValidPassword}
           >
             {isLoading ? (
@@ -168,21 +175,21 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           </Button>
         </div>
       </form>
-      <div className='relative'>
-        <div className='absolute inset-0 flex items-center'>
-          <span className='w-full border-t border-gray-300 dark:border-gray-600' />
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-gray-300 dark:border-gray-600" />
         </div>
-        <div className='relative flex justify-center text-xs uppercase'>
-          <span className='bg-background px-2 text-gray-500'>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-gray-500">
             Or continue with
           </span>
         </div>
       </div>
-      <div className='flex flex-col gap-4'>
+      <div className="flex flex-col gap-4">
         <Button
           className="w-full h-12"
           variant="outline"
-          onClick={() => handleOAuthSignIn('google')}
+          onClick={() => handleOAuthSignIn("google")}
           disabled={isGoogleLoading || isGithubLoading}
         >
           {isGoogleLoading ? (
@@ -216,29 +223,29 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         </Button>
 
         <Button
-          variant='outline'
-          className='w-full h-12'
-          type='button'
+          variant="outline"
+          className="w-full h-12"
+          type="button"
           disabled={isGoogleLoading || isGithubLoading}
-          onClick={() => handleOAuthSignIn('github')}
+          onClick={() => handleOAuthSignIn("github")}
         >
           {isGithubLoading ? (
             <Spinner className="w-4 h-4" />
           ) : (
-            <IconBrandGithub className='h-6 w-6 mr-2' />
+            <IconBrandGithub className="h-6 w-6 mr-2" />
           )}
           <span>&nbsp;GitHub</span>
         </Button>
       </div>
-      <p className='px-8 text-center text-sm text-muted-foreground'>
-        Don&apos;t have an account?{' '}
+      <p className="px-8 text-center text-sm text-muted-foreground">
+        Don&apos;t have an account?{" "}
         <Link
-          href='/sign-up'
-          className='underline underline-offset-4 text-blue-600 hover:text-blue-600'
+          href="/sign-up"
+          className="underline underline-offset-4 text-blue-600 hover:text-blue-600"
         >
           Sign up
         </Link>
       </p>
     </div>
-  )
+  );
 }

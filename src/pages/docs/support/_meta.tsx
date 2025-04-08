@@ -1,7 +1,7 @@
-import { Meta } from '@/lib/types/meta';
+import { Meta } from "@/lib/types/meta";
 
 const meta: Meta = {
-  "contact": "Contact us"
+  contact: "Contact us",
 };
 
 export default meta;

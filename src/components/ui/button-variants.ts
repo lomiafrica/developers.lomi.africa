@@ -5,7 +5,8 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-transparent border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/50",
+        default:
+          "bg-transparent border border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800/50",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         outline:
@@ -40,5 +41,5 @@ export const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
-); 
+  },
+);

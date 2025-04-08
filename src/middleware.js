@@ -18,5 +18,8 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/introduction/getting-started", "/license-management/license-management"]
+  matcher: [
+    "/introduction/getting-started",
+    "/license-management/license-management",
+  ],
 };

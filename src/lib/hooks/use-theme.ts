@@ -16,7 +16,8 @@ export const initialState: ThemeProviderState = {
 };
 
 // Create the ThemeProviderContext
-export const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
+export const ThemeProviderContext =
+  createContext<ThemeProviderState>(initialState);
 
 // Define the useTheme hook
 export const useTheme = () => {
