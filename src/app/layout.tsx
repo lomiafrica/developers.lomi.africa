@@ -97,9 +97,6 @@ export const metadata: Metadata = {
     ],
   },
   manifest: "/manifest.json",
-  alternates: {
-    canonical: "https://developers.lomi.africa",
-  },
   verification: {
     google:
       "google-site-verification=fD_UOOSaZDjO5rdngNSUYtYQK-sfA5DhMyiUNW7GyAs",
