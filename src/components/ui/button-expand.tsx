@@ -87,7 +87,7 @@ function ButtonExpandLogo({ className }: { className?: string }) {
         <div className="relative group">
             <span className="flex items-baseline text-xl font-bold">
                 <span>lomi</span>
-                <div className="w-[3px] h-[3px] bg-current ml-[2px]" />
+                <div className="w-[0.15em] h-[0.15em] bg-current ml-[1.5px]" />
             </span>
             <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1">
                 <span className="inline-flex items-center">
