@@ -15,7 +15,8 @@ const HistoryItem = ({
   name: string;
   path: string;
 }) => {
-  const isAbsoluteUrl = path?.startsWith("http://") || path?.startsWith("https://");
+  const isAbsoluteUrl =
+    path?.startsWith("http://") || path?.startsWith("https://");
 
   return (
     <Button
@@ -43,7 +44,7 @@ const HistoryItem = ({
         </a>
       ) : (
         <Link
-          href={path?.startsWith('/') ? path : `/${path}`}
+          href={path?.startsWith("/") ? path : `/${path}`}
           className="flex w-full h-full items-center"
         >
           <div className="flex items-center p-1 rounded-lg border bg-white dark:bg-zinc-900">

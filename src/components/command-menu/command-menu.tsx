@@ -12,7 +12,12 @@ import { Typography } from "@/components/ui/typography";
 import { ResultGroup } from "@/components/command-menu/results/result-group";
 import { History } from "@/components/command-menu/history/history";
 import { HistoryType } from "@/lib/types/history";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Command } from "@/components/ui/command";
 import { DialogProps } from "@radix-ui/react-dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -96,7 +101,9 @@ const CommandDialog = ({
           <VisuallyHidden>Search Documentation</VisuallyHidden>
         </DialogTitle>
         <DialogDescription asChild>
-          <VisuallyHidden>Search through documentation pages and suggested topics.</VisuallyHidden>
+          <VisuallyHidden>
+            Search through documentation pages and suggested topics.
+          </VisuallyHidden>
         </DialogDescription>
         <Command
           className={cn(
@@ -194,12 +201,12 @@ export const CommandMenu = ({
 
     // Navigate based on URL type
     const { path } = suggestion;
-    if (path.startsWith('http://') || path.startsWith('https://')) {
+    if (path.startsWith("http://") || path.startsWith("https://")) {
       // Absolute URL: navigate directly
       window.location.href = path;
     } else {
       // Relative URL: ensure it starts with '/' and navigate
-      const relativePath = path.startsWith('/') ? path : `/${path}`;
+      const relativePath = path.startsWith("/") ? path : `/${path}`;
       window.location.href = relativePath; // Using window.location.href for simplicity
     }
     setOpen(false);

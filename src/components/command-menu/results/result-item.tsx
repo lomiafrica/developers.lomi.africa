@@ -81,7 +81,8 @@ export const ResultItem = ({
     localStorage.setItem("history", JSON.stringify(history));
     setOpen(false);
   };
-  const isAbsoluteUrl = result.path?.startsWith("http://") || result.path?.startsWith("https://");
+  const isAbsoluteUrl =
+    result.path?.startsWith("http://") || result.path?.startsWith("https://");
 
   return (
     <div className={cn(computedHeight, "flex items-center w-full")}>
@@ -126,7 +127,9 @@ export const ResultItem = ({
           </a>
         ) : (
           <Link
-            href={result.path?.startsWith('/') ? result.path : `/${result.path}`}
+            href={
+              result.path?.startsWith("/") ? result.path : `/${result.path}`
+            }
             className="flex w-full h-full items-center"
           >
             <div className="flex items-center p-1 rounded-lg border bg-white dark:bg-zinc-900 shadow-lg">

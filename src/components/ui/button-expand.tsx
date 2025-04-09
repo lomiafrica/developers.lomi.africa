@@ -40,7 +40,7 @@ function ButtonExpand({
       className={cn(
         `text-lg sm:text-base font-medium ${textColor} ${hoverTextColor} ${bgColor} ${hoverBgColor} shadow-lg transition-all duration-300 h-[52px] sm:h-10 px-[32px] sm:px-4 focus:outline-none focus-visible:outline-none`,
         className,
-        disabled && "opacity-50 cursor-not-allowed"
+        disabled && "opacity-50 cursor-not-allowed",
       )}
       onClick={onClick}
       disabled={disabled}

@@ -1,7 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ImagePlus, CheckCircle, FileIcon, X, ArrowRight, Loader2, ChevronDown } from "lucide-react";
+import {
+  ImagePlus,
+  CheckCircle,
+  FileIcon,
+  X,
+  ArrowRight,
+  Loader2,
+  ChevronDown,
+} from "lucide-react";
 import { supabase } from "@/lib/supabase/client";
 import { ButtonExpand } from "@/components/ui/button-expand";
 import { useToast } from "@/lib/hooks/use-toast";
@@ -40,7 +48,10 @@ const CustomSelect = ({ value, onChange, options }: CustomSelectProps) => {
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+      if (
+        selectRef.current &&
+        !selectRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -58,7 +69,7 @@ const CustomSelect = ({ value, onChange, options }: CustomSelectProps) => {
           "w-full bg-background text-foreground p-2 cursor-pointer border border-border",
           "hover:bg-accent dark:hover:bg-accent/50 transition-colors duration-200 flex items-center justify-between",
           "text-sm font-medium rounded-sm focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring",
-          isOpen ? "ring-1 ring-ring border-ring" : ""
+          isOpen ? "ring-1 ring-ring border-ring" : "",
         )}
         onClick={() => setIsOpen(!isOpen)}
         aria-haspopup="listbox"
@@ -66,13 +77,14 @@ const CustomSelect = ({ value, onChange, options }: CustomSelectProps) => {
       >
         <span>
           {value
-            ? options.find((opt: SelectOption) => opt.value === value)?.label || ""
+            ? options.find((opt: SelectOption) => opt.value === value)?.label ||
+              ""
             : "Select a category"}
         </span>
         <ChevronDown
           className={cn(
             "h-4 w-4 opacity-50 transition-transform duration-200",
-            isOpen ? "rotate-180" : ""
+            isOpen ? "rotate-180" : "",
           )}
         />
       </button>
@@ -93,7 +105,7 @@ const CustomSelect = ({ value, onChange, options }: CustomSelectProps) => {
               aria-selected={value === option.value}
               tabIndex={0}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
+                if (e.key === "Enter" || e.key === " ") {
                   onChange(option.value);
                   setIsOpen(false);
                 }
@@ -170,11 +182,16 @@ export default function ModalSupportForm({
       }
 
       setMessage((prevMessage) =>
-        prevMessage.startsWith("Issue description:") || !prevMessage || prevMessage.startsWith(messagePrefix)
+        prevMessage.startsWith("Issue description:") ||
+        !prevMessage ||
+        prevMessage.startsWith(messagePrefix)
           ? `${messagePrefix}Issue description: `
-          : prevMessage
+          : prevMessage,
       );
-    } else if (isOpen && !message.trim().replace("Issue description:", "").trim()) {
+    } else if (
+      isOpen &&
+      !message.trim().replace("Issue description:", "").trim()
+    ) {
       setMessage("Issue description: ");
     }
   }, [contextData, isOpen, message]);
@@ -182,7 +199,7 @@ export default function ModalSupportForm({
   const fetchDeveloperInfo = async (): Promise<DeveloperInfo | null> => {
     setSubmitError(null);
     try {
-      const response = await fetch('/api/developer-info');
+      const response = await fetch("/api/developer-info");
       if (!response.ok) {
         let errorMsg = `HTTP error! status: ${response.status}`;
         try {
@@ -200,7 +217,10 @@ export default function ModalSupportForm({
       return data;
     } catch (error) {
       console.error("Error fetching developer info:", error);
-      const errorMessage = error instanceof Error ? error.message : "Failed to fetch user details.";
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to fetch user details.";
       setSubmitError(errorMessage);
       toast({
         variant: "destructive",
@@ -224,7 +244,16 @@ export default function ModalSupportForm({
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  }, [setCategory, setMessage, setImage, setIsSubmitted, setUploadProgress, setIsSubmitting, setIsUploading, setSubmitError]);
+  }, [
+    setCategory,
+    setMessage,
+    setImage,
+    setIsSubmitted,
+    setUploadProgress,
+    setIsSubmitting,
+    setIsUploading,
+    setSubmitError,
+  ]);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -241,7 +270,8 @@ export default function ModalSupportForm({
     const effectiveOrganizationId = organizationId || merchantId;
 
     let imageUrl: string | null = null;
-    let progressInterval: ReturnType<typeof setInterval> | undefined = undefined;
+    let progressInterval: ReturnType<typeof setInterval> | undefined =
+      undefined;
 
     if (image) {
       setIsUploading(true);
@@ -273,13 +303,19 @@ export default function ModalSupportForm({
         imageUrl = urlData?.publicUrl ?? null;
 
         if (!imageUrl) {
-          console.warn("Could not retrieve public URL for uploaded image:", fileName);
+          console.warn(
+            "Could not retrieve public URL for uploaded image:",
+            fileName,
+          );
         }
       } catch (uploadError) {
         if (progressInterval) clearInterval(progressInterval);
         setIsUploading(false);
         setUploadProgress(0);
-        const errorMsg = uploadError instanceof Error ? uploadError.message : "Image upload failed.";
+        const errorMsg =
+          uploadError instanceof Error
+            ? uploadError.message
+            : "Image upload failed.";
         toast({
           variant: "destructive",
           title: "Upload Error",
@@ -299,7 +335,12 @@ export default function ModalSupportForm({
         await supabase.rpc("create_support_request", {
           p_merchant_id: merchantId,
           p_organization_id: effectiveOrganizationId,
-          p_category: category as "billing" | "other" | "account" | "technical" | "feature",
+          p_category: category as
+            | "billing"
+            | "other"
+            | "account"
+            | "technical"
+            | "feature",
           p_message: message,
           p_image_url: imageUrl ?? undefined,
           p_subject: contextData?.subject || "Support Request",
@@ -318,7 +359,10 @@ export default function ModalSupportForm({
       }, 3000);
     } catch (error) {
       console.error("Error in support request submission:", error);
-      const errorMsg = error instanceof Error ? error.message : "An unexpected error occurred.";
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.";
       toast({
         variant: "destructive",
         title: "Submission Error",
@@ -375,7 +419,10 @@ export default function ModalSupportForm({
     }
   };
 
-  const isSubmitDisabled = !category || !message.replace("Issue description:", "").trim() || isSubmitting;
+  const isSubmitDisabled =
+    !category ||
+    !message.replace("Issue description:", "").trim() ||
+    isSubmitting;
 
   return (
     <Dialog
@@ -388,7 +435,9 @@ export default function ModalSupportForm({
     >
       <DialogContent className="sm:max-w-md w-full max-h-[90vh] overflow-y-auto p-2 rounded-sm border bg-background shadow-lg">
         <DialogHeader className="p-3 border-b">
-          <DialogTitle className="text-base font-semibold">Contact Support</DialogTitle>
+          <DialogTitle className="text-base font-semibold">
+            Contact Support
+          </DialogTitle>
           <DialogDescription className="text-sm text-muted-foreground">
             {contextData?.subject
               ? `Need help with ${contextData.subject}? Describe the issue below.`
@@ -416,7 +465,9 @@ export default function ModalSupportForm({
                 <Textarea
                   placeholder="Please describe the issue in detail..."
                   value={message}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setMessage(e.target.value)
+                  }
                   onDrop={handleDrop}
                   onDragOver={(e: React.DragEvent<HTMLTextAreaElement>) => {
                     e.preventDefault();
@@ -429,7 +480,7 @@ export default function ModalSupportForm({
                   className={cn(
                     "min-h-[120px] max-h-[240px] text-sm placeholder:text-sm placeholder:text-muted-foreground",
                     "pr-10 w-full resize-y rounded-sm border bg-background",
-                    "focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring transition-colors duration-200"
+                    "focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring transition-colors duration-200",
                   )}
                 />
                 <Button
@@ -484,14 +535,15 @@ export default function ModalSupportForm({
                       <span className="sr-only">Remove image</span>
                     </button>
                   </div>
-                  {(isUploading || (isSubmitting && image && !submitError)) && uploadProgress > 0 && (
-                    <div className="mt-2 w-full bg-gray-200 dark:bg-gray-700 h-1 rounded-full overflow-hidden">
-                      <div
-                        className={`h-1 rounded-full transition-all duration-300 ease-out ${uploadProgress === 100 ? 'bg-green-500' : 'bg-blue-500'}`}
-                        style={{ width: `${uploadProgress}%` }}
-                      />
-                    </div>
-                  )}
+                  {(isUploading || (isSubmitting && image && !submitError)) &&
+                    uploadProgress > 0 && (
+                      <div className="mt-2 w-full bg-gray-200 dark:bg-gray-700 h-1 rounded-full overflow-hidden">
+                        <div
+                          className={`h-1 rounded-full transition-all duration-300 ease-out ${uploadProgress === 100 ? "bg-green-500" : "bg-blue-500"}`}
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    )}
                 </div>
               )}
               {submitError && (
@@ -503,13 +555,23 @@ export default function ModalSupportForm({
 
             <DialogFooter className=" p-3 flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
               <DialogClose asChild>
-                <Button variant="outline" disabled={isSubmitting} className="rounded-sm w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  disabled={isSubmitting}
+                  className="rounded-sm w-full sm:w-auto"
+                >
                   Cancel
                 </Button>
               </DialogClose>
               <ButtonExpand
                 text={isSubmitting ? "Submitting..." : "Submit Request"}
-                customIcon={isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                customIcon={
+                  isSubmitting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ArrowRight className="h-4 w-4" />
+                  )
+                }
                 bgColor="bg-blue-600 dark:bg-blue-700"
                 textColor="text-white"
                 hoverBgColor="hover:bg-blue-700 dark:hover:bg-blue-800"

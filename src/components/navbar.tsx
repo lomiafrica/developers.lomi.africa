@@ -3,7 +3,18 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Sun, Moon, LogOut, Loader2, Menu, X, Newspaper, Globe, LogIn, Search } from "lucide-react";
+import {
+  Sun,
+  Moon,
+  LogOut,
+  Loader2,
+  Menu,
+  X,
+  Newspaper,
+  Globe,
+  LogIn,
+  Search,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { XIcon } from "@/components/icons/XIcon";
 import { PHIcon } from "@/components/icons/PHIcon";
@@ -46,20 +57,24 @@ export const Navbar = () => {
 
   useEffect(() => {
     setAuthLoading(true);
-    supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
-      setSession(session);
-      setAuthLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }: { data: { session: Session | null } }) => {
+        setSession(session);
+        setAuthLoading(false);
+      });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
-      setSession(session);
-      if (session) {
-        setIsAuthModalOpen(false);
-      }
-      setAuthLoading(false);
-    });
+    } = supabase.auth.onAuthStateChange(
+      (_event: AuthChangeEvent, session: Session | null) => {
+        setSession(session);
+        if (session) {
+          setIsAuthModalOpen(false);
+        }
+        setAuthLoading(false);
+      },
+    );
 
     return () => subscription?.unsubscribe();
   }, []);
@@ -110,15 +125,29 @@ export const Navbar = () => {
   const baseIconClass =
     "inline-flex h-9 w-9 items-center justify-center text-foreground/80 dark:text-muted-foreground transition-all duration-200";
 
-  const actionButtonStyle = "ml-4 text-xs font-semibold transition-colors cursor-pointer";
-  const getStartedStyle = cn(actionButtonStyle, "text-[#366FDF] hover:text-[#4DA1F8] dark:text-[#4DA1F8] dark:hover:text-[#1E4B9E]");
-  const disconnectStyle = cn(actionButtonStyle, "text-red-600 hover:text-red-500 dark:text-red-500 dark:hover:text-red-400");
+  const actionButtonStyle =
+    "ml-4 text-xs font-semibold transition-colors cursor-pointer";
+  const getStartedStyle = cn(
+    actionButtonStyle,
+    "text-[#366FDF] hover:text-[#4DA1F8] dark:text-[#4DA1F8] dark:hover:text-[#1E4B9E]",
+  );
+  const disconnectStyle = cn(
+    actionButtonStyle,
+    "text-red-600 hover:text-red-500 dark:text-red-500 dark:hover:text-red-400",
+  );
 
   const mobileLinkStyle = "p-2 rounded-sm transition-colors";
-  const mobileGetStartedStyle = cn(mobileLinkStyle, "text-[#366FDF] hover:text-[#4DA1F8] dark:text-[#4DA1F8] dark:hover:text-[#1E4B9E]");
-  const mobileDisconnectStyle = cn(mobileLinkStyle, "text-red-600 hover:bg-red-500/10 dark:text-red-500 dark:hover:bg-red-500/10");
+  const mobileGetStartedStyle = cn(
+    mobileLinkStyle,
+    "text-[#366FDF] hover:text-[#4DA1F8] dark:text-[#4DA1F8] dark:hover:text-[#1E4B9E]",
+  );
+  const mobileDisconnectStyle = cn(
+    mobileLinkStyle,
+    "text-red-600 hover:bg-red-500/10 dark:text-red-500 dark:hover:bg-red-500/10",
+  );
 
-  const dropdownItemStyle = "flex items-center justify-between w-full p-2 text-sm rounded-sm cursor-pointer transition-colors hover:bg-accent dark:hover:bg-accent/50";
+  const dropdownItemStyle =
+    "flex items-center justify-between w-full p-2 text-sm rounded-sm cursor-pointer transition-colors hover:bg-accent dark:hover:bg-accent/50";
   const dropdownLinkStyle = `${dropdownItemStyle} focus:outline-none`;
   const dropdownButtonStyle = `${dropdownItemStyle} focus:outline-none`;
 
@@ -133,7 +162,13 @@ export const Navbar = () => {
 
     if (authLoading) {
       return (
-        <span className={cn(baseStyle, "flex items-center text-muted-foreground", 'ml-4')}>
+        <span
+          className={cn(
+            baseStyle,
+            "flex items-center text-muted-foreground",
+            "ml-4",
+          )}
+        >
           <Loader2 className="h-4 w-4 animate-spin mr-2" />
           Loading...
         </span>
@@ -162,38 +197,99 @@ export const Navbar = () => {
       sideOffset={14}
     >
       <DropdownMenuItem asChild>
-        <Link href="/blog" className={cn(dropdownLinkStyle, 'group hover:text-[#E01E5A] dark:hover:text-[#E01E5A]')}>
-          Blog <Globe className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#E01E5A] dark:group-hover:text-[#E01E5A]" />
+        <Link
+          href="/blog"
+          className={cn(
+            dropdownLinkStyle,
+            "group hover:text-[#E01E5A] dark:hover:text-[#E01E5A]",
+          )}
+        >
+          Blog{" "}
+          <Globe className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#E01E5A] dark:group-hover:text-[#E01E5A]" />
         </Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
-        <Link href="https://twitter.com/lomiafrica" target="_blank" rel="noopener noreferrer" className={cn(dropdownLinkStyle, 'group hover:text-[#000000] dark:hover:text-[#FFFFFF]')}>
-          Twitter <XIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#000000] dark:group-hover:text-[#FFFFFF]" />
+        <Link
+          href="https://twitter.com/lomiafrica"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            dropdownLinkStyle,
+            "group hover:text-[#000000] dark:hover:text-[#FFFFFF]",
+          )}
+        >
+          Twitter{" "}
+          <XIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#000000] dark:group-hover:text-[#FFFFFF]" />
         </Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
-        <Link href="https://www.facebook.com/people/lomi/61574769796760/" target="_blank" rel="noopener noreferrer" className={cn(dropdownLinkStyle, 'group hover:text-[#1877F2] dark:hover:text-[#1877F2]')}>
-          Facebook <FacebookIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#1877F2] dark:group-hover:text-[#1877F2]" />
+        <Link
+          href="https://www.facebook.com/people/lomi/61574769796760/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            dropdownLinkStyle,
+            "group hover:text-[#1877F2] dark:hover:text-[#1877F2]",
+          )}
+        >
+          Facebook{" "}
+          <FacebookIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#1877F2] dark:group-hover:text-[#1877F2]" />
         </Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
-        <Link href="https://www.producthunt.com/products/lomi" target="_blank" rel="noopener noreferrer" className={cn(dropdownLinkStyle, 'group hover:text-[#DA552F] dark:hover:text-[#DA552F]')}>
-          Product Hunt <PHIcon className="h-[20px] w-[20px] ml-auto translate-x-[2px] opacity-80 group-hover:text-[#DA552F] dark:group-hover:text-[#DA552F]" />
+        <Link
+          href="https://www.producthunt.com/products/lomi"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            dropdownLinkStyle,
+            "group hover:text-[#DA552F] dark:hover:text-[#DA552F]",
+          )}
+        >
+          Product Hunt{" "}
+          <PHIcon className="h-[20px] w-[20px] ml-auto translate-x-[2px] opacity-80 group-hover:text-[#DA552F] dark:group-hover:text-[#DA552F]" />
         </Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
-        <Link href="https://www.linkedin.com/company/lomiafri" target="_blank" rel="noopener noreferrer" className={cn(dropdownLinkStyle, 'group hover:text-[#0A66C2] dark:hover:text-[#0A66C2]')}>
-          LinkedIn <LinkedInIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#0A66C2] dark:group-hover:text-[#0A66C2]" />
+        <Link
+          href="https://www.linkedin.com/company/lomiafri"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            dropdownLinkStyle,
+            "group hover:text-[#0A66C2] dark:hover:text-[#0A66C2]",
+          )}
+        >
+          LinkedIn{" "}
+          <LinkedInIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#0A66C2] dark:group-hover:text-[#0A66C2]" />
         </Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
-        <Link href="https://github.com/lomiafrica/developers.lomi.africa" target="_blank" rel="noopener noreferrer" className={cn(dropdownLinkStyle, 'group hover:text-[#6e5494] dark:hover:text-[#6e5494]')}>
-          GitHub <GitHubIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#6e5494] dark:group-hover:text-[#6e5494]" />
+        <Link
+          href="https://github.com/lomiafrica/developers.lomi.africa"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            dropdownLinkStyle,
+            "group hover:text-[#6e5494] dark:hover:text-[#6e5494]",
+          )}
+        >
+          GitHub{" "}
+          <GitHubIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#6e5494] dark:group-hover:text-[#6e5494]" />
         </Link>
       </DropdownMenuItem>
       <DropdownMenuItem asChild>
-        <Link href="https://jumbo.lomi.africa" target="_blank" rel="noopener noreferrer" className={cn(dropdownLinkStyle, 'group hover:text-green-500 dark:hover:text-green-500')}>
-          Jumbo <JumboIcon className="h-[22px] w-[22px] ml-auto translate-x-[3px] opacity-80 group-hover:text-green-500 dark:group-hover:text-green-500" />
+        <Link
+          href="https://jumbo.lomi.africa"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            dropdownLinkStyle,
+            "group hover:text-green-500 dark:hover:text-green-500",
+          )}
+        >
+          Jumbo{" "}
+          <JumboIcon className="h-[22px] w-[22px] ml-auto translate-x-[3px] opacity-80 group-hover:text-green-500 dark:group-hover:text-green-500" />
         </Link>
       </DropdownMenuItem>
       <DropdownMenuSeparator className="bg-border/40 dark:bg-zinc-700/40 h-px" />
@@ -201,7 +297,7 @@ export const Navbar = () => {
         onClick={openSupportModal}
         className={cn(
           dropdownButtonStyle,
-          'group hover:text-teal-600 dark:hover:text-teal-500 hover:bg-teal-500/5 dark:hover:bg-teal-500/10'
+          "group hover:text-teal-600 dark:hover:text-teal-500 hover:bg-teal-500/5 dark:hover:bg-teal-500/10",
         )}
       >
         Support
@@ -210,7 +306,7 @@ export const Navbar = () => {
         onClick={toggleTheme}
         className={cn(
           dropdownButtonStyle,
-          'group hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-500/5 dark:hover:bg-amber-400/10'
+          "group hover:text-amber-500 dark:hover:text-amber-400 hover:bg-amber-500/5 dark:hover:bg-amber-400/10",
         )}
       >
         Toggle Theme
@@ -223,15 +319,32 @@ export const Navbar = () => {
       <DropdownMenuSeparator className="bg-border/40 dark:bg-zinc-700/40 h-px" />
       <DropdownMenuItem className="p-0 focus:bg-transparent">
         {authLoading ? (
-          <div className={cn(dropdownButtonStyle, "text-muted-foreground justify-start")}>
+          <div
+            className={cn(
+              dropdownButtonStyle,
+              "text-muted-foreground justify-start",
+            )}
+          >
             Loading... <Loader2 className="h-4 w-4 animate-spin ml-auto" />
           </div>
         ) : session ? (
-          <button onClick={handleSignOut} className={cn(dropdownButtonStyle, "text-red-600 hover:text-red-500 dark:text-red-500 dark:hover:text-red-400 justify-start font-semibold")}>
+          <button
+            onClick={handleSignOut}
+            className={cn(
+              dropdownButtonStyle,
+              "text-red-600 hover:text-red-500 dark:text-red-500 dark:hover:text-red-400 justify-start font-semibold",
+            )}
+          >
             Disconnect <LogOut className="h-4 w-4 ml-auto opacity-80" />
           </button>
         ) : (
-          <button onClick={openAuthModal} className={cn(dropdownButtonStyle, "text-[#366FDF] dark:text-[#4DA1F8] justify-start font-semibold")}>
+          <button
+            onClick={openAuthModal}
+            className={cn(
+              dropdownButtonStyle,
+              "text-[#366FDF] dark:text-[#4DA1F8] justify-start font-semibold",
+            )}
+          >
             Get Started <LogIn className="h-4 w-4 ml-auto opacity-80" />
           </button>
         )}
@@ -303,7 +416,10 @@ export const Navbar = () => {
               </div>
 
               {/* Desktop Menu Button */}
-              <DropdownMenu open={isDesktopMenuOpen} onOpenChange={setIsDesktopMenuOpen}>
+              <DropdownMenu
+                open={isDesktopMenuOpen}
+                onOpenChange={setIsDesktopMenuOpen}
+              >
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
@@ -351,7 +467,8 @@ export const Navbar = () => {
               href="/blog"
               className="group flex items-center justify-between p-2 hover:bg-accent dark:hover:bg-accent/50 hover:text-[#E01E5A] dark:hover:text-[#E01E5A] rounded-sm"
             >
-              Blog <Globe className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#E01E5A] dark:group-hover:text-[#E01E5A]" />
+              Blog{" "}
+              <Globe className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#E01E5A] dark:group-hover:text-[#E01E5A]" />
             </Link>
             <Link
               href="https://twitter.com/lomiafrica"
@@ -359,7 +476,8 @@ export const Navbar = () => {
               rel="noopener noreferrer"
               className="group flex items-center justify-between p-2 hover:bg-black/5 dark:hover:bg-white/10 hover:text-[#000000] dark:hover:text-[#FFFFFF] rounded-sm"
             >
-              Twitter <XIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#000000] dark:group-hover:text-[#FFFFFF]" />
+              Twitter{" "}
+              <XIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#000000] dark:group-hover:text-[#FFFFFF]" />
             </Link>
             <Link
               href="https://www.facebook.com/people/lomi/61574769796760/"
@@ -367,7 +485,8 @@ export const Navbar = () => {
               rel="noopener noreferrer"
               className="group flex items-center justify-between p-2 hover:bg-blue-500/5 dark:hover:bg-blue-500/10 hover:text-[#1877F2] dark:hover:text-[#1877F2] rounded-sm"
             >
-              Facebook <FacebookIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#1877F2] dark:group-hover:text-[#1877F2]" />
+              Facebook{" "}
+              <FacebookIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#1877F2] dark:group-hover:text-[#1877F2]" />
             </Link>
             <Link
               href="https://www.producthunt.com/products/lomi"
@@ -375,7 +494,8 @@ export const Navbar = () => {
               rel="noopener noreferrer"
               className="group flex items-center justify-between p-2 hover:bg-[#DA552F]/5 dark:hover:bg-[#DA552F]/10 hover:text-[#DA552F] dark:hover:text-[#DA552F] rounded-sm"
             >
-              Product Hunt <PHIcon className="h-5 w-5 ml-auto opacity-80 translate-x-[3px] group-hover:text-[#DA552F] dark:group-hover:text-[#DA552F]" />
+              Product Hunt{" "}
+              <PHIcon className="h-5 w-5 ml-auto opacity-80 translate-x-[3px] group-hover:text-[#DA552F] dark:group-hover:text-[#DA552F]" />
             </Link>
             <Link
               href="https://www.linkedin.com/company/lomiafri"
@@ -383,30 +503,42 @@ export const Navbar = () => {
               rel="noopener noreferrer"
               className="group flex items-center justify-between p-2 hover:bg-[#0A66C2]/5 dark:hover:bg-[#0A66C2]/10 hover:text-[#0A66C2] dark:hover:text-[#0A66C2] rounded-sm"
             >
-              LinkedIn <LinkedInIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#0A66C2] dark:group-hover:text-[#0A66C2]" />
+              LinkedIn{" "}
+              <LinkedInIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#0A66C2] dark:group-hover:text-[#0A66C2]" />
             </Link>
             <Link
               href="https://github.com/lomiafrica/developers.lomi.africa"
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(mobileLinkStyle, "group flex items-center justify-between hover:bg-[#6e5494]/5 dark:hover:bg-[#6e5494]/10 hover:text-[#6e5494] dark:hover:text-[#6e5494]")}
+              className={cn(
+                mobileLinkStyle,
+                "group flex items-center justify-between hover:bg-[#6e5494]/5 dark:hover:bg-[#6e5494]/10 hover:text-[#6e5494] dark:hover:text-[#6e5494]",
+              )}
             >
-              GitHub <GitHubIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#6e5494] dark:group-hover:text-[#6e5494]" />
+              GitHub{" "}
+              <GitHubIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#6e5494] dark:group-hover:text-[#6e5494]" />
             </Link>
             <Link
               href="https://jumbo.lomi.africa"
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(mobileLinkStyle, "group flex items-center justify-between hover:bg-green-400/5 dark:hover:bg-green-400/10 text-green-400 dark:text-green-400 hover:text-green-500 dark:hover:text-green-500")}
+              className={cn(
+                mobileLinkStyle,
+                "group flex items-center justify-between hover:bg-green-400/5 dark:hover:bg-green-400/10 text-green-400 dark:text-green-400 hover:text-green-500 dark:hover:text-green-500",
+              )}
             >
-              Jumbo <JumboIcon className="h-[24px] w-[24px] ml-auto opacity-80 translate-x-[3px] group-hover:text-green-500 dark:group-hover:text-green-500" />
+              Jumbo{" "}
+              <JumboIcon className="h-[24px] w-[24px] ml-auto opacity-80 translate-x-[3px] group-hover:text-green-500 dark:group-hover:text-green-500" />
             </Link>
           </div>
         </div>
       </div>
 
       <AuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} />
-      <ModalSupportForm isOpen={isSupportModalOpen} onClose={closeSupportModal} />
+      <ModalSupportForm
+        isOpen={isSupportModalOpen}
+        onClose={closeSupportModal}
+      />
       <CommandMenu
         open={isCommandMenuOpen}
         setOpen={setIsCommandMenuOpen}
