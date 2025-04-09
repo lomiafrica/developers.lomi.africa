@@ -13,11 +13,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey, {
   cookieOptions: {
     // Conditionally set domain ONLY in production builds for SSO
-    domain: process.env.NODE_ENV === "production" ? ".lomi.africa" : undefined,
+    domain: process.env.BUN_ENV === "production" ? ".lomi.africa" : undefined,
     path: "/",
     sameSite: "lax",
     // Ensure 'secure' is true ONLY in production (requires HTTPS)
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.BUN_ENV === "production",
     maxAge: 50 * 60, // Match the website app's setting
   },
 });
