@@ -1,5 +1,5 @@
 {
-  "buildCommand": "next build",
+  "buildCommand": "npm install autoprefixer && npm install && next build",
   "devCommand": "next dev",
   "installCommand": "npm install",
   "framework": "nextjs",
