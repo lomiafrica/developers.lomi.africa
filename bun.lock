@@ -59,6 +59,9 @@
         "ts-node": "^10.9.2",
         "typescript": "^5",
       },
+      "optionalDependencies": {
+        "@napi-rs/simple-git-linux-x64-gnu": "^1.1.0",
+      },
     },
   },
   "packages": {
