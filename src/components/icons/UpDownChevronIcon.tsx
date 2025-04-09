@@ -1,11 +1,11 @@
 import { useTheme } from "@/lib/hooks/use-theme";
 import { cn } from "@/lib/actions/utils";
-
+import Image from "next/image";
 export function UpDownChevronIcon({ className }: { className?: string }) {
   const { theme } = useTheme();
 
   return (
-    <img
+    <Image
       src="/random/up_down_chevron.webp"
       alt="Up Down Chevron"
       className={cn(

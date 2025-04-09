@@ -1,6 +1,8 @@
+import Image from "next/image";
+
 export function TransactionsIcon({ className }: { className?: string }) {
   return (
-    <img
+    <Image
       src="/random/transactions.webp"
       alt="Transactions"
       className={className}

@@ -1,6 +1,8 @@
+import Image from "next/image";
+
 export function StorefrontIcon({ className }: { className?: string }) {
   return (
-    <img
+    <Image
       src="/random/storefront.webp"
       alt="Storefront"
       className={className}
