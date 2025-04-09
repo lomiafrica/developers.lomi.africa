@@ -1,6 +1,15 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+// Define shared cookie options function/object
+const getCookieOptions = (): CookieOptions => ({
+  path: "/",
+  domain: process.env.NODE_ENV === "production" ? ".lomi.africa" : undefined,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  maxAge: 50 * 60, // Optional: Consistent with client/middleware
+});
+
 export function createClient() {
   const cookieStore = cookies();
 
@@ -15,7 +24,8 @@ export function createClient() {
         },
         set(name: string, value: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value, ...options });
+            // Merge shared options
+            cookieStore.set({ name, value, ...getCookieOptions(), ...options });
           } catch (error) {
             // The `set` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
@@ -24,7 +34,8 @@ export function createClient() {
         },
         remove(name: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value: "", ...options });
+            // Merge shared options and ensure deletion
+            cookieStore.set({ name, value: "", ...getCookieOptions(), ...options, maxAge: -1 });
           } catch (error) {
             // The `delete` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
@@ -32,6 +43,8 @@ export function createClient() {
           }
         },
       },
+      // Pass cookieOptions here as well if the library supports it directly
+      // cookieOptions: getCookieOptions(), // Check @supabase/ssr docs
     },
   );
 }
