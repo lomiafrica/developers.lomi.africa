@@ -3,6 +3,7 @@
   "devCommand": "next dev",
   "installCommand": "bun install",
   "framework": "nextjs",
+  "packageManager": "bun@1.2.0",
   "outputDirectory": ".next",
   "regions": ["iad1"],
   "env": {
