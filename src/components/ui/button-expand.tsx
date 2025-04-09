@@ -14,6 +14,7 @@ interface ButtonExpandProps {
   iconPlacement?: "left" | "right";
   type?: "button" | "submit" | "reset";
   customIcon?: React.ReactNode;
+  disabled?: boolean;
 }
 
 function ButtonExpand({
@@ -28,6 +29,7 @@ function ButtonExpand({
   iconPlacement = "right",
   type = "button",
   customIcon,
+  disabled,
 }: ButtonExpandProps) {
   return (
     <Button
@@ -35,8 +37,13 @@ function ButtonExpand({
       variant="expandIcon"
       Icon={() => customIcon || <Icon className="h-4 w-4" />}
       iconPlacement={iconPlacement}
-      className={`text-lg sm:text-base font-medium ${textColor} ${hoverTextColor} ${bgColor} ${hoverBgColor} shadow-lg transition-all duration-300 h-[52px] sm:h-10 px-[32px] sm:px-4 focus:outline-none focus-visible:outline-none ${className}`}
+      className={cn(
+        `text-lg sm:text-base font-medium ${textColor} ${hoverTextColor} ${bgColor} ${hoverBgColor} shadow-lg transition-all duration-300 h-[52px] sm:h-10 px-[32px] sm:px-4 focus:outline-none focus-visible:outline-none`,
+        className,
+        disabled && "opacity-50 cursor-not-allowed"
+      )}
       onClick={onClick}
+      disabled={disabled}
     >
       {text}
     </Button>

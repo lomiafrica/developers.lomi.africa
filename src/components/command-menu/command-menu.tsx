@@ -6,16 +6,16 @@ import { Button } from "@/components/ui/button";
 import { Expand, Search, Shrink, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import jsonFileCache from "@/lib/cache/fileCache.json";
 import { FileCache, FileData } from "@/lib/types/fileCache";
 import { Input } from "@/components/ui/input";
 import { Typography } from "@/components/ui/typography";
 import { ResultGroup } from "@/components/command-menu/results/result-group";
 import { History } from "@/components/command-menu/history/history";
 import { HistoryType } from "@/lib/types/history";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Command } from "@/components/ui/command";
 import { DialogProps } from "@radix-ui/react-dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface CommandDialogProps extends DialogProps {
   expanded?: boolean;
@@ -92,6 +92,12 @@ const CommandDialog = ({
           expanded ? "max-w-4xl" : "max-w-2xl",
         )}
       >
+        <DialogTitle asChild>
+          <VisuallyHidden>Search Documentation</VisuallyHidden>
+        </DialogTitle>
+        <DialogDescription asChild>
+          <VisuallyHidden>Search through documentation pages and suggested topics.</VisuallyHidden>
+        </DialogDescription>
         <Command
           className={cn(
             "bg-popover [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5",
@@ -186,8 +192,16 @@ export const CommandMenu = ({
     localStorage.setItem("history", JSON.stringify(newHistory));
     setHistory(newHistory);
 
-    // Navigate to the path
-    window.location.href = suggestion.path;
+    // Navigate based on URL type
+    const { path } = suggestion;
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      // Absolute URL: navigate directly
+      window.location.href = path;
+    } else {
+      // Relative URL: ensure it starts with '/' and navigate
+      const relativePath = path.startsWith('/') ? path : `/${path}`;
+      window.location.href = relativePath; // Using window.location.href for simplicity
+    }
     setOpen(false);
   };
 
@@ -267,7 +281,7 @@ export const CommandMenu = ({
                       {section.items.map((item) => (
                         <button
                           key={item.path}
-                          className="w-full text-left px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                          className="w-full text-left px-2 py-1.5 text-sm rounded-sm transition-colors hover:bg-blue-200 dark:hover:bg-blue-800/40 hover:text-accent-foreground"
                           onClick={() => handleSuggestionClick(item)}
                         >
                           <div className="font-medium">{item.name}</div>
@@ -292,7 +306,7 @@ export const CommandMenu = ({
                     {section.items.map((item) => (
                       <button
                         key={item.path}
-                        className="flex flex-col w-full text-left px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+                        className="flex flex-col w-full text-left px-2 py-1.5 text-sm rounded-sm transition-colors hover:bg-blue-200 dark:hover:bg-blue-800/40 hover:text-accent-foreground"
                         onClick={() => handleSuggestionClick(item)}
                       >
                         <span className="font-medium">{item.name}</span>
@@ -325,51 +339,5 @@ export const CommandMenu = ({
         )}
       </CommandList>
     </CommandDialog>
-  );
-};
-
-export const CommandMenuTrigger = ({
-  className = "",
-}: {
-  className?: string;
-}) => {
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === "d" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        setOpen((open) => !open);
-      }
-    };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, []);
-
-  return (
-    <>
-      <CommandMenu
-        open={open}
-        setOpen={setOpen}
-        fileCache={jsonFileCache as FileCache}
-        key="command_menu"
-      />
-      <Button
-        className={cn(
-          "flex items-center gap-2 h-9 px-3 rounded-sm border border-input bg-transparent",
-          className,
-        )}
-        variant="outline"
-        onClick={() => setOpen((open) => !open)}
-      >
-        <Search className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm text-muted-foreground hidden sm:inline-flex">
-          Search docs
-        </span>
-        <Badge variant="secondary" className="ml-auto rounded-sm px-1">
-          <span className="text-xs">⌘D</span>
-        </Badge>
-      </Button>
-    </>
   );
 };

@@ -61,6 +61,12 @@
     &::-webkit-scrollbar {
       display: none; /* Chrome, Safari, Opera */
     }
+    /* Remove focus outline globally - A11Y WARNING: Not recommended */
+    &:focus,
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+    }
   }
 
   /* Add smooth transition for theme changes */

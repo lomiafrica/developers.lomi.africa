@@ -81,6 +81,8 @@ export const ResultItem = ({
     localStorage.setItem("history", JSON.stringify(history));
     setOpen(false);
   };
+  const isAbsoluteUrl = result.path?.startsWith("http://") || result.path?.startsWith("https://");
+
   return (
     <div className={cn(computedHeight, "flex items-center w-full")}>
       <div
@@ -99,23 +101,51 @@ export const ResultItem = ({
         )}
         onClick={handleHistory}
       >
-        <Link href={`/${result.path}`}>
-          <div className="flex items-center p-1 rounded-lg border bg-white dark:bg-zinc-900 shadow-lg">
-            <FileText height={20} width={20} strokeWidth={1} />
-          </div>
-          <div className="flex flex-col mx-4 items-start justify-center overflow-hidden grow">
-            <Badge
-              variant="secondary"
-              className="bg-zinc-200 dark:bg-zinc-700 capitalize"
-            >
-              {namePath}
-            </Badge>
-            {sentence && (
-              <FormattedSentence sentence={sentence} keyword={keyword} />
-            )}
-          </div>
-          <ChevronRight height={20} width={20} strokeWidth={2} />
-        </Link>
+        {isAbsoluteUrl ? (
+          <a
+            href={result.path}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full h-full items-center"
+          >
+            <div className="flex items-center p-1 rounded-lg border bg-white dark:bg-zinc-900 shadow-lg">
+              <FileText height={20} width={20} strokeWidth={1} />
+            </div>
+            <div className="flex flex-col mx-4 items-start justify-center overflow-hidden grow">
+              <Badge
+                variant="secondary"
+                className="bg-zinc-200 dark:bg-zinc-700 capitalize"
+              >
+                {namePath}
+              </Badge>
+              {sentence && (
+                <FormattedSentence sentence={sentence} keyword={keyword} />
+              )}
+            </div>
+            <ChevronRight height={20} width={20} strokeWidth={2} />
+          </a>
+        ) : (
+          <Link
+            href={result.path?.startsWith('/') ? result.path : `/${result.path}`}
+            className="flex w-full h-full items-center"
+          >
+            <div className="flex items-center p-1 rounded-lg border bg-white dark:bg-zinc-900 shadow-lg">
+              <FileText height={20} width={20} strokeWidth={1} />
+            </div>
+            <div className="flex flex-col mx-4 items-start justify-center overflow-hidden grow">
+              <Badge
+                variant="secondary"
+                className="bg-zinc-200 dark:bg-zinc-700 capitalize"
+              >
+                {namePath}
+              </Badge>
+              {sentence && (
+                <FormattedSentence sentence={sentence} keyword={keyword} />
+              )}
+            </div>
+            <ChevronRight height={20} width={20} strokeWidth={2} />
+          </Link>
+        )}
       </Button>
     </div>
   );

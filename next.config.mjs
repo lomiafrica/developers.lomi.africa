@@ -11,6 +11,8 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       `default-src 'self'`,
+      // Allow connections to self and Supabase (both HTTP API and WebSockets)
+      `connect-src 'self' https://mdswvokxrnfggrujsfjd.supabase.co wss://mdswvokxrnfggrujsfjd.supabase.co`,
       // Allow scripts from self, Vercel domains (for analytics/preview), and inline/eval scripts (Next.js requirement)
       `script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://*.vercel.com https://va.vercel-scripts.com`,
       // Allow styles from self and inline styles

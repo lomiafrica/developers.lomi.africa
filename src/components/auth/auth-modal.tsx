@@ -3,11 +3,11 @@
 import {
   Dialog,
   DialogContent,
+  DialogHeader,
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
 import { UserAuthForm } from "@/components/auth/user-auth-form";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,22 +17,16 @@ interface AuthModalProps {
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="p-0 rounded-none border-0 sm:max-w-[425px] [&>button]:hidden">
-        <VisuallyHidden asChild>
-          <DialogTitle>Authentication</DialogTitle>
-        </VisuallyHidden>
-        <VisuallyHidden asChild>
-          <DialogDescription>Sign in to your account</DialogDescription>
-        </VisuallyHidden>
-        <div className="px-8 py-6">
-          <div className="flex flex-col space-y-2 text-left mb-6">
-            <h1 className="text-2xl font-semibold tracking-tight">
+      <DialogContent className="p-0 rounded-lg border-0 sm:max-w-lg [&>button]:hidden">
+        <div className="p-6 sm:p-8">
+          <DialogHeader className="text-left mb-6">
+            <DialogTitle className="text-2xl font-semibold tracking-tight">
               Welcome back
-            </h1>
-            <p className="text-sm text-muted-foreground">
+            </DialogTitle>
+            <DialogDescription className="text-sm text-muted-foreground">
               Sign in to your account to continue
-            </p>
-          </div>
+            </DialogDescription>
+          </DialogHeader>
           <UserAuthForm />
         </div>
       </DialogContent>

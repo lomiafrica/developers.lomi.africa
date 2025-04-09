@@ -15,6 +15,8 @@ const HistoryItem = ({
   name: string;
   path: string;
 }) => {
+  const isAbsoluteUrl = path?.startsWith("http://") || path?.startsWith("https://");
+
   return (
     <Button
       asChild
@@ -24,8 +26,13 @@ const HistoryItem = ({
         className,
       )}
     >
-      <Link href={`/${path}`}>
-        <div className="flex items-center w-full">
+      {isAbsoluteUrl ? (
+        <a
+          href={path}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full h-full items-center"
+        >
           <div className="flex items-center p-1 rounded-lg border bg-white dark:bg-zinc-900">
             <FileText height={20} width={20} strokeWidth={1} />
           </div>
@@ -33,8 +40,21 @@ const HistoryItem = ({
             <Typography variant="small">{name}</Typography>
           </div>
           <ChevronRight height={20} width={20} strokeWidth={2} />
-        </div>
-      </Link>
+        </a>
+      ) : (
+        <Link
+          href={path?.startsWith('/') ? path : `/${path}`}
+          className="flex w-full h-full items-center"
+        >
+          <div className="flex items-center p-1 rounded-lg border bg-white dark:bg-zinc-900">
+            <FileText height={20} width={20} strokeWidth={1} />
+          </div>
+          <div className="flex flex-col mx-4 items-start justify-center overflow-hidden grow">
+            <Typography variant="small">{name}</Typography>
+          </div>
+          <ChevronRight height={20} width={20} strokeWidth={2} />
+        </Link>
+      )}
     </Button>
   );
 };
