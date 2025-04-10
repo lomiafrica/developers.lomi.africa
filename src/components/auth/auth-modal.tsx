@@ -1,9 +1,14 @@
 "use client";
 
-import * as React from 'react';
-import { Dialog, DialogOverlay, DialogContent, DialogPortal } from "@radix-ui/react-dialog";
+import * as React from "react";
+import {
+  Dialog,
+  DialogOverlay,
+  DialogContent,
+  DialogPortal,
+} from "@radix-ui/react-dialog";
 import { UserAuthForm } from "@/components/auth/user-auth-form";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -13,13 +18,13 @@ interface AuthModalProps {
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   React.useEffect(() => {
     if (isOpen) {
-      document.body.classList.add('modal-open');
+      document.body.classList.add("modal-open");
     } else {
-      document.body.classList.remove('modal-open');
+      document.body.classList.remove("modal-open");
     }
 
     return () => {
-      document.body.classList.remove('modal-open');
+      document.body.classList.remove("modal-open");
     };
   }, [isOpen]);
 
@@ -35,7 +40,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
-                style={{ backdropFilter: 'blur(1px)' }}
+                style={{ backdropFilter: "blur(1px)" }}
                 onClick={(e) => {
                   if (e.target === e.currentTarget) {
                     onClose();

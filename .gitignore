@@ -23,6 +23,7 @@
 *.pem
 FIRSTPRINCIPLES.md
 .cursorrules
+.prettierignore
 
 # debug
 npm-debug.log*
