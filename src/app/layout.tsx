@@ -17,8 +17,8 @@ const fontSans = FontSans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://developers.lomi.africa"),
   title: {
-    default: "lomi. | Developers Documentation",
-    template: "%s | lomi. | Developers docs",
+    default: "lomi. | Developers documentation",
+    template: "%s | lomi. | Developers documentation",
   },
   description:
     "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
@@ -51,26 +51,26 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://developers.lomi.africa",
-    title: "lomi. | Developer Documentation",
+    title: "lomi. | Developer documentation",
     description:
       "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
-    siteName: "lomi. | Developer Documentation",
+    siteName: "lomi. | Developer documentation",
     images: [
       {
-        url: "https://developers.lomi.africa/lomi-icon.png",
+        url: "https://developers.lomi.africa/banner.webp",
         width: 1200,
         height: 630,
         alt: "lomi. Documentation",
-        type: "image/png",
+        type: "image/webp",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "lomi. | Developer Documentation",
+    title: "lomi. | Developer documentation",
     description:
       "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
-    images: ["https://developers.lomi.africa/lomi-icon.png"],
+    images: ["https://developers.lomi.africa/banner.webp"],
     creator: "@lomiafrica",
     site: "@lomiafrica",
   },

@@ -14,6 +14,8 @@ import {
   Globe,
   LogIn,
   Search,
+  LayoutDashboard,
+  LifeBuoy,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { XIcon } from "@/components/icons/XIcon";
@@ -302,6 +304,20 @@ export const Navbar = () => {
         </Link>
       </DropdownMenuItem>
       <DropdownMenuSeparator className="bg-border/40 dark:bg-zinc-700/40 h-px" />
+      <DropdownMenuItem asChild>
+        <Link
+          href="https://lomi.africa/portal"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            dropdownLinkStyle,
+            "group hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-500/5 dark:hover:bg-purple-500/10",
+          )}
+        >
+          Dashboard
+          <LayoutDashboard className="h-4 w-4 ml-auto opacity-80 group-hover:text-purple-600 dark:group-hover:text-purple-400" />
+        </Link>
+      </DropdownMenuItem>
       <DropdownMenuItem
         onClick={handleOpenSupportModal}
         className={cn(
@@ -310,6 +326,7 @@ export const Navbar = () => {
         )}
       >
         Support
+        <LifeBuoy className="h-4 w-4 ml-auto opacity-80 group-hover:text-teal-600 dark:group-hover:text-teal-500" />
       </DropdownMenuItem>
       <DropdownMenuItem
         onSelect={(event) => event.preventDefault()}

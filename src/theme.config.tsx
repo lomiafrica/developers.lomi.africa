@@ -15,8 +15,8 @@ const config: DocsThemeConfig = {
         />
         <title>lomi. | Developers docs</title>
         <link rel="canonical" href="https://developers.lomi.africa" />
-        <link rel="icon" href="/fav.png" />
-        <link rel="apple-touch-icon" href="/lomi.png" />
+        <link rel="icon" href="/favicon.png" />
+        <link rel="apple-touch-icon" href="/favicon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

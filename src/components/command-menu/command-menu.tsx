@@ -28,57 +28,62 @@ interface CommandDialogProps extends DialogProps {
 
 const defaultSuggestions = [
   {
-    title: "Popular topics",
-    items: [
-      {
-        name: "Authentication",
-        path: "https://developers.lomi.africa/reference/core/authentication",
-        description: "Learn how to authenticate with the lomi. API",
-      },
-      {
-        name: "Webhooks",
-        path: "https://developers.lomi.africa/reference/core/webhooks",
-        description: "Set up and manage webhooks for real-time updates",
-      },
-      {
-        name: "Error Handling",
-        path: "https://developers.lomi.africa/reference/core/errors",
-        description: "Common errors and how to handle them",
-      },
-    ],
-  },
-  {
     title: "Getting started",
     items: [
       {
         name: "Introduction",
-        path: "https://developers.lomi.africa/docs/introduction/what-is-lomi",
-        description: "Get started with lomi.'s payment platform",
+        path: "/docs/introduction/what-is-lomi",
+        description: "Get started with lomi.'s payment stack",
       },
       {
-        name: "API Overview",
-        path: "https://developers.lomi.africa/reference/core/overview",
+        name: "API overview",
+        path: "/reference/core/overview",
         description: "High-level overview of the lomi. API",
       },
       {
-        name: "Data Models",
-        path: "https://developers.lomi.africa/reference/core/data-models",
+        name: "Data models",
+        path: "/reference/core/data-models",
         description: "Understanding lomi.'s data structures",
       },
     ],
   },
   {
-    title: "Dev' tools",
+    title: "Popular topics",
     items: [
       {
+        name: "Authentication",
+        path: "/reference/core/authentication",
+        description: "Learn how to authenticate with the lomi. API",
+      },
+      {
+        name: "Checkout sessions",
+        path: "/reference/core/checkout-sessions",
+        description: "Create and manage checkout sessions",
+      },
+      {
+        name: "Error handling",
+        path: "/reference/core/errors",
+        description: "Common errors and how to handle them",
+      },
+    ],
+  },
+  {
+    title: "Tools",
+    items: [
+      {
+        name: "Jumbo",
+        path: "/docs/introduction/jumbo",
+        description: "Get started fast with Jumbo, our AI-powered IDE",
+      },
+      {
         name: "lomi. CLI",
-        path: "https://developers.lomi.africa/docs/lomi-cli/overview",
+        path: "/docs/lomi-cli/overview",
         description: "Command-line tools for lomi. developers",
       },
       {
-        name: "License Management",
-        path: "https://developers.lomi.africa/docs/freedom/open-source",
-        description: "Manage your lomi. licenses",
+        name: "Self-hosting",
+        path: "/docs/freedom/open-source",
+        description: "Self-host lomi. on your own servers",
       },
     ],
   },

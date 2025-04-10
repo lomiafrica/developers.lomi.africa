@@ -1,6 +1,7 @@
 {
   "name": "developers.lomi.africa",
-  "version": "0.1.0",
+  "description": "Documentation website of lomi. - The open source payment orchestration platform powering West-African businesses",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "scripts": {

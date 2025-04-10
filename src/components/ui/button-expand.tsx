@@ -1,7 +1,7 @@
 import { ArrowRight, LucideIcon, Phone, ArrowLeft, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
+import Image from "next/image";
 interface ButtonExpandProps {
   text: string;
   icon?: LucideIcon;
@@ -91,12 +91,26 @@ function ButtonExpandBack({
 // Logo button with hover effect
 function ButtonExpandLogo({ className }: { className?: string }) {
   return (
-    <div className="relative group">
-      <span className="flex items-baseline text-xl font-bold">
-        <span>lomi</span>
-        <div className="w-[0.15em] h-[0.15em] bg-current ml-[1.5px]" />
-      </span>
-      <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1">
+    <div className="relative group flex items-center">
+      <Image
+        src="/lomi_d.webp"
+        width={45}
+        height={45}
+        alt="lomi logo"
+        className="block dark:hidden"
+        quality={100}
+        priority
+      />
+      <Image
+        src="/lomi_l.webp"
+        width={45}
+        height={45}
+        alt="lomi logo"
+        className="hidden dark:block"
+        quality={100}
+        priority
+      />
+      <div className="absolute left-full ml-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <span className="inline-flex items-center">
           <span className="text-[#1E4B9E] dark:text-[#4DA1F8] px-3 py-1 bg-[#E3EEFD] dark:bg-[#1E232A] text-sm font-semibold border border-transparent dark:border-[#1E232A] rounded-sm whitespace-nowrap">
             for developers
