@@ -1,22 +1,22 @@
-# Customer Subscriptions
+# **Customer Subscriptions**
 
 The Customer Subscriptions API allows you to manage the individual recurring payment subscriptions for your customers. Subscriptions link a specific customer to a [Subscription Plan](./subscriptions) and track the lifecycle of their recurring payments.
 
-## Authentication
+## **Authentication**
 
-Requests require authentication using your API key in the `X-API-Key` header. The associated Merchant ID is usually inferred from the key. See the [Authentication](./authentication) guide.
+Requests require authentication using your API key in the `` `X-API-Key` `` header. The associated Merchant ID is usually inferred from the key. See the [Authentication](./authentication) guide.
 
-## The customer subscription object
+## **The customer subscription object**
 
 Represents an active or past subscription for a specific customer to a specific plan. See [Data Models](./data-models#customer-subscription-object) for the full structure (Note: This link assumes the object will be added to data-models.mdx).
 
-## Endpoints
+## **Endpoints**
 
-### List customer subscriptions
+### **List customer subscriptions**
 
 Retrieves a list of customer subscriptions for your merchant account, with options for filtering and pagination.
 
-**Endpoint:** `GET /customer-subscriptions`
+**Endpoint:** `` `GET /customer-subscriptions` ``
 
 **Query parameters:**
 
@@ -24,7 +24,7 @@ Retrieves a list of customer subscriptions for your merchant account, with optio
 | ------------- | ------------- | -------- | -------------------------------------------------------------------------------------------------- |
 | `merchant_id` | string (UUID) | *Maybe*  | The unique identifier of the merchant. *(May be inferred from API key)*                              |
 | `customer_id` | string (UUID) | No       | Filter subscriptions by a specific customer ID.                                                    |
-| `status`      | string        | No       | Filter by subscription status. Valid statuses: `pending`, `active`, `paused`, `cancelled`, `expired`, `past_due`, `trial`. |
+| `status`      | string        | No       | Filter by subscription status. Valid statuses: `` `pending` ``, `` `active` ``, `` `paused` ``, `` `cancelled` ``, `` `expired` ``, `` `past_due` ``, `` `trial` ``. |
 | `limit`       | number        | No       | Maximum number of subscriptions to return (default: 20).                                           |
 | `offset`      | number        | No       | Number of subscriptions to skip for pagination (default: 0).                                       |
 
@@ -64,11 +64,11 @@ Retrieves a list of customer subscriptions for your merchant account, with optio
 }
 ```
 
-### Get subscription details
+### **Get subscription details**
 
 Retrieves the details of a specific customer subscription.
 
-**Endpoint:** `GET /customer-subscriptions/{subscription_id}`
+**Endpoint:** `` `GET /customer-subscriptions/{subscription_id}` ``
 
 **Path parameters:**
 
@@ -95,11 +95,11 @@ Retrieves the details of a specific customer subscription.
 }
 ```
 
-### Update subscription
+### **Update subscription**
 
 Updates the status, dates, or metadata of a specific customer subscription.
 
-**Endpoint:** `PATCH /customer-subscriptions/{subscription_id}`
+**Endpoint:** `` `PATCH /customer-subscriptions/{subscription_id}` ``
 
 **Path parameters:**
 
@@ -119,7 +119,7 @@ Updates the status, dates, or metadata of a specific customer subscription.
 
 | Parameter           | Type             | Description                                                                   |
 | ------------------- | ---------------- | ----------------------------------------------------------------------------- |
-| `status`            | string           | New status: `active`, `paused`, `cancelled`, `expired`, `past_due`, `trial`.    |
+| `status`            | string           | New status: `` `active` ``, `` `paused` ``, `` `cancelled` ``, `` `expired` ``, `` `past_due` ``, `` `trial` ``.    |
 | `start_date`        | string (ISO8601) | New start date for the subscription.                                          |
 | `end_date`          | string (ISO8601) | New end date for the subscription (often used when cancelling).               |
 | `next_billing_date` | string (ISO8601) | Manually set the next billing date.                                           |
@@ -154,11 +154,11 @@ Updates the status, dates, or metadata of a specific customer subscription.
 }
 ```
 
-### Cancel subscription
+### **Cancel subscription**
 
-Cancels a specific customer subscription by setting its status to `cancelled`.
+Cancels a specific customer subscription by setting its status to `` `cancelled` ``.
 
-**Endpoint:** `DELETE /customer-subscriptions/{subscription_id}`
+**Endpoint:** `` `DELETE /customer-subscriptions/{subscription_id}` ``
 
 **Path parameters:**
 
@@ -189,6 +189,6 @@ Cancels a specific customer subscription by setting its status to `cancelled`.
 }
 ```
 
-## Error handling
+## **Error handling**
 
-Common errors include `400 Bad Request` for invalid input or missing fields, `401 Unauthorized`, `404 Not Found` if the subscription ID doesn't exist for the merchant, and `500 Internal Server Error`. Refer to the [Errors](./errors) guide for general structure and handling. 
+Common errors include `` `400 Bad Request` `` for invalid input or missing fields, `` `401 Unauthorized` ``, `` `404 Not Found` `` if the subscription ID doesn't exist for the merchant, and `` `500 Internal Server Error` ``. Refer to the [Errors](./errors) guide for general structure and handling. 

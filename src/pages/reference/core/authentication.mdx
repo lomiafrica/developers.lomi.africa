@@ -1,14 +1,14 @@
-# Authentication
+# **Authentication**
 
-Lomi authenticates your API requests using API keys. Any request that doesn't include a valid API key will return an authentication error.
+All lomi. requests are authentified using API keys. Any request that doesn't include a valid API key will return an authentication error.
 
-There are two types of API keys corresponding to Lomi's two environments: Test and Live.
+There are two types of API keys corresponding to lomi.'s two environments: Test and Live.
 
-## API keys
+## **API keys**
 
 All API requests must be made over HTTPS. Requests made over plain HTTP will fail. API requests without authentication will also fail.
 
-You must include an API key in the `X-API-Key` header for every request.
+You must include an API key in the `` `X-API-Key` `` header for every request.
 
 ```http
 GET /v1/providers HTTP/1.1
@@ -18,41 +18,41 @@ X-API-Key: your_api_key
 
 Replace `your_api_key` with your specific secret API key.
 
-## Test vs. Live environments
+## **Test vs. Live environments**
 
-Lomi provides two distinct environments to separate development and testing from production operations.
+lomi. provides two distinct environments to separate development and testing from production operations.
 
-### Test environment
+### **Test environment**
 
 Use the test environment to develop and test your integration without processing real transactions or affecting live data. It mirrors the functionality of the live environment.
 
--   **API Keys:** Test API keys start with `lomi_sk_test_`.
--   **Base URL:** `https://sandbox.api.lomi.africa/v1`
+-   **API Keys:** Test API keys start with `` `lomi_sk_test_` ``.
+-   **Base URL:** `` `https://sandbox.api.lomi.africa/v1` ``
 -   **Rate Limits:** 120 requests per minute / 20,000 requests per day.
--   **Data:** Uses simulated data. Responses may include environment flags like `"environment": "test"`.
+-   **Data:** Uses simulated data. Responses may include environment flags like `` `"environment": "test"` ``.
 
-### Live environment
+### **Live environment**
 
 Use the live environment for production operations involving real transactions.
 
--   **API Keys:** Live API keys start with `lomi_sk_live_`.
--   **Base URL:** `https://api.lomi.africa/v1`
+-   **API Keys:** Live API keys start with `` `lomi_sk_live_` ``.
+-   **Base URL:** `` `https://api.lomi.africa/v1` ``
 -   **Rate Limits:** 60 requests per minute / 10,000 requests per day.
--   **Data:** Processes real data. Responses may include environment flags like `"environment": "live"`.
+-   **Data:** Processes real data. Responses may include environment flags like `` `"environment": "live"` ``.
 
 To switch between environments, simply use the appropriate API key and base URL.
 
-## Obtaining API keys
+## **Obtaining API keys**
 
 You can obtain your API keys after signing up and completing verification:
 
-1.  Log in to your [Lomi Dashboard](https://dashboard.lomi.africa/).
+1.  Log in to the [dashboard](https://lomi.africa/portal).
 2.  Navigate to the **Developers** or **API Settings** section.
 3.  Generate separate API keys for the **Test** and **Live** environments.
 
-## Key management and security
+## **Key management and security**
 
-Treat your API keys as sensitive credentials. You can manage them (generate, revoke, view usage) in the Lomi Dashboard.
+Treat your API keys as sensitive credentials. You can manage them (generate, revoke, view usage) in the merchant dashboard.
 
 **Best practices:**
 

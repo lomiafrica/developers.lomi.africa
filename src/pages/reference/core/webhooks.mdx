@@ -1,57 +1,57 @@
-# Webhooks
+# **Webhooks**
 
-Webhooks allow your application to receive real-time notifications about events that occur in your lomi. account, such as successful payments, subscription renewals, or failed transactions. Instead of polling the API, you can configure a webhook endpoint where Lomi will send event data via HTTP POST requests.
+Webhooks allow your application to receive real-time notifications about events that occur in your lomi. account, such as successful payments, subscription renewals, or failed transactions. Instead of polling the API, you can configure a webhook endpoint where lomi will send event data via HTTP `` `POST` `` requests.
 
-## Base URL
+## **Base URL**
 
 ```
 https://api.lomi.africa/v1
 ```
 
-## Authentication
+## **Authentication**
 
-API requests to manage webhooks require authentication using an API key in the `X-API-Key` header. See [Authentication](./authentication).
+API requests to manage webhooks require authentication using an API key in the `` `X-API-Key` `` header. See [Authentication](./authentication).
 
 ```http
 X-API-Key: your_api_key
 ```
 
-## Webhook security
+## **Webhook security**
 
-To ensure the security and integrity of webhook events, Lomi signs each request sent to your endpoint using a unique secret associated with that webhook.
+To ensure the security and integrity of webhook events, lomi. signs each request sent to your endpoint using a unique secret associated with that webhook.
 
-1.  **Signature Header:** Each webhook request includes an `X-Lomi-Signature` HTTP header.
-2.  **Webhook Secret:** When you create a webhook endpoint via the API, a `secret` (prefixed with `whsec_`) is returned. **Store this secret securely, as it will not be shown again.**
-3.  **Verification:** Your endpoint should verify the signature by computing an HMAC-SHA256 hash of the raw request body using the webhook secret and comparing it to the signature provided in the header.
+1.  **Signature Header:** Each webhook request includes an `` `X-Lomi-Signature` `` HTTP header.
+2.  **Webhook Secret:** When you create a webhook endpoint via the API, a `` `secret` `` (prefixed with `` `whsec_` ``) is returned. **Store this secret securely, as it will not be shown again.**
+3.  **Verification:** Your endpoint should verify the signature by computing an `` `HMAC-SHA256` `` hash of the raw request body using the webhook secret and comparing it to the signature provided in the header.
 
 Refer to the [Webhook Signature Verification](../../../developers-reference/webhook-signature-verification) guide for detailed implementation examples in various languages.
 
-## Webhook events
+## **Webhook events**
 
-When creating or updating a webhook, you subscribe it to specific event types. Lomi will only send notifications for the events you've subscribed to.
+When creating or updating a webhook, you subscribe it to specific event types. lomi. will only send notifications for the events you've subscribed to.
 
 | Event Enum                    | Description                                  | Data Payload Type |
 | ----------------------------- | -------------------------------------------- | ----------------- |
-| `PAYMENT_SUCCEEDED`           | A one-time payment is successful.            | Transaction       |
-| `PAYMENT_FAILED`              | A one-time payment attempt failed.           | Transaction       |
-| `CHECKOUT_COMPLETED`          | A checkout session was completed.            | CheckoutSession   |
-| `SUBSCRIPTION_CREATED`        | A new subscription is created.               | Subscription      |
-| `SUBSCRIPTION_RENEWED`        | A subscription successfully renews.          | Subscription      |
-| `SUBSCRIPTION_PAYMENT_FAILED` | A scheduled subscription payment failed.     | Subscription      |
-| `SUBSCRIPTION_CANCELED`       | A subscription is canceled.                  | Subscription      |
-| `REFUND_COMPLETED`            | A refund is successfully processed.          | Refund            |
-| `PROVIDER_STATUS_CHANGED`     | The status of a connected provider changes.  | ProviderSetting   |
-| `test.webhook`                | A test event generated via the API.          | TestPayload       |
+| `` `PAYMENT_SUCCEEDED` ``           | A one-time payment is successful.            | `` `Transaction` ``       |
+| `` `PAYMENT_FAILED` ``              | A one-time payment attempt failed.           | `` `Transaction` ``       |
+| `` `CHECKOUT_COMPLETED` ``          | A checkout session was completed.            | `` `CheckoutSession` ``   |
+| `` `SUBSCRIPTION_CREATED` ``        | A new subscription is created.               | `` `Subscription` ``      |
+| `` `SUBSCRIPTION_RENEWED` ``        | A subscription successfully renews.          | `` `Subscription` ``      |
+| `` `SUBSCRIPTION_PAYMENT_FAILED` `` | A scheduled subscription payment failed.     | `` `Subscription` ``      |
+| `` `SUBSCRIPTION_CANCELED` ``       | A subscription is canceled.                  | `` `Subscription` ``      |
+| `` `REFUND_COMPLETED` ``            | A refund is successfully processed.          | `` `Refund` ``            |
+| `` `PROVIDER_STATUS_CHANGED` ``     | The status of a connected provider changes.  | `` `ProviderSetting` ``   |
+| `` `test.webhook` ``                | A test event generated via the API.          | `` `TestPayload` ``       |
 
 *(Note: The specific structure of the data payload for each event type will be documented under the respective API resource, e.g., Transactions, Subscriptions.)*
 
-## API endpoints
+## **API endpoints**
 
-### List webhooks
+### **List webhooks**
 
 Retrieves a list of all webhook endpoints configured for your organization.
 
-**Endpoint:** `GET /webhooks`
+**Endpoint:** `` `GET /webhooks` ``
 
 **Example response (200 OK):**
 
@@ -73,11 +73,11 @@ Retrieves a list of all webhook endpoints configured for your organization.
 }
 ```
 
-### Create webhook
+### **Create webhook**
 
 Creates a new webhook endpoint.
 
-**Endpoint:** `POST /webhooks`
+**Endpoint:** `` `POST /webhooks` ``
 
 **Request body:**
 
@@ -89,9 +89,9 @@ Creates a new webhook endpoint.
 }
 ```
 
-*   `url` (string, required): The HTTPS URL for your webhook endpoint.
-*   `authorized_events` (array of strings, required): List of event types to subscribe to (see [Webhook Events](#webhook-events)).
-*   `description` (string, optional): A descriptive label.
+*   `` `url` `` (`` `string` ``, required): The HTTPS URL for your webhook endpoint.
+*   `` `authorized_events` `` (`` `array of strings` ``, required): List of event types to subscribe to (see [Webhook Events](#webhook-events)).
+*   `` `description` `` (`` `string` ``, optional): A descriptive label.
 
 **Example response (201 Created):**
 
@@ -111,17 +111,17 @@ Creates a new webhook endpoint.
 }
 ```
 
-### Get webhook
+### **Get webhook**
 
 Retrieves details for a specific webhook.
 
-**Endpoint:** `GET /webhooks/{id}`
+**Endpoint:** `` `GET /webhooks/{id}` ``
 
 **Path parameters:**
 
 | Parameter | Type   | Required | Description                   |
 | --------- | ------ | -------- | ----------------------------- |
-| `id`      | string | Yes      | ID of the webhook (`wh_...`) |
+| `` `id` ``      | `` `string` `` | Yes      | ID of the webhook (`` `wh_...` ``) |
 
 **Example response (200 OK):**
 
@@ -135,17 +135,17 @@ Retrieves details for a specific webhook.
 }
 ```
 
-### Update webhook
+### **Update webhook**
 
 Updates an existing webhook endpoint.
 
-**Endpoint:** `PATCH /webhooks/{id}`
+**Endpoint:** `` `PATCH /webhooks/{id}` ``
 
 **Path parameters:**
 
 | Parameter | Type   | Required | Description                   |
 | --------- | ------ | -------- | ----------------------------- |
-| `id`      | string | Yes      | ID of the webhook (`wh_...`) |
+| `` `id` ``      | `` `string` `` | Yes      | ID of the webhook (`` `wh_...` ``) |
 
 **Request body (include only fields to update):**
 
@@ -158,10 +158,10 @@ Updates an existing webhook endpoint.
 }
 ```
 
-*   `url` (string, optional): The new HTTPS URL.
-*   `authorized_events` (array of strings, optional): The new list of event types.
-*   `is_active` (boolean, optional): Set `false` to disable, `true` to enable.
-*   `description` (string, optional): A new description.
+*   `` `url` `` (`` `string` ``, optional): The new HTTPS URL.
+*   `` `authorized_events` `` (`` `array of strings` ``, optional): The new list of event types.
+*   `` `is_active` `` (`` `boolean` ``, optional): Set `` `false` `` to disable, `` `true` `` to enable.
+*   `` `description` `` (`` `string` ``, optional): A new description.
 
 **Example response (200 OK):**
 
@@ -177,25 +177,25 @@ Updates an existing webhook endpoint.
 }
 ```
 
-### Delete webhook
+### **Delete webhook**
 
 Deletes a webhook endpoint.
 
-**Endpoint:** `DELETE /webhooks/{id}`
+**Endpoint:** `` `DELETE /webhooks/{id}` ``
 
 **Path parameters:**
 
 | Parameter | Type   | Required | Description                   |
 | --------- | ------ | -------- | ----------------------------- |
-| `id`      | string | Yes      | ID of the webhook (`wh_...`) |
+| `` `id` ``      | `` `string` `` | Yes      | ID of the webhook (`` `wh_...` ``) |
 
 **Example response (204 No Content):** No response body.
 
-## Testing webhooks
+## **Testing webhooks**
 
-You can test your webhook endpoints using the API or `curl`.
+You can test your webhook endpoints using the API or `` `curl` ``.
 
-### Create a webhook for testing
+### **Create a webhook for testing**
 
 First, create a webhook endpoint pointing to a test receiver (e.g., using a service like [Webhook.site](https://webhook.site/) or a local tunnel like ngrok).
 
@@ -211,11 +211,11 @@ curl -X POST "https://api.lomi.africa/v1/webhooks" \
   }'
 ```
 
-Note the `id` and `secret` from the response.
+Note the `` `id` `` and `` `secret` `` from the response.
 
-### Send a test event
+### **Send a test event**
 
-Use the `POST /webhooks/{id}/test` endpoint to send a predefined `test.webhook` event to your endpoint.
+Use the `` `POST /webhooks/{id}/test` `` endpoint to send a predefined `` `test.webhook` `` event to your endpoint.
 
 ```bash
 # Replace WEBHOOK_ID and API_KEY
@@ -225,30 +225,30 @@ curl -X POST "https://api.lomi.africa/v1/webhooks/YOUR_WEBHOOK_ID/test" \
 
 Check your test receiver to confirm the event was received and verify the signature using the stored secret.
 
-## Delivery logs and retries
+## **Delivery logs and retries**
 
-Lomi logs webhook delivery attempts and provides endpoints to view these logs and manually retry failed deliveries.
+lomi. logs webhook delivery attempts and provides endpoints to view these logs and manually retry failed deliveries.
 
-### Get webhook delivery logs
+### **Get webhook delivery logs**
 
 Retrieves delivery logs for a specific webhook, showing success/failure status, timestamps, response codes, etc.
 
-**Endpoint:** `GET /webhooks/{id}/logs`
+**Endpoint:** `` `GET /webhooks/{id}/logs` ``
 
 **Path parameters:**
 
 | Parameter | Type   | Required | Description                   |
 | --------- | ------ | -------- | ----------------------------- |
-| `id`      | string | Yes      | ID of the webhook (`wh_...`) |
+| `` `id` ``      | `` `string` `` | Yes      | ID of the webhook (`` `wh_...` ``) |
 
 **Query parameters (optional):**
 
 | Parameter | Type    | Description                        |
 | --------- | ------- | ---------------------------------- |
-| `limit`   | integer | Number of logs to return (max 100) |
-| `offset`  | integer | Number of logs to skip (pagination)|
-| `success` | boolean | Filter by successful deliveries    |
-| `failed`  | boolean | Filter by failed deliveries        |
+| `` `limit` ``   | `` `integer` `` | Number of logs to return (max 100) |
+| `` `offset` ``  | `` `integer` `` | Number of logs to skip (pagination)|
+| `` `success` `` | `` `boolean` `` | Filter by successful deliveries    |
+| `` `failed` ``  | `` `boolean` `` | Filter by failed deliveries        |
 
 **Example request:**
 
@@ -258,18 +258,18 @@ curl -X GET "https://api.lomi.africa/v1/webhooks/YOUR_WEBHOOK_ID/logs?limit=10&f
   -H "X-API-Key: YOUR_API_KEY"
 ```
 
-### Retry webhook delivery
+### **Retry webhook delivery**
 
 Manually triggers a retry for a specific failed delivery log entry.
 
-**Endpoint:** `POST /webhooks/{webhook_id}/logs/{log_id}/retry`
+**Endpoint:** `` `POST /webhooks/{webhook_id}/logs/{log_id}/retry` ``
 
 **Path parameters:**
 
 | Parameter    | Type   | Required | Description                         |
 | ------------ | ------ | -------- | ----------------------------------- |
-| `webhook_id` | string | Yes      | ID of the webhook (`wh_...`)       |
-| `log_id`     | string | Yes      | ID of the failed delivery log entry |
+| `` `webhook_id` `` | `` `string` `` | Yes      | ID of the webhook (`` `wh_...` ``)       |
+| `` `log_id` ``     | `` `string` `` | Yes      | ID of the failed delivery log entry |
 
 **Example request:**
 
@@ -279,12 +279,12 @@ curl -X POST "https://api.lomi.africa/v1/webhooks/YOUR_WEBHOOK_ID/logs/YOUR_LOG_
   -H "X-API-Key: YOUR_API_KEY"
 ```
 
-**Automatic retries:** Lomi automatically retries failed deliveries using an exponential backoff strategy over approximately 6 hours before marking the delivery as permanently failed.
+**Automatic retries:** lomi. automatically retries failed deliveries using an exponential backoff strategy over approximately 6 hours before marking the delivery as permanently failed.
 
-## Best practices
+## **Best practices**
 
--   **Verify signatures:** Always verify the `X-Lomi-Signature` to ensure the request is from Lomi.
--   **Respond quickly:** Your endpoint should return a `2xx` status code within a few seconds. Offload longer processing to background jobs.
--   **Handle retries:** Be prepared for Lomi to retry sending events if your endpoint fails or times out.
+-   **Verify signatures:** Always verify the `` `X-Lomi-Signature` `` to ensure the request is from lomi.
+-   **Respond quickly:** Your endpoint should return a `` `2xx` `` status code within a few seconds. Offload longer processing to background jobs.
+-   **Handle retries:** Be prepared for lomi. to retry sending events if your endpoint fails or times out.
 -   **Idempotency:** Design your event processing logic to handle duplicate events gracefully.
 -   **Secure your secret:** Store your webhook secret securely using environment variables or a secrets manager. 

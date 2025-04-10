@@ -1,31 +1,31 @@
-# Checkout Sessions
+# **Checkout Sessions**
 
-The Checkout Sessions API allows you to create secure, temporary sessions that represent a customer's intent to pay. You redirect your customer to the Lomi-hosted checkout page associated with the session to complete the payment.
+The Checkout Sessions API allows you to create secure, temporary sessions that represent a customer's intent to pay. You redirect your customer to the lomi.-hosted checkout page associated with the session to complete the payment.
 
-## Authentication
+## **Authentication**
 
-Requests require authentication using your API key in the `X-API-Key` header. The associated Merchant ID is typically inferred from the key. See the [Authentication](./authentication) guide.
+Requests require authentication using your API key in the `` `X-API-Key` `` header. The associated Merchant ID is typically inferred from the key. See the [Authentication](./authentication) guide.
 
-## The checkout session object
+## **The checkout session object**
 
 Represents a single checkout attempt, containing details about the payment, customer information (if provided), associated resources (like products or plans), and the session's status and URL. See [Data Models](./data-models#checkout-session-object) for the full structure (Note: This link assumes the object will be added to data-models.mdx).
 
-## Session lifecycle
+## **Session lifecycle**
 
 1.  **Create:** You create a session via the API, specifying the amount, currency, allowed providers, and redirect URLs.
-2.  **Redirect:** You receive a unique `url` in the response and redirect your customer to this Lomi-hosted page.
-3.  **Payment:** The customer selects a payment method and completes the payment on the Lomi page.
-4.  **Status Update:** The session `status` changes to `completed` or `expired`.
-5.  **Redirect Back:** Lomi redirects the customer back to your `success_url` or `cancel_url`.
-6.  **Verification:** You should verify the outcome by listening for webhook events (e.g., `checkout.session.completed`) or by retrieving the session status via the API.
+2.  **Redirect:** You receive a unique `` `url` `` in the response and redirect your customer to this generated checkout page.
+3.  **Payment:** The customer selects a payment method and completes the payment on the page.
+4.  **Status Update:** The session `` `status` `` changes to `` `completed` `` or `` `expired` ``.
+5.  **Redirect Back:** lomi. redirects the customer back to your `` `success_url` `` or `` `cancel_url` ``.
+6.  **Verification:** You should verify the outcome by listening for webhook events (e.g., `` `checkout.session.completed` ``) or by retrieving the session status via the API.
 
-## Endpoints
+## **Endpoints**
 
-### Create checkout session
+### **Create checkout session**
 
 Creates a new checkout session.
 
-**Endpoint:** `POST /checkout-sessions`
+**Endpoint:** `` `POST /checkout-sessions` ``
 
 **Request body parameters:**
 
@@ -41,9 +41,9 @@ Creates a new checkout session.
 | `customer_email`      | string         | No       | Pre-fills the email field on the checkout page.                                                            |
 | `customer_name`       | string         | No       | Pre-fills the name field on the checkout page.                                                             |
 | `customer_phone`      | string         | No       | Pre-fills the phone number field on the checkout page.                                                     |
-| `product_id`          | string (UUID)  | No       | Associates the session with a specific Lomi [Product](./products).                                       |
-| `subscription_id`     | string (UUID)  | No       | Associates the session with a specific Lomi [Customer Subscription](./customer-subscriptions).             |
-| `plan_id`             | string (UUID)  | No       | Associates the session with a specific Lomi [Subscription Plan](./subscriptions).                          |
+| `product_id`          | string (UUID)  | No       | Associates the session with a specific lomi.'s [Product](./products).                                       |
+| `subscription_id`     | string (UUID)  | No       | Associates the session with a specific lomi's [Customer Subscription](./customer-subscriptions).             |
+| `plan_id`             | string (UUID)  | No       | Associates the session with a specific lomi's [Subscription Plan](./subscriptions).                          |
 | `metadata`            | object         | No       | Key-value pairs (up to 50 keys, string values) stored with the session.                                  |
 | `expiration_minutes`  | number         | No       | Minutes until the checkout session expires (default: 30).                                                  |
 | `allow_coupon_code`   | boolean        | No       | Allow coupon codes to be applied during checkout (default: `false`).                                     |
@@ -52,7 +52,7 @@ Creates a new checkout session.
 
 ```json
 {
-  "success_url": "https://your-site.com/order/success?session_id={CHECKOUT_SESSION_ID}",
+  "success_url": "https://your-site.com/order/success?",
   "cancel_url": "https://your-site.com/cart",
   "allowed_providers": ["WAVE", "ORANGE"],
   "amount": 10000,
@@ -61,7 +61,6 @@ Creates a new checkout session.
   "metadata": { "internal_order_ref": "ORD-12345" }
 }
 ```
-*(Note: You can include `{CHECKOUT_SESSION_ID}` in your redirect URLs; Lomi will replace it with the actual session ID before redirecting.)*
 
 **Example response (201 Created):**
 
@@ -75,7 +74,7 @@ Creates a new checkout session.
     "created_at": "2025-04-04T14:21:49.955Z",
     "merchant_id": "904d003c-3736-41d4-90a5-9de74d404fd7",
     "organization_id": "0979ec77-9fb1-4c9a-8c55-d7fb6c182c9c",
-    "success_url": "https://your-site.com/order/success?session_id={CHECKOUT_SESSION_ID}",
+    "success_url": "https://your-site.com/order/success?",
     "cancel_url": "https://your-site.com/cart",
     "amount": 10000,
     "currency_code": "XOF",
@@ -95,11 +94,11 @@ Creates a new checkout session.
 }
 ```
 
-### Get checkout session
+### **Get checkout session**
 
 Retrieves the details and current status of a specific checkout session.
 
-**Endpoint:** `GET /checkout-sessions/{id}`
+**Endpoint:** `` `GET /checkout-sessions/{id}` ``
 
 **Path parameters:**
 
@@ -120,11 +119,11 @@ Retrieves the details and current status of a specific checkout session.
 }
 ```
 
-### List checkout sessions
+### **List checkout sessions**
 
 Retrieves a list of checkout sessions associated with your merchant account, with options for filtering and pagination.
 
-**Endpoint:** `GET /checkout-sessions`
+**Endpoint:** `` `GET /checkout-sessions` ``
 
 **Query parameters:**
 
@@ -159,15 +158,15 @@ Retrieves a list of checkout sessions associated with your merchant account, wit
 }
 ```
 
-## Webhooks
+## **Webhooks**
 
 Listen for webhook events to be notified when a session is completed or expires, rather than relying solely on polling the API.
 
--   `checkout.session.completed`: Sent when a payment is successfully completed through the session.
--   `checkout.session.expired`: Sent when an open session passes its expiration time without being completed.
+-   `` `checkout.session.completed` ``: Sent when a payment is successfully completed through the session.
+-   `` `checkout.session.expired` ``: Sent when an open session passes its expiration time without being completed.
 
 See the [Webhooks](./webhooks) guide for configuration details.
 
-## Error handling
+## **Error handling**
 
-Common errors include `400 Bad Request` for invalid input (missing required fields, invalid URLs, invalid provider codes), `401 Unauthorized`, `403 Forbidden` if the session doesn't belong to the merchant, `404 Not Found` if the session ID doesn't exist, and `500 Internal Server Error`. Refer to the [Errors](./errors) guide for general structure and handling. 
+Common errors include `` `400 Bad Request` `` for invalid input (missing required fields, invalid URLs, invalid provider codes), `` `401 Unauthorized` ``, `` `403 Forbidden` `` if the session doesn't belong to the merchant, `` `404 Not Found` `` if the session ID doesn't exist, and `` `500 Internal Server Error` ``. Refer to the [Errors](./errors) guide for general structure and handling. 

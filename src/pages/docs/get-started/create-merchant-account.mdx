@@ -2,16 +2,15 @@
 
 ## **Prerequisites**
 
-- Business registration in any country of the world.
 You'll need to provide the following business details:
-  - Legal business name
-  - Valid email address
-  - Tax ID
-  - Country of operation
-  - Legal representative contact information
-  - Legal representative ID
+- Valid business registration from any country of the world
+- Legal business name
+- Tax ID
+- Main country of operation
+- Legal representative contact information
+- Legal representative ID
 
-and a few technical requirements:
+and meet a few technical requirements:
   - Node.js 18+ for SDK usage
   - An HTTPS endpoint accessible from the internet for receiving webhooks
 
@@ -19,7 +18,7 @@ and a few technical requirements:
 
 Follow these steps to set up your lomi. integration and make your first API call.
 
-### 1. Create your account and get your API keys
+### Create your account and get your API keys
 
 First, you need to create your lomi. merchant account. During the sign-up process, you will provide your business details as listed in the prerequisites. Once your account application is submitted and approved, you'll be able to connect payment channels and process live transactions.
 
@@ -27,7 +26,7 @@ Once your account is approved, navigate to the API Keys section to find your uni
 
 **For development and testing, always use your Test API keys.** Your Test secret key will have a prefix like `lomi_sk_test_...`.
 
-### 2. Set environment variables
+### Set environment variables
 
 Set your Test API key and the API base URL for the sandbox environment as environment variables in your terminal. This is the recommended way to handle credentials.
 
@@ -47,9 +46,9 @@ export LOMI_API_URL=https://sandbox.api.lomi.africa/v1
 export LOMI_API_URL=https://api.lomi.africa/v1
 ```
 
-### 3. Install lomi. with your CLI
+### Install lomi. with your CLI
 
-The lomi. CLI tool provides convenient commands for interacting with the API, managing resources, and testing webhooks. More information on how to use the CLI is available on its dedicated page: [lomi. CLI Documentation](/docs/cli) *(xxxxxx)*
+The lomi. CLI tool provides convenient commands for interacting with the API, managing resources, and testing webhooks. More information on how to use the CLI is available on its dedicated page: [lomi. CLI Documentation](/docs/lomi-cli/overview).
 
 ```bash
 bun install lomi.cli
@@ -57,7 +56,7 @@ bun install lomi.cli
 npm install lomi.cli
 ```
 
-### 4. Make your first API call
+### Make your first API call
 
 Now, let's retrieve your merchant details using the Node.js SDK. This example assumes you have set the `LOMI_API_KEY` and `LOMI_API_URL` environment variables as shown in Step 2.
 
@@ -146,7 +145,7 @@ fi
 ```
 This `curl` command sends a GET request to the merchants endpoint using your test API key and the sandbox URL.
 
-### 5. Set up webhooks
+### Set up webhooks
 
 Webhooks are essential for receiving real-time notifications about events happening in your lomi. account, such as successful payments, completed checkouts, or failed payments.
 
@@ -278,9 +277,9 @@ It's crucial to test your integration thoroughly in your Test znvironment before
 
 ## **Next steps**
 
-- [Process transactions](./process-transactions)
-- [API reference](/api-reference)
-- [Error handling](/errors)
+- [Get your keys](/docs/get-started/api-keys)
+- [Process transactions](/docs/get-started/transactions)
+
 
 ## **Support**
 

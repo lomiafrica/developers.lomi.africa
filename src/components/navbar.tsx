@@ -104,7 +104,14 @@ export const Navbar = () => {
 
   const openAuthModal = () => setIsAuthModalOpen(true);
   const closeAuthModal = () => setIsAuthModalOpen(false);
-  const openSupportModal = () => setIsSupportModalOpen(true);
+
+  const handleOpenSupportModal = () => {
+    if (session) {
+      setIsSupportModalOpen(true);
+    } else {
+      openAuthModal();
+    }
+  };
   const closeSupportModal = () => setIsSupportModalOpen(false);
 
   const handleSignOut = async () => {
@@ -198,7 +205,9 @@ export const Navbar = () => {
     >
       <DropdownMenuItem asChild>
         <Link
-          href="/blog"
+          href="https://lomi.africa/blog"
+          target="_blank"
+          rel="noopener noreferrer"
           className={cn(
             dropdownLinkStyle,
             "group hover:text-[#E01E5A] dark:hover:text-[#E01E5A]",
@@ -294,7 +303,7 @@ export const Navbar = () => {
       </DropdownMenuItem>
       <DropdownMenuSeparator className="bg-border/40 dark:bg-zinc-700/40 h-px" />
       <DropdownMenuItem
-        onClick={openSupportModal}
+        onClick={handleOpenSupportModal}
         className={cn(
           dropdownButtonStyle,
           "group hover:text-teal-600 dark:hover:text-teal-500 hover:bg-teal-500/5 dark:hover:bg-teal-500/10",
@@ -303,6 +312,7 @@ export const Navbar = () => {
         Support
       </DropdownMenuItem>
       <DropdownMenuItem
+        onSelect={(event) => event.preventDefault()}
         onClick={toggleTheme}
         className={cn(
           dropdownButtonStyle,

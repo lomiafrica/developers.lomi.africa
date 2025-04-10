@@ -1,32 +1,32 @@
-# Refunds (Beta)
+# **Refunds (Beta)**
 
 **(Note: This API is currently in Beta)**
 
 The Refunds API allows you to retrieve details about refunds processed for transactions associated with your merchant account.
 
-*(Currently, creating refunds via the API is not supported; refunds are typically initiated through the Lomi dashboard or other internal mechanisms.)*
+*(Currently, creating refunds via the API is not supported; refunds are typically initiated through the merchant dashboard or other internal mechanisms.)*
 
-## Authentication
+## **Authentication**
 
-Requests require authentication using your API key in the `X-API-Key` header. See the [Authentication](./authentication) guide.
+Requests require authentication using your API key in the `` `X-API-Key` `` header. See the [Authentication](./authentication) guide.
 
-## The refund object
+## **The refund object**
 
 Represents a refund issued for a specific transaction. See [Data Models](./data-models#refund-object) for the full structure (Note: This link assumes the object will be added to data-models.mdx).
 
-## Endpoints
+## **Endpoints**
 
-### Get refund details
+### **Get refund details**
 
 Retrieves the details of a specific refund by its unique ID.
 
-**Endpoint:** `GET /refunds/{id}`
+**Endpoint:** `` `GET /refunds/{id}` ``
 
 **Path parameters:**
 
 | Parameter | Type          | Required | Description                                     |
 | --------- | ------------- | -------- | ----------------------------------------------- |
-| `id`      | string (UUID) | Yes      | The unique identifier of the refund (`refund_id`). |
+| `id`      | string (UUID) | Yes      | The unique identifier of the refund (`` `refund_id` ``). |
 
 **Example response (200 OK):**
 
@@ -40,7 +40,7 @@ Retrieves the details of a specific refund by its unique ID.
     "refunded_amount": 5000.00, // Amount actually refunded
     "fee_amount": 150.00, // Original transaction fee
     "reason": "Customer requested refund due to duplicate charge",
-    "status": "completed", // Can be: pending, completed, failed
+    "status": "completed", // Can be: `` `pending` ``, `` `completed` ``, `` `failed` ``
     "metadata": {
       "processed_by": "support@your-company.com",
       "ticket_ref": "ZT-1234"
@@ -52,6 +52,6 @@ Retrieves the details of a specific refund by its unique ID.
 }
 ```
 
-## Error handling
+## **Error handling**
 
-Common errors include `400 Bad Request` for an invalid refund ID format, `401 Unauthorized`, `404 Not Found` if the refund ID doesn't exist or belong to the merchant, and `500 Internal Server Error`. Refer to the [Errors](./errors) guide for general structure and handling. 
+Common errors include `` `400 Bad Request` `` for an invalid refund ID format, `` `401 Unauthorized` ``, `` `404 Not Found` `` if the refund ID doesn't exist or belong to the merchant, and `` `500 Internal Server Error` ``. Refer to the [Errors](./errors) guide for general structure and handling. 

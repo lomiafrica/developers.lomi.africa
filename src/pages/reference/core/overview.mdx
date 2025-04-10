@@ -1,24 +1,24 @@
-# API overview
+# **API overview**
 
-Welcome to the Lomi REST API documentation. This API allows you to integrate Lomi's payment capabilities directly into your applications.
+Welcome to the lomi.'s REST API documentation. This API allows you to integrate lomi.'s payment capabilities directly into your applications.
 
 You can use the API to manage resources like payment providers and configure webhooks to receive real-time event notifications.
 
-## Environments and Authentication
+## **Environments and Authentication**
 
-Lomi provides separate **Test** and **Live** environments, each with its own base URL and API keys. All API requests must be authenticated using your secret API key passed in the `X-API-Key` header.
+lomi. provides separate **Test** and **Live** environments, each with its own base URL and API keys. All API requests must be authenticated using your secret API key passed in the `` `X-API-Key` `` header.
 
 For full details on environments, base URLs, obtaining API keys, and security best practices, see the [Authentication](./authentication) guide.
 
-## Requests and responses
+## **Requests and responses**
 
-All API requests should be made over HTTPS to the appropriate base URL. Request bodies (for `POST`, `PATCH` methods) should be sent as JSON.
+All API requests should be made over HTTPS to the appropriate base URL. Request bodies (for `` `POST` ``, `` `PATCH` `` methods) should be sent as JSON.
 
-Responses are returned in JSON format. Successful requests return `2xx` status codes. Failed requests return `4xx` or `5xx` status codes with a standardized error object in the response body.
+Responses are returned in JSON format. Successful requests return `` `2xx` `` status codes. Failed requests return `` `4xx` `` or `` `5xx` `` status codes with a standardized error object in the response body.
 
 Learn more about the structure of success and error responses in the [Errors](./errors) guide.
 
-## API resources
+## **API resources**
 
 This core reference section covers the following API resources:
 
@@ -30,11 +30,14 @@ This core reference section covers the following API resources:
 -   **[Products](./products):** Managing product definitions.
 -   **[Transactions](./transactions):** Retrieving payment transaction details.
 -   **[Subscription Plans](./subscriptions):** Managing reusable subscription plan definitions.
+-   **[Customer Subscriptions](./customer-subscriptions):** Managing individual customer subscriptions.
+-   **[Checkout Sessions](./checkout-sessions):** Creating sessions for online checkouts.
+-   **[Payment Links](./payment-links):** Creating shareable payment pages.
 -   **[Providers](./providers):** Retrieving connected payment provider information.
 -   **[Webhooks](./webhooks):** Managing webhook endpoints for event notifications.
+-   **[Refunds](./refunds):** Retrieving refund details (Beta).
+-   **[Changelog](./../changelog/changelog):** Notable API changes and updates.
 
-*(Support for Customer Subscriptions, Payment Links, Checkout Sessions, and Refunds is coming soon.)*
+## **Versioning**
 
-## Versioning
-
-The current API version is `v1`, included in the base URL path (`/v1/`). We strive to maintain backward compatibility for this version. Significant breaking changes would be introduced under a new version path. 
+The current API version is `` `v1` ``, included in the base URL path (`/v1/`). We strive to maintain backward compatibility for this version. Significant breaking changes would be introduced under a new version path. 

@@ -1,28 +1,28 @@
-# Providers API
+# **Providers API**
 
 The Providers API allows merchants to retrieve information about available payment providers connected to their account. This information can be used to determine which payment methods to offer to customers.
 
-## Base URL
+## **Base URL**
 
 ```
 https://api.lomi.africa/v1
 ```
 
-## Authentication
+## **Authentication**
 
-All API requests require authentication using an API key. Provide your API key in the `X-API-Key` request header. See [Authentication](./authentication) for more details.
+All API requests require authentication using an API key. Provide your API key in the `` `X-API-Key` `` request header. See [Authentication](./authentication) for more details.
 
 ```http
 X-API-Key: your_api_key
 ```
 
-## Endpoints
+## **Endpoints**
 
-### List payment providers
+### **List payment providers**
 
 Retrieves a list of all available payment providers and indicates whether they are connected (active) for the authenticated merchant.
 
-**Endpoint:** `GET /providers`
+**Endpoint:** `` `GET /providers` ``
 
 **Query parameters:** None
 
@@ -61,20 +61,20 @@ Retrieves a list of all available payment providers and indicates whether they a
 
 | Property          | Type    | Description                                                     |
 | ----------------- | ------- | --------------------------------------------------------------- |
-| `code`            | string  | Unique identifier for the payment provider                      |
-| `name`            | string  | Display name of the payment provider                            |
-| `description`     | string  | Brief description of the payment provider                       |
-| `payment_methods` | array   | List of payment method types supported by this provider         |
-| `is_connected`    | boolean | Whether this provider is connected to your merchant account |
+| `` `code` ``            | `` `string` ``  | Unique identifier for the payment provider                      |
+| `` `name` ``            | `` `string` ``  | Display name of the payment provider                            |
+| `` `description` ``     | `` `string` ``  | Brief description of the payment provider                       |
+| `` `payment_methods` `` | `` `array` ``   | List of payment method types supported by this provider         |
+| `` `is_connected` ``    | `` `boolean` `` | Whether this provider is connected to your merchant account |
 
 **Possible error responses:**
 
 | Status Code | Error Message                     | Description                                  |
 | ----------- | --------------------------------- | -------------------------------------------- |
-| 401         | `Authentication required`         | Missing or invalid API key                   |
-| 500         | `Failed to retrieve providers`    | Internal server error retrieving providers |
+| `` `401` ``         | `` `Authentication required` ``         | Missing or invalid API key                   |
+| `` `500` ``         | `` `Failed to retrieve providers` ``    | Internal server error retrieving providers |
 
-## Error handling
+## **Error handling**
 
 Error responses follow a consistent format. See the [Errors](./errors) guide for more details.
 
@@ -87,34 +87,34 @@ Error responses follow a consistent format. See the [Errors](./errors) guide for
 }
 ```
 
-## Rate limits
+## **Rate limits**
 
 API requests are subject to rate limits based on your API key type:
 
 -   **Live API keys:** 60 requests per minute, 10,000 requests per day
 -   **Test API keys:** 120 requests per minute, 20,000 requests per day
 
-Exceeding these limits will result in a `429 Too Many Requests` error.
+Exceeding these limits will result in a `` `429 Too Many Requests` `` error.
 
-## Implementation notes
+## **Implementation notes**
 
--   Use the `is_connected` property to determine which providers to display as payment options to your customers. Only connected providers can be used to process payments.
--   The list of available providers (`code`) may change over time as new integrations are added.
+-   Use the `` `is_connected` `` property to determine which providers to display as payment options to your customers. Only connected providers can be used to process payments.
+-   The list of available providers (`` `code` ``) may change over time as new integrations are added.
 -   Provider availability might depend on merchant configuration and supported regions.
--   Use the provider `code` (e.g., "ORANGE", "WAVE") when specifying allowed providers in other API calls like creating Checkout Sessions.
+-   Use the provider `` `code` `` (e.g., `` `"ORANGE"` ``, `` `"WAVE"` ``) when specifying allowed providers in other API calls like creating Checkout Sessions.
 
-## Testing
+## **Testing**
 
-You can test this endpoint using `curl` or any HTTP client. Remember to replace placeholder values like the base URL and API key.
+You can test this endpoint using `` `curl` `` or any HTTP client. Remember to replace placeholder values like the base URL and API key.
 
-### Retrieve all available payment providers
+### **Retrieve all available payment providers**
 
 ```bash
 curl -X GET "https://api.lomi.africa/v1/providers" \
   -H "X-API-Key: your_api_key"
 ```
 
-### Test with an invalid API key
+### **Test with an invalid API key**
 
 ```bash
 curl -X GET "https://api.lomi.africa/v1/providers" \
@@ -132,7 +132,7 @@ Expected error response:
 }
 ```
 
-### Test with a missing API key header
+### **Test with a missing API key header**
 
 ```bash
 curl -X GET "https://api.lomi.africa/v1/providers"

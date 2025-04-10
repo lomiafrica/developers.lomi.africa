@@ -5,7 +5,7 @@ const meta: Meta = {
   "idempotency-keys": "Idempotency Keys",
   "error-handling": "Error Handling",
   "security-best-practices": "Security Best Practices",
-  testing: "Testing Guide",
+  "testing": "Testing Guide",
   "ci-cd": "CI/CD Integration",
 };
 

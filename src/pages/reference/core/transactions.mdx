@@ -1,33 +1,33 @@
-# Transactions
+# **Transactions**
 
 The Transactions API allows you to retrieve information about payment transactions associated with your merchant account.
 
-## Authentication
+## **Authentication**
 
-Requests require authentication using your API key in the `X-API-Key` header. See the [Authentication](./authentication) guide.
+Requests require authentication using your API key in the `` `X-API-Key` `` header. See the [Authentication](./authentication) guide.
 
-## The transaction object
+## **The transaction object**
 
 Represents a single payment transaction, including details about the amount, status, provider, customer, and related resources. See [Data Models](./data-models#transaction-object) for the full structure.
 
-## Endpoints
+## **Endpoints**
 
-### List transactions
+### **List transactions**
 
 Retrieves a list of transactions for the authenticated merchant, with options for filtering and pagination.
 
-**Endpoint:** `GET /transactions`
+**Endpoint:** `` `GET /transactions` ``
 
 **Query parameters:**
 
 | Parameter     | Type            | Required | Description                                                                          |
 | ------------- | --------------- | -------- | ------------------------------------------------------------------------------------ |
-| `status`      | string / array  | No       | Filter by transaction status(es). Provide a single status or comma-separated list (e.g., `completed`, `failed,refunded`). Valid statuses: `pending`, `completed`, `failed`, `refunded`, `expired`. |
-| `provider`    | string          | No       | Filter by payment provider code (e.g., `ORANGE`, `WAVE`).                               |
-| `from_date`   | string (ISO8601)| No       | Filter transactions created on or after this date/time (inclusive). Format: `YYYY-MM-DDTHH:mm:ssZ`. |
-| `to_date`     | string (ISO8601)| No       | Filter transactions created on or before this date/time (inclusive). Format: `YYYY-MM-DDTHH:mm:ssZ`. |
-| `limit`       | number          | No       | Maximum number of transactions to return (default: 20, max: 100).                     |
-| `page`        | number          | No       | Page number for pagination (default: 1).                                              |
+| `` `status` ``      | `` `string` `` / `` `array` ``  | No       | Filter by transaction status(es). Provide a single status or comma-separated list (e.g., `` `completed` ``, `` `failed,refunded` ``). Valid statuses: `` `pending` ``, `` `completed` ``, `` `failed` ``, `` `refunded` ``, `` `expired` ``. |
+| `` `provider` ``    | `` `string` ``          | No       | Filter by payment provider code (e.g., `` `ORANGE` ``, `` `WAVE` ``).                               |
+| `` `from_date` ``   | `` `string (ISO8601)` ``| No       | Filter transactions created on or after this date/time (inclusive). Format: `` `YYYY-MM-DDTHH:mm:ssZ` ``. |
+| `` `to_date` ``     | `` `string (ISO8601)` ``| No       | Filter transactions created on or before this date/time (inclusive). Format: `` `YYYY-MM-DDTHH:mm:ssZ` ``. |
+| `` `limit` ``       | `` `number` ``          | No       | Maximum number of transactions to return (default: 20, max: 100).                     |
+| `` `page` ``        | `` `number` ``          | No       | Page number for pagination (default: 1).                                              |
 
 **Example request (filtering for completed Wave transactions):**
 
@@ -76,17 +76,17 @@ X-API-Key: your_api_key
 }
 ```
 
-### Get transaction by ID
+### **Get transaction by ID**
 
 Retrieves the details of a specific transaction by its unique ID.
 
-**Endpoint:** `GET /transactions/{transaction_id}`
+**Endpoint:** `` `GET /transactions/{transaction_id}` ``
 
 **Path parameters:**
 
 | Parameter        | Type         | Required | Description                                        |
 | ---------------- | ------------ | -------- | -------------------------------------------------- |
-| `transaction_id` | string (UUID)| Yes      | The unique identifier of the transaction to retrieve. |
+| `` `transaction_id` `` | `` `string (UUID)` ``| Yes      | The unique identifier of the transaction to retrieve. |
 
 **Example response (200 OK):**
 
@@ -102,6 +102,6 @@ Retrieves the details of a specific transaction by its unique ID.
 }
 ```
 
-## Error handling
+## **Error handling**
 
-Common errors include `400 Bad Request` for invalid filter parameters or ID format, `401 Unauthorized`, `404 Not Found` if the transaction ID doesn't exist, and `500 Internal Server Error`. Refer to the [Errors](./errors) guide for general structure and handling. 
+Common errors include `` `400 Bad Request` `` for invalid filter parameters or ID format, `` `401 Unauthorized` ``, `` `404 Not Found` `` if the transaction ID doesn't exist, and `` `500 Internal Server Error` ``. Refer to the [Errors](./errors) guide for general structure and handling. 

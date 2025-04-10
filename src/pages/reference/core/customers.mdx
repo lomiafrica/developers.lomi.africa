@@ -1,37 +1,37 @@
-# Customers
+# **Customers**
 
 The Customers API allows you to create, retrieve, update, list, and delete customer profiles associated with your merchant account.
 
-## Authentication
+## **Authentication**
 
-Requests require authentication using your API key in the `X-API-Key` header. See the [Authentication](./authentication) guide.
+Requests require authentication using your API key in the `` `X-API-Key` `` header. See the [Authentication](./authentication) guide.
 
-## The customer object
+## **The customer object**
 
 Represents a customer profile containing contact information and other details. See [Data Models](./data-models#customer-object) for the full structure.
 
-## Endpoints
+## **Endpoints**
 
-### Create a customer
+### **Create a customer**
 
 Creates a new customer profile.
 
-**Endpoint:** `POST /customers`
+**Endpoint:** `` `POST /customers` ``
 
 **Request body parameters:**
 
 | Parameter         | Type    | Required | Description                                           |
 | ----------------- | ------- | -------- | ----------------------------------------------------- |
-| `name`            | string  | Yes      | Customer's full name.                                 |
-| `email`           | string  | No       | Customer's email address.                             |
-| `phone_number`    | string  | No       | Customer's phone number (preferably E.164 format).    |
-| `whatsapp_number` | string  | No       | Customer's WhatsApp number (preferably E.164 format). |
-| `country`         | string  | No       | Customer's country name or code.                     |
-| `city`            | string  | No       | Customer's city.                                     |
-| `address`         | string  | No       | Customer's street address.                            |
-| `postal_code`     | string  | No       | Customer's postal code.                               |
-| `is_business`     | boolean | No       | Set `true` if the customer is a business (default: `false`). |
-| `metadata`        | object  | No       | Key-value pairs for storing additional information.   |
+| `` `name` ``            | `` `string` ``  | Yes      | Customer's full name.                                 |
+| `` `email` ``           | `` `string` ``  | No       | Customer's email address.                             |
+| `` `phone_number` ``    | `` `string` ``  | No       | Customer's phone number (preferably E.164 format).    |
+| `` `whatsapp_number` `` | `` `string` ``  | No       | Customer's WhatsApp number (preferably E.164 format). |
+| `` `country` ``         | `` `string` ``  | No       | Customer's country name or code.                     |
+| `` `city` ``            | `` `string` ``  | No       | Customer's city.                                     |
+| `` `address` ``         | `` `string` ``  | No       | Customer's street address.                            |
+| `` `postal_code` ``     | `` `string` ``  | No       | Customer's postal code.                               |
+| `` `is_business` ``     | `` `boolean` `` | No       | Set `` `true` `` if the customer is a business (default: `` `false` ``). |
+| `` `metadata` ``        | `` `object` ``  | No       | Key-value pairs for storing additional information.   |
 
 **Example request:**
 
@@ -70,37 +70,37 @@ Creates a new customer profile.
 }
 ```
 
-### Get a customer
+### **Get a customer**
 
 Retrieves the details of a specific customer by their ID.
 
-**Endpoint:** `GET /customers/{id}`
+**Endpoint:** `` `GET /customers/{id}` ``
 
 **Path parameters:**
 
 | Parameter | Type   | Required | Description                     |
 | --------- | ------ | -------- | ------------------------------- |
-| `id`      | string | Yes      | The unique identifier of the customer (`customer_id`). |
+| `` `id` ``      | `` `string` `` | Yes      | The unique identifier of the customer (`` `customer_id` ``). |
 
 **Example response (200 OK):**
 
 *(Response structure is the same as the `Create a customer` response)*
 
-### Update a customer
+### **Update a customer**
 
 Updates the details of a specific customer.
 
-**Endpoint:** `PATCH /customers/{id}`
+**Endpoint:** `` `PATCH /customers/{id}` ``
 
 **Path parameters:**
 
 | Parameter | Type   | Required | Description                     |
 | --------- | ------ | -------- | ------------------------------- |
-| `id`      | string | Yes      | The unique identifier of the customer (`customer_id`). |
+| `` `id` ``      | `` `string` `` | Yes      | The unique identifier of the customer (`` `customer_id` ``). |
 
 **Request body parameters:**
 
-*(Include only the fields you want to update. Parameters are the same as for `Create a customer`, none are required.)*
+*(Include only the fields you want to update. Parameters are the same as for `` `Create a customer` ``, none are required.)*
 
 **Example request:**
 
@@ -115,20 +115,20 @@ Updates the details of a specific customer.
 
 *(Response structure is the same as the `Create a customer` response, showing updated values and `updated_at` timestamp)*
 
-### List customers
+### **List customers**
 
 Returns a list of customers associated with your merchant account. Supports pagination and filtering.
 
-**Endpoint:** `GET /customers`
+**Endpoint:** `` `GET /customers` ``
 
 **Query parameters:**
 
 | Parameter     | Type   | Required | Description                                          |
 | ------------- | ------ | -------- | ---------------------------------------------------- |
-| `limit`       | number | No       | Maximum number of customers to return (default: 20). |
-| `page`        | number | No       | Page number for pagination (default: 1).             |
-| `email`       | string | No       | Filter customers by exact email address.             |
-| `phone_number`| string | No       | Filter customers by exact phone number.              |
+| `` `limit` ``       | `` `number` `` | No       | Maximum number of customers to return (default: 20). |
+| `` `page` ``        | `` `number` `` | No       | Page number for pagination (default: 1).             |
+| `` `email` ``       | `` `string` `` | No       | Filter customers by exact email address.             |
+| `` `phone_number` ``| `` `string` `` | No       | Filter customers by exact phone number.              |
 
 **Note:** By default, this endpoint only returns customers who have completed or refunded transactions. To see all customers, including newly created ones without transactions, you might need specific permissions or a different filter (check API updates for this behavior).
 
@@ -151,17 +151,17 @@ Returns a list of customers associated with your merchant account. Supports pagi
 }
 ```
 
-### Delete a customer
+### **Delete a customer**
 
 Deletes a specific customer profile.
 
-**Endpoint:** `DELETE /customers/{id}`
+**Endpoint:** `` `DELETE /customers/{id}` ``
 
 **Path parameters:**
 
 | Parameter | Type   | Required | Description                     |
 | --------- | ------ | -------- | ------------------------------- |
-| `id`      | string | Yes      | The unique identifier of the customer (`customer_id`). |
+| `` `id` ``      | `` `string` `` | Yes      | The unique identifier of the customer (`` `customer_id` ``). |
 
 **Example response (200 OK):**
 
@@ -174,6 +174,6 @@ Deletes a specific customer profile.
 }
 ```
 
-## Error handling
+## **Error handling**
 
-Common errors include `400 Bad Request` for invalid input, `401 Unauthorized`, `404 Not Found` if the customer ID doesn't exist, and `500 Internal Server Error`. Refer to the [Errors](./errors) guide for general structure and handling. 
+Common errors include `` `400 Bad Request` `` for invalid input, `` `401 Unauthorized` ``, `` `404 Not Found` `` if the customer ID doesn't exist, and `` `500 Internal Server Error` ``. Refer to the [Errors](./errors) guide for general structure and handling. 
