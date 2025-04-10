@@ -96,7 +96,9 @@ export default function InfoBox({
               variantStyles[safeVariant].icon, // Apply combined styles
             )}
           />
-          <div className={cn("text-[15px]", variantStyles[safeVariant].text)}> {/* Apply combined styles */}
+          <div className={cn("text-[15px]", variantStyles[safeVariant].text)}>
+            {" "}
+            {/* Apply combined styles */}
             {children}
             {link && (
               // Update link style for light/dark modes
