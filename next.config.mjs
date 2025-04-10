@@ -53,10 +53,10 @@ const securityHeaders = [
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    esmExternals: false,
-    webpackBuildWorker: true,
-  },
+  // experimental: {
+  //   esmExternals: false,
+  //   webpackBuildWorker: true,
+  // },
   async headers() {
     return [
       {
