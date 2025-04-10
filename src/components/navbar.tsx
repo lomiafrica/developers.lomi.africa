@@ -289,20 +289,6 @@ export const Navbar = () => {
           <GitHubIcon className="h-4 w-4 ml-auto opacity-80 group-hover:text-[#6e5494] dark:group-hover:text-[#6e5494]" />
         </Link>
       </DropdownMenuItem>
-      <DropdownMenuItem asChild>
-        <Link
-          href="https://jumbo.lomi.africa"
-          target="_blank"
-          rel="noopener noreferrer"
-          className={cn(
-            dropdownLinkStyle,
-            "group hover:text-green-500 dark:hover:text-green-500",
-          )}
-        >
-          Jumbo{" "}
-          <JumboIcon className="h-[22px] w-[22px] ml-auto translate-x-[3px] opacity-80 group-hover:text-green-500 dark:group-hover:text-green-500" />
-        </Link>
-      </DropdownMenuItem>
       <DropdownMenuSeparator className="bg-border/40 dark:bg-zinc-700/40 h-px" />
       <DropdownMenuItem asChild>
         <Link
@@ -316,6 +302,20 @@ export const Navbar = () => {
         >
           Dashboard
           <LayoutDashboard className="h-4 w-4 ml-auto opacity-80 group-hover:text-purple-600 dark:group-hover:text-purple-400" />
+        </Link>
+      </DropdownMenuItem>
+      <DropdownMenuItem asChild>
+        <Link
+          href="https://jumbo.lomi.africa"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            dropdownLinkStyle,
+            "group hover:text-green-500 dark:hover:text-green-500",
+          )}
+        >
+          Jumbo{" "}
+          <JumboIcon className="h-[22px] w-[22px] ml-auto translate-x-[3px] opacity-80 group-hover:text-green-500 dark:group-hover:text-green-500" />
         </Link>
       </DropdownMenuItem>
       <DropdownMenuItem
