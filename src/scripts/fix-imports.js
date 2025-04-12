@@ -1,6 +1,6 @@
-import { writeFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { writeFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,4 +21,4 @@ const nextConfig = {
 export default withNextra(nextConfig);
 `;
 
-writeFileSync(join(__dirname, '..', 'next.config.mjs'), configContent); 
+writeFileSync(join(__dirname, "..", "next.config.mjs"), configContent);
