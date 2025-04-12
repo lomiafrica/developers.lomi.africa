@@ -4,7 +4,7 @@ Webhooks allow your application to receive real-time notifications about events 
 
 ## **Base URL**
 
-```
+```http filename="Terminal"
 https://api.lomi.africa/v1
 ```
 
@@ -12,7 +12,7 @@ https://api.lomi.africa/v1
 
 API requests to manage webhooks require authentication using an API key in the `` `X-API-Key` `` header. See [Authentication](./authentication).
 
-```http
+```http filename="Terminal"
 X-API-Key: your_api_key
 ```
 
@@ -55,7 +55,7 @@ Retrieves a list of all webhook endpoints configured for your organization.
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /webhooks response"
 {
   "data": [
     {
@@ -81,7 +81,7 @@ Creates a new webhook endpoint.
 
 **Request body:**
 
-```json
+```json filename="POST /webhooks request body"
 {
   "url": "https://example.com/new-webhook-receiver",
   "authorized_events": ["PAYMENT_SUCCEEDED", "PAYMENT_FAILED"],
@@ -95,7 +95,7 @@ Creates a new webhook endpoint.
 
 **Example response (201 Created):**
 
-```json
+```json filename="POST /webhooks response"
 {
   "data": {
       "id": "wh_new1b2c3d4e5f6",
@@ -125,7 +125,7 @@ Retrieves details for a specific webhook.
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /webhooks/{id} response"
 {
   "data": {
       "id": "wh_a1b2c3d4e5f6",
@@ -149,7 +149,7 @@ Updates an existing webhook endpoint.
 
 **Request body (include only fields to update):**
 
-```json
+```json filename="PATCH /webhooks/{id} request body"
 {
   "url": "https://example.com/updated-webhook-receiver",
   "authorized_events": ["PAYMENT_SUCCEEDED"],
@@ -165,7 +165,7 @@ Updates an existing webhook endpoint.
 
 **Example response (200 OK):**
 
-```json
+```json filename="PATCH /webhooks/{id} response"
 {
   "data": {
       "id": "wh_a1b2c3d4e5f6",
@@ -199,7 +199,7 @@ You can test your webhook endpoints using the API or `` `curl` ``.
 
 First, create a webhook endpoint pointing to a test receiver (e.g., using a service like [Webhook.site](https://webhook.site/) or a local tunnel like ngrok).
 
-```bash
+```bash filename="Terminal"
 # Replace API_KEY and URL
 curl -X POST "https://api.lomi.africa/v1/webhooks" \
   -H "Content-Type: application/json" \
@@ -217,7 +217,7 @@ Note the `` `id` `` and `` `secret` `` from the response.
 
 Use the `` `POST /webhooks/{id}/test` `` endpoint to send a predefined `` `test.webhook` `` event to your endpoint.
 
-```bash
+```bash filename="Terminal"
 # Replace WEBHOOK_ID and API_KEY
 curl -X POST "https://api.lomi.africa/v1/webhooks/YOUR_WEBHOOK_ID/test" \
   -H "X-API-Key: YOUR_API_KEY"

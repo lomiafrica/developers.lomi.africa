@@ -48,7 +48,7 @@ Creates a new payment link of the specified type.
 
 **Example request (Instant link):**
 
-```json
+```json filename="POST /payment-links request (Instant Link)"
 {
   "link_type": "instant",
   "title": "Donation",
@@ -61,7 +61,7 @@ Creates a new payment link of the specified type.
 
 **Example response (201 Created):**
 
-```json
+```json filename="POST /payment-links response"
 {
   "success": true,
   "data": {
@@ -113,7 +113,7 @@ Retrieves a list of payment links for your merchant account, with options for fi
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /payment-links response"
 {
   "success": true,
   "data": [
@@ -152,7 +152,7 @@ Retrieves the details of a specific payment link by its ID.
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /payment-links/{link_id} response"
 {
   "success": true,
   "data": {
@@ -189,7 +189,7 @@ Updates certain configurable fields of a specific payment link. Core details lik
 
 **Example request:**
 
-```json
+```json filename="PATCH /payment-links/{link_id} request"
 {
   "allowed_providers": ["WAVE"],
   "metadata": { "updated_via": "api" }
@@ -198,7 +198,7 @@ Updates certain configurable fields of a specific payment link. Core details lik
 
 **Example response (200 OK):**
 
-```json
+```json filename="PATCH /payment-links/{link_id} response"
 {
   "success": true,
   "data": {

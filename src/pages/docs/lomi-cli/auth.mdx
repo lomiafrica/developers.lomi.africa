@@ -1,0 +1,65 @@
+import { Callout } from 'nextra/components';
+
+# **Authenticate the CLI (`lomi. login`)**
+
+The `lomi. login` command authenticates the **lomi. CLI**, allowing it to securely interact with the **lomi. API** on your behalf using a dedicated **CLI Token**. This authentication is a prerequisite for most commands that require API access (like `status`, `payments`, `webhook`, and `dev`).
+
+## **Usage**
+
+```bash filename="Terminal"
+lomi. login
+```
+
+## **How it works**
+
+This command uses a secure **Device Authorization Grant** flow (a standard OAuth 2.0 flow designed for input-constrained devices like CLIs):
+
+1.  **Initiation**: The CLI contacts the **lomi.** authentication service to start the login process.
+2.  **Device Code Request**: The service generates a unique `user_code` (which you'll enter in the browser) and a `device_code` (used internally by the CLI to check for completion).
+3.  **User Interaction**:
+    *   The CLI displays the `user_code` for you to copy.
+    *   It prompts you to press Enter, after which it attempts to open your default web browser to the **lomi.** `verification_uri`.
+    *   In the browser, you log in to your **lomi.** account (if not already logged in) and enter the `user_code` when prompted to authorize the CLI.
+4.  **Polling**: While you are authenticating in the browser, the CLI periodically polls the authentication service using the `device_code` to check if the authorization has been granted.
+5.  **Token Retrieval**: Once you successfully approve the authorization in the browser, the authentication service provides a secure, short-lived **CLI Token** to the waiting CLI.
+6.  **Secure Storage**: The CLI saves this **CLI Token** securely in the global configuration file (typically `~/.lomi/config.json`). This token is used for subsequent API calls made *by the CLI itself*.
+
+<Callout type="info" emoji="💡" title="Security Benefit">
+  This device flow avoids the need for you to manually handle or store your main `LOMI_API_KEY` for general CLI operations, enhancing the security of your primary credentials.
+</Callout>
+
+## **Output example**
+
+Upon successful login, you will see a confirmation message:
+
+```text filename="Terminal output example"
+Login initiated.
+
+Action Required to complete authentication:
+
+1. Copy this code: XXXX-XXXX
+
+2. Press enter to open your browser
+
+3. Paste the code when prompted on the webpage.
+
+IMPORTANT: After signing in, you might be redirected elsewhere...
+Please manually navigate back to the verification URL: https://lomi.africa/verify
+
+Press Enter to open the browser and continue...
+Waiting for you to authorize in the browser...
+Waiting for authorization in browser... ✓
+Saving CLI Token... ✓
+Login successful! CLI Token saved globally.
+
+You can now run lomi. CLI commands that require authentication.
+Use `lomi. init` in your project directory to set up SDK-specific API keys.
+```
+
+## **Troubleshooting**
+
+-   **Browser not opening**: If the browser doesn't open automatically, manually copy the `verification_uri` shown in the terminal and paste it into your browser's address bar.
+-   **Code expired**: The `user_code` is time-sensitive. If it expires before you complete the authorization, simply run `lomi. login` again to get a new code.
+-   **Access denied**: If you deny the authorization request in the browser, the CLI login will fail. Run `lomi. login` again if this was unintentional.
+-   **Network errors**: Ensure you have a stable internet connection, as the CLI needs to communicate with the **lomi.** authentication service.
+-   **Firewall issues**: If you are behind a strict firewall, ensure it allows HTTPS connections to `lomi.africa`. Check your firewall settings or contact your network administrator if you suspect issues. 

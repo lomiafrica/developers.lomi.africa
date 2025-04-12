@@ -19,20 +19,20 @@ The recommended way to handle your API keys and other configuration details is t
 **Required variables:**
 
 *   `LOMI_API_KEY`: Your lomi. API secret key (either Test or Live).
-    ```bash
+    ```bash filename="Terminal"
     export LOMI_API_KEY=lomi_sk_test_... # For testing
     # or
     export LOMI_API_KEY=lomi_sk_live_... # For production
     ```
 *   `LOMI_WEBHOOK_SECRET`: Your unique webhook signing secret, used to verify incoming webhook requests. You obtain this from the lomi. Dashboard.
-    ```bash
+    ```bash filename="Terminal"
     export LOMI_WEBHOOK_SECRET=whsec_...
     ```
 
 **Optional variables:**
 
 *   `LOMI_API_URL`: Specifies the API base URL. If not set, the SDK might default based on the key type, but explicitly setting it is safer.
-    ```bash
+    ```bash filename="Terminal"
     # Sandbox for testing
     export LOMI_API_URL=https://sandbox.api.lomi.africa/v1 
     # Production for live transactions
@@ -46,7 +46,7 @@ The recommended way to handle your API keys and other configuration details is t
 
 Access your environment variables when initializing the SDK:
 
-```typescript
+```typescript filename="Node.js SDK initialization"
 import { LomiSDK } from 'lomi.cli';
 
 const lomi = new LomiSDK({
@@ -63,7 +63,7 @@ const lomi = new LomiSDK({
 
 Use your webhook secret to verify the authenticity of incoming webhooks:
 
-```typescript
+```typescript filename="Webhook signature verification (Express)"
 // Inside your webhook handler (e.g., using Express)
 // req.rawBody contains the raw request body buffer
 // req.headers['x-lomi-signature'] contains the signature header

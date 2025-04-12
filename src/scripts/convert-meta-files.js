@@ -48,7 +48,7 @@ function findMetaFiles(dir) {
 }
 
 console.log('Starting meta files conversion...');
-const pagesDir = path.join(__dirname, '../src/pages');
+const pagesDir = path.join(__dirname, '../pages');
 console.log(`Looking for meta files in: ${pagesDir}`);
 findMetaFiles(pagesDir);
 console.log('Conversion process completed.'); 

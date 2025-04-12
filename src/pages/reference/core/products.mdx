@@ -33,7 +33,7 @@ Creates a new product for the authenticated merchant.
 
 **Example request:**
 
-```json
+```json filename="POST /products request"
 {
   "name": "Standard Subscription",
   "description": "Monthly access to standard features.",
@@ -45,7 +45,7 @@ Creates a new product for the authenticated merchant.
 
 **Example response (201 Created):**
 
-```json
+```json filename="POST /products response"
 {
   "data": {
     "product_id": "uuid-generated-for-product",
@@ -81,7 +81,7 @@ Retrieves a list of products for the authenticated merchant, with pagination and
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /products response"
 {
   "data": [
     {
@@ -142,7 +142,7 @@ Updates the `` `is_active` `` status of a specific product. Other product detail
 
 **Example request:**
 
-```json
+```json filename="PATCH /products/{id} request"
 {
   "is_active": false
 }
@@ -150,24 +150,4 @@ Updates the `` `is_active` `` status of a specific product. Other product detail
 
 **Example response (200 OK):**
 
-*(Response structure is the same as the `Create product` response, showing the updated `` `is_active` `` value and `` `updated_at` `` timestamp)*
-
-### **Delete product**
-
-Deletes a specific product.
-
-**Endpoint:** `` `DELETE /products/{id}` ``
-
-**Path parameters:**
-
-| Parameter | Type   | Required | Description                                      |
-| --------- | ------ | -------- | ------------------------------------------------ |
-| `` `id` ``      | `` `string` `` | Yes      | The unique identifier (UUID) of the product (`` `product_id` ``). |
-
-**Example response (204 No Content):**
-
-*(No response body)*
-
-## **Error handling**
-
-Common errors include `` `400 Bad Request` `` for invalid input (e.g., negative price, invalid URL) or attempting to update immutable fields, `` `401 Unauthorized` ``, `` `404 Not Found` `` if the product ID doesn't exist or belong to the merchant, and `` `500 Internal Server Error` ``. Refer to the [Errors](./errors) guide. 
+*(Response structure is the same as the `Create product` response, showing the updated `` `is_active` `` value and `` `updated_at`

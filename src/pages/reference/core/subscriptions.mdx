@@ -39,7 +39,7 @@ Creates a new subscription plan for your merchant account.
 
 **Example request:**
 
-```json
+```json filename="POST /merchants/{id}/subscriptions request"
 {
   "name": "Pro Monthly Plan",
   "amount": 15000,
@@ -54,7 +54,7 @@ Creates a new subscription plan for your merchant account.
 
 **Example response (201 Created):**
 
-```json
+```json filename="POST /merchants/{id}/subscriptions response"
 {
   "success": true,
   "data": {
@@ -96,7 +96,7 @@ Retrieves a list of subscription plans belonging to your merchant account.
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /merchants/{id}/subscriptions response"
 {
   "success": true,
   "data": [
@@ -126,7 +126,7 @@ Retrieves details for a specific subscription plan.
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /merchants/{id}/subscriptions/{plan_id} response"
 {
   "success": true,
   "data": {
@@ -161,7 +161,7 @@ Updates the `` `is_active` `` status and/or `` `metadata` `` of a specific subsc
 
 **Example request (deactivate):**
 
-```json
+```json filename="PATCH /merchants/{id}/subscriptions/{plan_id} request (Deactivate)"
 {
   "is_active": false
 }

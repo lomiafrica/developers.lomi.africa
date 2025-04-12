@@ -1,11 +1,11 @@
-# Code reviews
+# **Code reviews**
 
 Our code review process ensures code quality, knowledge sharing, and maintainability.
 
-## Pull request guidelines
+## **Pull request guidelines**
 
-### 1. Title format
-```bash
+### **1. Title format**
+```bash filename="PR Title Format"
 # Format
 <type>(<scope>): <description>
 
@@ -15,8 +15,8 @@ fix(webhooks): handle timeout errors
 docs(api): update authentication guide
 ```
 
-### 2. Description template
-```markdown
+### **2. Description template**
+```markdown filename="PR Description Template"
 ## Changes
 - Added Wave payment provider integration
 - Implemented webhook signature verification
@@ -34,10 +34,10 @@ docs(api): update authentication guide
 Closes #123
 ```
 
-## Review process
+## **Review process**
 
-### 1. Self review
-```bash
+### **1. Self review**
+```bash filename="Terminal - Self Review Checks"
 # Run tests
 npm test
 
@@ -48,60 +48,62 @@ npm run lint
 npm run docs:build
 ```
 
-### 2. Code review
+### **2. Code review**
 - Request reviews from relevant team members
 - Address feedback promptly
 - Re-request review after changes
 
-### 3. CI checks
+### **3. CI checks**
 - All tests must pass
 - Code coverage requirements met
 - No security vulnerabilities
 - Documentation updated
 
-## Review checklist
+## **Review checklist**
 
-### 1. Code quality
-- [ ] Follows coding standards
-- [ ] No duplicate code
-- [ ] Proper error handling
-- [ ] Efficient implementation
+### **1. Code quality**
+- Follows coding standards
+- No duplicate code
+- Proper error handling
+- Efficient implementation
 
-### 2. Testing
-- [ ] Unit tests added/updated
-- [ ] Integration tests if needed
-- [ ] Edge cases covered
-- [ ] Test coverage maintained
+### **2. Testing**
+- Unit tests added/updated
+- Integration tests if needed
+- Edge cases covered
+- Test coverage maintained
 
-### 3. Security
-- [ ] Input validation
-- [ ] Authentication/Authorization
-- [ ] Sensitive data handling
-- [ ] Security best practices
+### **3. Security**
+- Input validation
+- Authentication/Authorization
+- Sensitive data handling
+- Security best practices
 
-### 4. Documentation
-- [ ] Code comments
-- [ ] API documentation
-- [ ] README updates
-- [ ] Changelog entry
+### **4. Documentation**
+- Code comments
+- API documentation
+- README updates
+- Changelog entry
 
-## Best practices
+## **Best practices**
 
-### 1. As a submitter
-```typescript
+### **1. As a submitter**
+```typescript filename="Submitter Example (Good vs Bad)"
 // DO: Small, focused changes
 function validatePayment(amount: number): boolean {
   return amount > 0 && amount <= 1000000;
 }
 
 // DON'T: Multiple unrelated changes
+/*
 function validateAndProcessPayment() {
   // Mixed concerns
 }
+*/
 ```
 
-### 2. As a reviewer
-```typescript
+### **2. As a reviewer**
+```typescript filename="Reviewer Example (Good vs Bad Feedback)"
 // Good feedback
 // Consider using a type guard for better type safety
 function isValidAmount(amount: unknown): amount is number {
@@ -109,17 +111,19 @@ function isValidAmount(amount: unknown): amount is number {
 }
 
 // Unhelpful feedback
-// This is wrong
+// // This is wrong
 ```
 
-### 3. Code examples
-```typescript
+### **3. Code examples**
+```typescript filename="Code Example (Before/After)"
 // Before
+/*
 function process(data) {
   if (data) {
     return data.value;
   }
 }
+*/
 
 // After
 function process(data: InputData): OutputData {
@@ -130,12 +134,12 @@ function process(data: InputData): OutputData {
 }
 ```
 
-## Review comments
+## **Review comments**
 
-### 1. Constructive feedback
-```typescript
+### **1. Constructive feedback**
+```typescript filename="Constructive Feedback Example"
 // Instead of:
-// This is messy
+// // This is messy
 
 // Better:
 // Consider extracting this logic into a separate function
@@ -148,10 +152,10 @@ function validateWebhookSignature(
 }
 ```
 
-### 2. Suggestions
-```typescript
+### **2. Suggestions**
+```typescript filename="Suggestion Example"
 // Instead of:
-// Use better names
+// // Use better names
 
 // Better:
 // Consider more descriptive names:
@@ -159,10 +163,10 @@ function validateWebhookSignature(
 // - `data` -> `paymentData`
 ```
 
-## After review
+## **After review**
 
-### 1. Addressing feedback
-```bash
+### **1. Addressing feedback**
+```bash filename="Terminal - Addressing Feedback"
 # Update branch
 git fetch origin
 git rebase origin/develop
@@ -175,8 +179,8 @@ git commit -m "fix: address review feedback"
 git push --force-with-lease
 ```
 
-### 2. Merging
-```bash
+### **2. Merging**
+```bash filename="Terminal - Merging Strategies"
 # Squash and merge
 git checkout develop
 git merge --squash feature/payment-method
@@ -186,7 +190,7 @@ git checkout develop
 git rebase feature/payment-method
 ```
 
-## Next steps
+## **Next steps**
 
 - [Contributing guidelines](./contributing-guidelines)
 - [Branching strategy](./branching-strategy)

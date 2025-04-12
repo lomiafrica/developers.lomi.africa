@@ -82,16 +82,16 @@
 
   html {
     height: 100vh;
-    overflow: hidden auto;
-    overscroll-behavior-y: none;
-    scroll-snap-type: y mandatory;
+    /* overflow: hidden auto; */ /* Keep commented or remove */
+    /* overscroll-behavior-y: none; */ /* Remove if not needed */
+    /* scroll-snap-type: y mandatory; */ /* REMOVE THIS */
   }
 
   body {
     @apply bg-background text-foreground;
-    height: 100vh;
-    overflow: hidden auto;
-    overscroll-behavior-y: none;
+    height: 100vh; /* May need this if body is intended scroll container */
+    overflow: hidden auto; /* RESTORE THIS - Body usually handles scrolling */
+    overscroll-behavior-y: none; /* Keep if desired */
   }
 
   main {

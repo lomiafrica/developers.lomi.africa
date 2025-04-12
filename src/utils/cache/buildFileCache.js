@@ -62,10 +62,10 @@ function readAndFlattenDirectory(directoryPath, parentName = null) {
 }
 
 function initializeFileCache() {
-    const directoryPath = path.join(__dirname, "../../src/pages");
+    const directoryPath = path.join(__dirname, "../../pages");
     const outputFilePath = path.join(
         __dirname,
-        "../../src/lib/cache/fileCache.json"
+        "../../lib/cache/fileCache.json"
     );
 
     const files = readAndFlattenDirectory(directoryPath, parentName);

@@ -10,7 +10,7 @@ Before using a payment provider via the API, you must first connect and enable i
 
 Once providers are configured in the Dashboard, you can use the API to fetch a list of all providers associated with your account and check their connection status.
 
-```typescript
+```typescript filename="checkProviders.ts - List available providers"
 import { LomiSDK } from 'lomi.cli';
 
 const lomi = new LomiSDK({
@@ -41,7 +41,7 @@ checkAvailableProviders();
 
 Based on `GET /providers` from the API reference:
 
-```json
+```json filename="Example response from GET /providers"
 [
   {
     "code": "ORANGE",
@@ -82,7 +82,7 @@ Based on `GET /providers` from the API reference:
 
 When creating a Checkout Session or a Payment Link, you specify which payment providers the customer can use via the `allowed_providers` array, using the `code` values retrieved from the list endpoint.
 
-```typescript
+```typescript filename="checkoutSession.ts - Specifying allowed providers"
 // Example for creating a Checkout Session
 const session = await lomi.checkoutSessions.create({
   // Only include codes for providers where is_connected was true

@@ -4,6 +4,7 @@
 .pnp.js
 .yarn/install-state.gz
 data/
+supabase/
 
 # testing
 /coverage

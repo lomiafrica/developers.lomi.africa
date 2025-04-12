@@ -30,7 +30,7 @@ Retrieves a list of customer subscriptions for your merchant account, with optio
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /customer-subscriptions response"
 {
   "success": true,
   "data": [
@@ -84,7 +84,7 @@ Retrieves the details of a specific customer subscription.
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /customer-subscriptions/{id} response"
 {
   "success": true,
   "data": {
@@ -127,7 +127,7 @@ Updates the status, dates, or metadata of a specific customer subscription.
 
 **Example request (pause subscription):**
 
-```json
+```json filename="PATCH /customer-subscriptions/{id} request (Pause)"
 {
   "status": "paused",
   "metadata": {
@@ -138,7 +138,7 @@ Updates the status, dates, or metadata of a specific customer subscription.
 
 **Example response (200 OK):**
 
-```json
+```json filename="PATCH /customer-subscriptions/{id} response"
 {
   "success": true,
   "data": {
@@ -174,9 +174,7 @@ Cancels a specific customer subscription by setting its status to `` `cancelled`
 
 **Example response (200 OK):**
 
-*(The source documentation shows a 200 OK with a body showing the cancelled object. While 204 No Content is common for DELETE, we follow the source here.)*
-
-```json
+```json filename="DELETE /customer-subscriptions/{id} response"
 {
   "success": true,
   "data": {

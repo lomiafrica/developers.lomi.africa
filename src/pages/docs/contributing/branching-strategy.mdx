@@ -1,19 +1,19 @@
-# Branching Strategy
+# **Branching strategy**
 
 We follow a Git workflow inspired by GitFlow but simplified for continuous delivery and integration. This strategy ensures a stable production branch (`main`) while facilitating active development on the `develop` branch.
 
-## Main branches
+## **Main branches**
 
 These are the long-lived core branches of the repository.
 
-### `main` branch
+### **`main` branch**
 
 - Represents the **production-ready** code. Only fully tested and approved code resides here.
 - **Protected**: Direct pushes are disabled. Changes must come through reviewed Pull Requests from `release` or `hotfix` branches.
 - **Tagged**: Each merge into `main` corresponds to a release and should be tagged with a semantic version number (e.g., `v1.2.3`).
 - **Deployments**: Merges to `main` trigger automated deployments to the production environment.
 
-### `develop` branch
+### **`develop` branch**
 
 - Serves as the primary **integration branch** for ongoing development.
 - Contains the latest successfully built development code, including completed features and bug fixes awaiting release.
@@ -21,15 +21,15 @@ These are the long-lived core branches of the repository.
 - **Deployments**: Changes merged into `develop` are typically deployed automatically to a staging or pre-production environment for further testing.
 - **Source for Features**: All feature branches should be created from `develop`.
 
-## Feature development
+## **Feature development**
 
 Short-lived branches used for specific tasks.
 
-### Feature branches (`feature/*`)
+### **Feature branches (`feature/*`)**
 
 Used for developing new features.
 
-```bash
+```bash filename="Terminal - Feature Branch Workflow"
 # 1. Ensure your local develop is up-to-date
 git checkout develop
 git pull upstream develop
@@ -50,11 +50,11 @@ git rebase upstream/develop
 git push origin feature/payment-method-wave
 ```
 
-### Bug fix branches (`fix/*`)
+### **Bug fix branches (`fix/*`)**
 
 Used for fixing non-critical bugs discovered during development.
 
-```bash
+```bash filename="Terminal - Bug Fix Branch Workflow"
 # 1. Create bug fix branch from develop
 git checkout develop
 git pull upstream develop
@@ -69,15 +69,15 @@ git commit -m "fix(transactions): increase timeout and add retry logic"
 git push origin fix/transaction-timeout-handling
 ```
 
-## Release process
+## **Release process**
 
 Managed branches for preparing and executing releases.
 
-### Release branches (`release/*`)
+### **Release branches (`release/*`)**
 
 Used to prepare a new production release. Allows for final testing, documentation updates, and minor bug fixes specific to the release.
 
-```bash
+```bash filename="Terminal - Release Branch Workflow"
 # 1. Create release branch from develop
 git checkout develop
 git pull upstream develop
@@ -94,11 +94,11 @@ git push origin release/v1.2.0
 # (See Merge Strategy below)
 ```
 
-### Hotfix branches (`hotfix/*`)
+### **Hotfix branches (`hotfix/*`)**
 
 Used for addressing critical bugs found in the production (`main`) branch. These require immediate attention.
 
-```bash
+```bash filename="Terminal - Hotfix Branch Workflow"
 # 1. Create hotfix branch directly from main
 git checkout main
 git pull upstream main
@@ -119,7 +119,7 @@ git push origin hotfix/critical-auth-issue-1.2.1
 # (See Merge Strategy below)
 ```
 
-## Branch protection rules
+## **Branch protection rules**
 
 Configured in the GitHub repository settings to enforce the workflow.
 
@@ -135,7 +135,7 @@ Configured in the GitHub repository settings to enforce the workflow.
     - Allow maintainers to merge without review (optional, based on team policy).
     - Prefer squash or rebase merging for feature PRs to keep history clean.
 
-## Merge strategy
+## **Merge strategy**
 
 How branches are merged back into the main lines.
 
@@ -158,7 +158,7 @@ How branches are merged back into the main lines.
     - Create another PR (or merge directly) from the `hotfix/*` branch back into `develop` to ensure the fix is included in ongoing development.
     - Delete the hotfix branch after merging into both `main` and `develop`.
 
-## Best practices summary
+## **Best practices summary**
 
 1.  **Branch naming conventions**
     - `feature/<description>`
@@ -169,7 +169,7 @@ How branches are merged back into the main lines.
 
 2.  **Commit messages**
     - Follow the [Conventional Commits specification](https://www.conventionalcommits.org/).
-    ```bash
+    ```bash filename="Commit Message Format Example"
     # Format: <type>(<scope>): <subject>
     # Example: feat(payments): add Wave payment provider integration
     ```
@@ -181,7 +181,7 @@ How branches are merged back into the main lines.
     - Keep PRs focused on a single logical change.
     - Request reviews from relevant team members or code owners.
 
-## Next steps
+## **Next steps**
 
 - [Code reviews](./code-reviews)
 - [Versioning](./versioning)

@@ -30,7 +30,7 @@ Once your account is approved, navigate to the API Keys section to find your uni
 
 Set your Test API key and the API base URL for the sandbox environment as environment variables in your terminal. This is the recommended way to handle credentials.
 
-```bash
+```bash filename="Terminal"
 # Replace with your actual Test Secret Key from the lomi. dashboard
 export LOMI_API_KEY=lomi_sk_test_xxxxxxxxxxxxxxxxxxxxxx
 # or
@@ -40,7 +40,7 @@ export LOMI_API_KEY=lomi_sk_live_xxxxxxxxxxxxxxxxxxxxxx
 
 Optionally, set the API base URL for the sandbox environment (though the SDK might default correctly if only a test key is provided):
 
-```bash
+```bash filename="Terminal"
 export LOMI_API_URL=https://sandbox.api.lomi.africa/v1
 # or
 export LOMI_API_URL=https://api.lomi.africa/v1
@@ -50,7 +50,7 @@ export LOMI_API_URL=https://api.lomi.africa/v1
 
 The lomi. CLI tool provides convenient commands for interacting with the API, managing resources, and testing webhooks. More information on how to use the CLI is available on its dedicated page: [lomi. CLI Documentation](/docs/lomi-cli/overview).
 
-```bash
+```bash filename="Terminal"
 bun install lomi.cli
 # or
 npm install lomi.cli
@@ -60,7 +60,7 @@ npm install lomi.cli
 
 Now, let's retrieve your merchant details using the Node.js SDK. This example assumes you have set the `LOMI_API_KEY` and `LOMI_API_URL` environment variables as shown in Step 2.
 
-```typescript
+```typescript filename="getMerchant.ts - Retrieve merchant details"
 import { LomiSDK } from 'lomi.cli';
 
 // Initialize the SDK using environment variables
@@ -125,7 +125,7 @@ getMerchantDetails('YOUR_MERCHANT_ID');
 
 You can also verify your API key and retrieve merchant details directly using `curl` in your terminal. This requires the `LOMI_API_KEY` and `LOMI_API_URL` environment variables to be set (Step 2) and assumes you have `jq` installed for pretty-printing the JSON output.
 
-```bash
+```bash filename="Terminal"
 # Make sure env vars are set:
 # export LOMI_API_KEY=lomi_sk_test_...
 # export LOMI_API_URL=https://sandbox.api.lomi.africa/v1
@@ -151,7 +151,7 @@ Webhooks are essential for receiving real-time notifications about events happen
 
 Here's a basic example using Express.js to create an endpoint that listens for lomi. webhooks:
 
-```typescript
+```typescript filename="webhook.ts - Basic webhook listener (Express)"
 import express from 'express';
 import { LomiSDK } from 'lomi.cli'; // Assuming LomiSDK is correctly imported
 

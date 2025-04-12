@@ -12,7 +12,7 @@ This section guides you through the basics of both methods. For detailed API spe
 
 To initiate a single payment for a dynamic product or service (like a specific shopping cart), create a Checkout Session. This generates a time-sensitive, secure, hosted payment page pre-filled with the details you provide.
 
-```typescript
+```typescript filename="checkout.ts - Create a checkout session"
 import { LomiSDK } from 'lomi.cli';
 
 const lomi = new LomiSDK({
@@ -71,7 +71,7 @@ Payment Links are ideal for scenarios where you need a reusable link for a fixed
 
 Here's an example of creating a Payment Link for a specific product:
 
-```typescript
+```typescript filename="paymentLink.ts - Create a product payment link"
 import { LomiSDK } from 'lomi.cli';
 
 const lomi = new LomiSDK({

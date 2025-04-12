@@ -35,7 +35,7 @@ Creates a new customer profile.
 
 **Example request:**
 
-```json
+```json filename="Example request for POST /customers"
 {
   "name": "Amadou Ba",
   "email": "amadou.ba@example.com",
@@ -48,7 +48,7 @@ Creates a new customer profile.
 
 **Example response (201 Created):**
 
-```json
+```json filename="Example response for POST /customers"
 {
   "data": {
     "customer_id": "b78de3c9-7f76-4f43-9c5d-19d9f5c7c985",
@@ -104,16 +104,12 @@ Updates the details of a specific customer.
 
 **Example request:**
 
-```json
+```json filename="Example request for PATCH /customers/{id}"
 {
   "phone_number": "+221779876543",
   "address": "123 Main St"
 }
 ```
-
-**Example response (200 OK):**
-
-*(Response structure is the same as the `Create a customer` response, showing updated values and `updated_at` timestamp)*
 
 ### **List customers**
 
@@ -165,7 +161,7 @@ Deletes a specific customer profile.
 
 **Example response (200 OK):**
 
-```json
+```json filename="Example response for DELETE /customers/{id}"
 {
   "data": {
     "customer_id": "b78de3c9-7f76-4f43-9c5d-19d9f5c7c985",

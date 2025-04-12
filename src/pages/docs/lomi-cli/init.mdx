@@ -1,0 +1,95 @@
+import { Callout, Steps } from 'nextra/components';
+
+# **Initialize a project (`lomi. init`)**
+
+The `lomi. init` command bootstraps a **lomi.** integration within your existing project directory. It focuses on setting up essential configuration and example code for the **lomi. Node.js SDK**, enabling your application to communicate with the **lomi. API**.
+
+## **Usage**
+
+Navigate to your project's root directory in the terminal and run:
+
+```bash filename="Terminal"
+lomi. init
+```
+
+## **What it does**
+
+This command performs the following actions:
+
+<Steps>
+
+### **Displays welcome message**
+
+Shows a welcome message and the **lomi.** ASCII art.
+
+### **Prompts for configuration**
+
+Interactively asks for necessary details to configure the **SDK** usage within your project:
+-   **API Key (`LOMI_API_KEY`)**: Your **secret API key** obtained from the **lomi. Merchant Portal**. This is stored in the `.env` file specifically for your SDK to authenticate its requests. **This is different from the CLI Token used by `lomi. login`.**
+-   **Environment**: Choose between `production` (live) and `sandbox` (testing) **lomi. API** endpoints for the SDK.
+-   **Webhook Secret (`LOMI_WEBHOOK_SECRET`)**: Your webhook signing secret from the **lomi. Merchant Portal**. Stored in `.env` for your *application* to verify incoming webhook signatures.
+-   **Language**: Choose between `TypeScript` and `JavaScript` for the generated example SDK usage code.
+-   **Package Manager**: Select your preferred package manager (`npm`, `yarn`, `pnpm`) for installing SDK dependencies.
+
+### **Creates `.env` file**
+
+Generates a `.env` file in your project root containing the credentials needed by the **lomi. Node.js SDK** in your application:
+
+```dotenv filename=".env"
+# Your lomi. API Key (get it from https://lomi.africa/portal/settings/api-keys)
+LOMI_API_KEY=your_api_key_here
+
+# Your Webhook Signing Secret (get it from https://lomi.africa/portal/webhooks)
+LOMI_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
+# API URL for the SDK (defaults to production)
+# Use https://sandbox.api.lomi.africa/v1 for testing
+LOMI_API_URL=https://api.lomi.africa/v1
+```
+
+<Callout type="warning" emoji="⚠️" title="Security: Ignore .env">
+  Always add your `.env` file to your `.gitignore` file to prevent accidentally committing your secret credentials to version control.
+</Callout>
+
+### **Creates example files**
+
+Generates example code illustrating how to use the **lomi. Node.js SDK** based on your language choice:
+-   **`lib/lomi./client.{ts|js}`**: Sets up and exports initialized **lomi. SDK** clients, loading credentials from the `.env` file.
+-   **`examples/checkout.{ts|js}`**: Demonstrates creating a checkout session using the configured SDK client.
+-   **`examples/webhook.{ts|js}`**: Provides a basic HTTP server example for receiving and verifying webhook events using the SDK and the `LOMI_WEBHOOK_SECRET` from `.env`.
+
+### **Installs dependencies**
+
+Installs necessary packages (`lomi.`, `dotenv`) for using the SDK and loading environment variables, using your selected package manager.
+
+</Steps>
+
+## **Output example**
+
+After completion, the command displays a summary:
+
+```text filename="Terminal output example"
+Project setup complete!
+
+Created Files:
+- .env (Contains SDK API Key & Webhook Secret - KEEP SAFE & add to .gitignore!)
+- lib/lomi./client.ts
+- examples/checkout.ts
+- examples/webhook.ts
+
+Installed Dependencies:
+- lomi.
+- dotenv
+
+Next Steps:
+1. Review the example code in `lib/` and `examples/`.
+2. Load environment variables (from `.env`) in your application before initializing the lomi. SDK client.
+3. Start building your lomi. integration!
+4. Use `lomi. dev` to test webhook events locally during development.
+5. Verify your CLI login status with `lomi. status` if needed.
+```
+
+## **Prerequisites**
+
+-   You should ideally run `lomi. login` first to authenticate the CLI itself, although `init` primarily focuses on SDK setup.
+-   Have your **lomi. API key** and **webhook secret** ready from the **lomi. Merchant Portal** (Settings > API Keys & Webhooks sections). 

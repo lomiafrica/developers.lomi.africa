@@ -4,7 +4,7 @@ The Providers API allows merchants to retrieve information about available payme
 
 ## **Base URL**
 
-```
+```http filename="Terminal"
 https://api.lomi.africa/v1
 ```
 
@@ -12,7 +12,7 @@ https://api.lomi.africa/v1
 
 All API requests require authentication using an API key. Provide your API key in the `` `X-API-Key` `` request header. See [Authentication](./authentication) for more details.
 
-```http
+```http filename="Terminal"
 X-API-Key: your_api_key
 ```
 
@@ -28,7 +28,7 @@ Retrieves a list of all available payment providers and indicates whether they a
 
 **Example response:**
 
-```json
+```json filename="GET /providers response"
 {
   "data": [
     {
@@ -78,7 +78,7 @@ Retrieves a list of all available payment providers and indicates whether they a
 
 Error responses follow a consistent format. See the [Errors](./errors) guide for more details.
 
-```json
+```json filename="Example error response"
 {
   "error": {
     "message": "Error message description",
@@ -109,21 +109,21 @@ You can test this endpoint using `` `curl` `` or any HTTP client. Remember to re
 
 ### **Retrieve all available payment providers**
 
-```bash
+```bash filename="Terminal"
 curl -X GET "https://api.lomi.africa/v1/providers" \
   -H "X-API-Key: your_api_key"
 ```
 
 ### **Test with an invalid API key**
 
-```bash
+```bash filename="Terminal"
 curl -X GET "https://api.lomi.africa/v1/providers" \
   -H "X-API-Key: invalid_api_key"
 ```
 
 Expected error response:
 
-```json
+```json filename="Invalid API key error"
 {
   "error": {
     "message": "Invalid API key",
@@ -134,13 +134,13 @@ Expected error response:
 
 ### **Test with a missing API key header**
 
-```bash
+```bash filename="Terminal"
 curl -X GET "https://api.lomi.africa/v1/providers"
 ```
 
 Expected error response:
 
-```json
+```json filename="Missing API key error"
 {
   "error": {
     "message": "Missing API key",

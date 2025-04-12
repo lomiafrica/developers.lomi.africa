@@ -27,5 +27,5 @@ function verifyMetaFiles(dir) {
 }
 
 console.log('Verifying meta files...');
-const pagesDir = path.join(__dirname, '../src/pages');
+const pagesDir = path.join(__dirname, '../pages');
 verifyMetaFiles(pagesDir); 

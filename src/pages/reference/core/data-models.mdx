@@ -24,7 +24,7 @@ Represents a merchant account on lomi. Returned by the `` `GET /merchants/{id}` 
 
 **Example:**
 
-```json
+```json filename="Example Merchant object"
 {
   "merchant_id": "904d003c-3736-41d4-90a5-9de74d404fd7",
   "name": "Test Merchant",
@@ -74,7 +74,7 @@ Represents a single transaction, such as a payment or refund. Returned by transa
 
 **Example:**
 
-```json
+```json filename="Example Transaction object"
 {
   "transaction_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "merchant_id": "904d003c-3736-41d4-90a5-9de74d404fd7",
@@ -124,7 +124,7 @@ Represents a reusable subscription plan definition. Returned by subscription pla
 
 **Example:**
 
-```json
+```json filename="Example Plan object"
 {
   "plan_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   "merchant_id": "904d003c-3736-41d4-90a5-9de74d404fd7",
@@ -170,7 +170,7 @@ Represents a customer profile associated with a merchant account. Returned by cu
 
 **Example:**
 
-```json
+```json filename="Example Customer object"
 {
   "customer_id": "b78de3c9-7f76-4f43-9c5d-19d9f5c7c985",
   "merchant_id": "904d003c-3736-41d4-90a5-9de74d404fd7",
@@ -212,7 +212,7 @@ Represents a product or service that can be purchased. Returned by product endpo
 
 **Example:**
 
-```json
+```json filename="Example Product object"
 {
   "product_id": "uuid-generated-for-product",
   "merchant_id": "uuid-of-authenticated-merchant",
@@ -243,7 +243,7 @@ Represents an available payment provider and its connection status for your acco
 
 **Example:**
 
-```json
+```json filename="Example Provider object"
 {
   "code": "WAVE",
   "name": "Wave",

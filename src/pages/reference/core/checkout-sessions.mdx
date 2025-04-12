@@ -50,7 +50,7 @@ Creates a new checkout session.
 
 **Example request:**
 
-```json
+```json filename="POST /checkout-sessions request"
 {
   "success_url": "https://your-site.com/order/success?",
   "cancel_url": "https://your-site.com/cart",
@@ -64,7 +64,7 @@ Creates a new checkout session.
 
 **Example response (201 Created):**
 
-```json
+```json filename="POST /checkout-sessions response"
 {
   "data": {
     "checkout_session_id": "a465993b-98fb-49c3-9943-5b8eac17004c",
@@ -108,7 +108,7 @@ Retrieves the details and current status of a specific checkout session.
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /checkout-sessions/{id} response"
 {
   "data": {
     "checkout_session_id": "a465993b-98fb-49c3-9943-5b8eac17004c",
@@ -135,7 +135,7 @@ Retrieves a list of checkout sessions associated with your merchant account, wit
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /checkout-sessions response"
 {
   "data": [
     {

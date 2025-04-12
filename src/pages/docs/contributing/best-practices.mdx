@@ -1,25 +1,61 @@
-# Best practices
+# **Best practices**
 
 Following these best practices helps maintain code quality, consistency, and security across the lomi. project.
 
-## Code organization
+## **Code style**
 
-*(Guidance on structuring code within packages, modules, and components will be added here. Maintain a clear separation of concerns.)*
+Maintain clean, readable code. We use Prettier and ESLint for automatic formatting and linting (`bun run lint:fix`).
 
-## Security
+### **1. Formatting and Readability**
+
+```typescript filename="Code Style Example"
+// Good: Readable, consistent formatting, meaningful names
+function isValidAmount(amount: number, maxAmount: number = 1000000): boolean {
+  return amount > 0 && amount <= maxAmount;
+}
+
+// Bad: Poor formatting, short unclear names, magic numbers
+# function validate(a){return a>0&&a<=1000000}
+```
+
+## **Code standards**
+
+Maintain high code quality by following these standards:
+
+### **1. TypeScript**
+
+Use TypeScript for type safety and clarity.
+
+```typescript filename="TypeScript Example"
+// Good: Clear interface and types
+interface PaymentRequest {
+  amount: number; // Amount in smallest currency unit (e.g., cents)
+  currency: string; // ISO 4217 currency code (e.g., 'XOF')
+  providerCode: string; // Unique identifier for the payment provider
+}
+
+async function processPayment(request: PaymentRequest): Promise<PaymentResult> {
+  // Implementation...
+  // Use types for return values as well
+}
+```
+
+## **Security**
 
 Security is paramount. Follow these guidelines to protect user data and system integrity.
 
-### 1. Environment variables
+### **1. Environment variables**
 
 Never commit sensitive keys or secrets directly into the codebase. Use environment variables.
 
-```bash
+```bash filename=".env.example"
 # .env.example - Provide a template for required variables
 LOMI_API_KEY=
 LOMI_WEBHOOK_SECRET=
 NODE_ENV=development
+```
 
+```bash filename=".gitignore"
 # .gitignore - Ensure local environment files are not tracked
 .env
 .env.local
@@ -28,11 +64,11 @@ NODE_ENV=development
 
 Refer to the [API Environment documentation](../../developers-reference/api-environment) for managing API keys.
 
-### 2. Sensitive data handling
+### **2. Sensitive data handling**
 
 Avoid logging sensitive information like API keys, passwords, or personal user data. If necessary, ensure it's properly redacted.
 
-```typescript
+```typescript filename="Redaction Example"
 // Example: Redact sensitive information in logs
 const sanitizeData = (data: any) => {
   const masked = { ...data };
@@ -48,19 +84,88 @@ const sanitizeData = (data: any) => {
 Always validate and sanitize user input to prevent injection attacks.
 Consider practices like [Webhook Signature Verification](../../developers-reference/webhook-signature-verification) to ensure data integrity.
 
-## Testing
+## **Error Handling**
 
-*(Details on testing strategies, frameworks (e.g., Jest, Vitest), and how to write and run tests for different parts of the monorepo will be added here. Aim for comprehensive unit, integration, and end-to-end tests.)*
+Handle errors gracefully and provide context.
 
-## Git workflow
+### **1. Graceful Handling**
+
+```typescript filename="Error Handling Example"
+// Good: Catch specific errors, provide context, log appropriately
+import { logger } from './logger'; // Assuming a logger utility
+
+try {
+  const result = await processPayment(request);
+  logger.info({ transactionId: result.id }, 'Payment successful');
+} catch (error) {
+  if (error instanceof ValidationError) {
+    logger.warn({ error, request }, 'Invalid payment request');
+    // Return specific error response to client
+  } else if (error instanceof PaymentProviderError) {
+    logger.error({ error, request }, 'Payment provider failed');
+    // Handle provider-specific failure (e.g., retry logic, alert)
+  } else {
+    logger.error({ error, request }, 'Unexpected error during payment processing');
+    // Handle unknown error
+  }
+}
+
+# Bad: Ignores error, logs vaguely
+/*
+try {
+  await processPayment(request);
+} catch (error) {
+  console.error("Something went wrong"); // Lacks context
+}
+*/
+```
+
+## **Testing**
+
+Write meaningful tests using Vitest (`describe`, `it`, `expect`). Aim for comprehensive unit, integration, and end-to-end tests.
+
+```typescript filename="Testing Example (Vitest)"
+import { describe, it, expect } from 'vitest';
+import { processPayment } from '../src/payment-processor'; // Adjust path
+
+describe('Payment Processing', () => {
+  it('should process a valid payment request', async () => {
+    const request: PaymentRequest = {
+      amount: 10000, // e.g., 100.00 XOF
+      currency: 'XOF',
+      providerCode: 'PROVIDER_X',
+    };
+
+    // Mock dependencies if necessary
+    // vi.mock(...)
+
+    const result = await processPayment(request);
+    expect(result).toBeDefined();
+    expect(result.status).toBe('completed');
+    // Add more specific assertions
+  });
+
+  it('should throw validation error for invalid amount', async () => {
+    const request: PaymentRequest = {
+      amount: -500,
+      currency: 'XOF',
+      providerCode: 'PROVIDER_X',
+    };
+
+    await expect(processPayment(request)).rejects.toThrow(ValidationError);
+  });
+});
+```
+
+## **Git workflow**
 
 Adhere to our established Git workflow for smooth collaboration.
 
-### 1. Branch management
+### **1. Branch management**
 
 Keep feature branches focused on a single task and relatively short-lived. Regularly rebase with the `develop` branch.
 
-```bash
+```bash filename="Terminal"
 # Create a focused feature branch
 git checkout develop
 git pull upstream develop
@@ -77,29 +182,31 @@ git push origin feature/add-wave-provider
 
 See the full [Branching Strategy](./branching-strategy) for details.
 
-### 2. Commit messages
+### **2. Commit messages**
 
 Use conventional commit messages to provide clarity and enable automated changelog generation.
 
-```bash
-# Format: <type>(<scope>): <description>
-# Example types: feat, fix, docs, style, refactor, test, chore
-# Example scopes: payments, webhooks, api, auth, docs
+```bash filename="Terminal - Good Commits"
+# Good: Specific type, scope, and description
+git commit -m "feat(auth): implement API key generation endpoint"
+git commit -m "fix(webhooks): handle duplicate event processing"
+git commit -m "docs(contributing): clarify rebase workflow"
 
-feat(auth): add API key rotation endpoint
-fix(webhook): handle signature verification errors gracefully
-docs(api): update authentication guide example
+# Bad: Vague, uninformative
+# git commit -m "fixed stuff"
+# git commit -m "wip"
+# git commit -m "more changes"
 ```
 
-## Documentation
+## **Documentation**
 
 Good documentation is essential for maintainability and collaboration.
 
-### 1. Code comments
+### **1. Code comments**
 
-Use comments to explain *why* something is done, not *what* it does (the code should explain the what). Use JSDoc or TSDoc for functions and complex logic.
+Use comments to explain *why* something is done, not *what* it does (the code should explain the what). Use TSDoc for functions and complex logic.
 
-```typescript
+```typescript filename="TSDoc Example"
 /**
  * Processes a payment request using the specified provider.
  * Handles potential errors and ensures idempotency.
@@ -107,6 +214,11 @@ Use comments to explain *why* something is done, not *what* it does (the code sh
  * @returns A promise resolving to the payment result.
  * @throws {ValidationError} If the request payload is invalid.
  * @throws {PaymentProcessingError} If the provider fails.
+ * @example
+ * ```typescript
+ * const result = await processPayment({ amount: 5000, currency: 'XOF', providerCode: 'WAVE' });
+ * console.log(result.transactionId);
+ * ```
  */
 async function processPayment(
   request: PaymentRequest
@@ -115,11 +227,11 @@ async function processPayment(
 }
 ```
 
-### 2. README files
+### **2. README files**
 
-Ensure packages and significant components have README files explaining their purpose, usage, configuration, and how to run tests.
+Ensure packages and significant components have `README` files explaining their purpose, usage, configuration, and how to run tests.
 
-```markdown
+```markdown filename="README Example"
 # Package/Component Name
 
 ## Overview
@@ -139,15 +251,15 @@ Explain how to run tests for this specific package/component.
 `pnpm --filter @lomi/package-name test`
 ```
 
-## Deployment
+## **Deployment**
 
 Follow standard procedures for deployment.
 
-### 1. CI/CD
+### **1. CI/CD**
 
 Continuous Integration and Continuous Deployment pipelines automate testing and deployment. Ensure your changes pass all checks.
 
-```yaml
+```yaml filename=".github/workflows/ci.yml Example"
 # Example: .github/workflows/ci.yml (Simplified)
 name: CI Checks
 on: [push, pull_request]
@@ -168,11 +280,11 @@ jobs:
       - run: pnpm test
 ```
 
-### 2. Version control
+### **2. Version control**
 
 Package versions are managed within their respective `package.json` files and updated according to our [Versioning](./versioning) guide.
 
-```json
+```json filename="package.json Example"
 // Example: packages/api/package.json
 {
   "name": "@lomi/api",
@@ -184,7 +296,7 @@ Package versions are managed within their respective `package.json` files and up
 }
 ```
 
-## Next steps
+## **Next steps**
 
 - [Code reviews](./code-reviews)
 - [Contributing guidelines](./contributing-guidelines)

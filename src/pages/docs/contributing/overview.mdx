@@ -1,3 +1,5 @@
+import { Steps } from 'nextra/components';
+
 # **Contributing**
 
 We're thrilled you're interested in helping improve lomi. Whether you're fixing bugs, adding new features, improving the documentation, or reporting issues, your contributions are valuable and we are grateful for your help.
@@ -14,7 +16,7 @@ There are many ways to contribute:
 - **Improving the docs**: Help us make our documentation clearer and more comprehensive.
 - **Community support**: Answer questions and help other users in the [Discord community](https://discord.gg/33syDfh9).
 
-### Links
+### **Links**
 
 Before you start, please familiarize yourself with these important documents:
 
@@ -23,3 +25,244 @@ Before you start, please familiarize yourself with these important documents:
 - **[Branching strategy](./branching-strategy)**: How we manage branches for development and releases.
 
 We appreciate your interest and look forward to hearing from you!
+
+----
+
+# **Getting Started**
+
+Ready to make your first contribution to lomi.? This guide will walk you through finding an issue, setting up your development environment, making changes, and submitting them.
+
+## **Prerequisites**
+
+Before you begin, ensure you have the following installed:
+
+- **[Git](https://git-scm.com/)**: For version control.
+- **[Node.js](https://nodejs.org/)**: We recommend the latest LTS version.
+- **[bun](https://bun.sh/)**: Our preferred package manager for managing dependencies in the monorepo.
+
+<Steps>
+
+### **Find an issue to work on (optional, but recommended)**
+
+Before diving into code, it's helpful to find an existing issue or propose a new one:
+
+- Browse [open issues](https://github.com/lomiafrica/lomi./issues) on the main repository.
+- Look for issues tagged with `good first issue` if you're new.
+- If you have a new idea or bug fix, consider creating a new issue to discuss it first.
+- Don't hesitate to ask questions in the issue comments if anything is unclear.
+
+### **Fork the repository**
+
+Start by forking the main lomi. repository on GitHub:
+
+1. Go to the [lomi. repository](https://github.com/lomiafrica/lomi.).
+2. Give us a star !
+3. Click the "Fork" button in the top-right corner.
+
+### **Clone your fork**
+
+Clone your forked repository to your local machine:
+
+```bash filename="Terminal"
+git clone https://github.com/beloved_anon/lomi.git
+cd lomi.
+```
+
+Replace `<beloved_anon>` with your real GitHub username.
+
+### **Set upstream remote**
+
+Add the original lomi. repository as the `upstream` remote. This allows you to keep your fork synchronized with the main project.
+
+```bash filename="Terminal"
+git remote add upstream https://github.com/lomiafrica/lomi./
+```
+
+Verify the remotes:
+
+```bash filename="Terminal"
+git remote -v
+# origin  https://github.com/<YOUR_USERNAME>/lomi./ (fetch)
+# origin  https://github.com/<YOUR_USERNAME>/lomi./ (push)
+# upstream https://github.com/lomiafrica/lomi./ (fetch)
+# upstream https://github.com/lomiafrica/lomi./ (push)
+```
+
+### **Install dependencies & set up environment**
+
+Install the project dependencies using `bun` from the root of the monorepo:
+
+```bash filename="Terminal"
+bun install
+```
+
+Set up your local environment variables by copying the example file:
+
+```bash filename="Terminal"
+cp .env.example .env
+# Review the .env file and add any necessary secrets or configurations
+```
+
+### **Local development commands**
+
+Here are some common commands you'll use during development:
+
+```bash filename="Terminal"
+# Start the main development server (specific app may vary)
+# Check the package.json in the specific app/package directory
+bun run dev
+
+# Build and serve the documentation site locally
+bun run docs:dev
+
+# Run linting checks across the project
+bun run lint
+
+# Run linters and automatically fix issues
+bun run lint:fix
+```
+
+### **Create a branch**
+
+Before making changes, create a new branch based on the `develop` branch. Follow our [Branching strategy](./branching-strategy) for naming conventions.
+
+```bash filename="Terminal"
+# Fetch the latest changes from upstream
+git fetch upstream
+
+# Check out the develop branch
+git checkout develop
+
+# Pull the latest changes for develop
+git pull upstream develop
+
+# Create your feature or bugfix branch
+git checkout -b <BRANCH_TYPE>/<SHORT_DESCRIPTION>
+# Example: git checkout -b feature/add-cool-new-thing
+# Example: git checkout -b fix/resolve-that-bug
+```
+
+### **Make your changes**
+
+Now you can start making your code or documentation changes within the appropriate package or app in the `packages/` or `apps/` directory.
+
+- **Code changes**: Write your code, ensuring it adheres to our [Code standards](./best-practices#code-standards) and [Best practices](./best-practices).
+- **Documentation changes**: Update or add documentation in the relevant `apps/developers/src/pages/docs/` directory. Use Markdown (`.mdx`).
+
+**Keep your branch updated:**
+
+Periodically, keep your branch up-to-date with the latest changes from the upstream `develop` branch:
+
+```bash filename="Terminal"
+# Fetch the latest changes from upstream
+git fetch upstream
+
+# Rebase your branch onto the latest develop branch
+# Make sure you have committed or stashed your local changes first!
+git rebase upstream/develop
+
+# You might need to resolve conflicts during the rebase process.
+# After resolving conflicts: git add . ; git rebase --continue
+# If you get stuck: git rebase --abort
+```
+
+### **Test your changes**
+
+Ensure your changes pass all relevant tests and meet our quality standards.
+
+```bash filename="Terminal"
+# Example: Running tests for a specific package
+# Replace <package_name> with the actual package, e.g., @lomi/api
+bun --filter <package_name> test
+
+# Run specific tests using a pattern (e.g., tests related to 'payment')
+bun test -- --grep "payment"
+
+# Run all tests across the monorepo
+bun test
+
+# Run tests and generate a coverage report
+bun run test:coverage
+```
+
+Write tests for your changes. See the [Code standards](./best-practices#code-standards) section for an example.
+
+### **Commit your changes**
+
+Commit your changes using a descriptive message that follows our [Commit message guidelines](./branching-strategy#commit-messages). Adhering to the format helps automate releases and changelogs.
+
+**Commit message format:**
+
+```text filename="Commit Message Format"
+<type>(<scope>): <description>
+
+# Examples:
+# feat(api): add support for webhook signature verification
+# fix(docs): correct typo in getting started guide
+# chore(deps): update dependency xyz
+```
+
+**Example commit:**
+
+```bash filename="Terminal"
+git add .
+git commit -m "feat(payments): implement new payment provider"
+```
+
+See [Best practices](./best-practices#best-practices) for good vs. bad commit message examples.
+
+### **Push your changes**
+
+Push your branch to your fork on GitHub:
+
+```bash filename="Terminal"
+git push origin <BRANCH_NAME>
+```
+
+### **Submit a pull request (PR)**
+
+1.  Go to your fork on GitHub (`https://github.com/<YOUR_USERNAME>/lomi.`).
+2.  You should see a prompt to create a Pull Request from your recently pushed branch. Click "**Compare & pull request**".
+3.  Ensure the base repository is `lomiafrica/lomi.` and the base branch is `develop`.
+4.  The head repository should be your fork, and the compare branch should be your feature/fix branch.
+5.  **Write a clear PR title:** Use the same format as commit messages (`<type>(<scope>): <description>`).
+6.  **Fill out the PR template:** Provide a clear description of your changes, including:
+    *   **Changes:** What did you change and why?
+    *   [ ] My code follows the style guidelines of this project.
+    *   [ ] I have performed a self-review of my own code.
+    *   [ ] I have commented my code, particularly in hard-to-understand areas.
+    *   [ ] I have made corresponding changes to the documentation.
+    *   [ ] My changes generate no new warnings.
+    *   [ ] I have added tests that prove my fix is effective or that my feature works.
+    *   [ ] New and existing unit tests pass locally with my changes (`bun test`).
+    *   [ ] Any dependent changes have been merged and published in downstream modules.
+    *   [ ] Commits are squashed appropriately (if needed) and have meaningful messages.
+8.  Submit the Pull Request.
+
+</Steps>
+
+## **Review process**
+
+Your PR will be reviewed by maintainers.
+
+### **During review:**
+
+- **Respond to Feedback:** Address comments and questions promptly.
+- **Make Changes:** Push new commits to your PR branch to incorporate requested changes. Avoid force-pushing unless asked.
+- **Keep Updated:** If `develop` advances significantly, rebase your branch to resolve conflicts.
+
+### **After merge:**
+
+- **Celebrate!** 🎉 Thank you for your contribution.
+- **Clean Up:** You can safely delete your feature branch from your fork.
+- **Stay involved:** Keep an eye on related issues or follow up if needed. Monitor the deployment if applicable.
+
+## **Next steps**
+
+- Familiarize yourself with our [Code of conduct](./code-of-conduct).
+- Understand our [Branching strategy](./branching-strategy).
+- Learn about the [Code review](./code-reviews) process in more detail.
+
+Your PR will be reviewed by maintainers according to our [Code Review](./code-reviews) process. Be prepared to respond to feedback and make further changes if necessary. We'll be fast to respond to you, don't you worry!
+
+Thank you so much.

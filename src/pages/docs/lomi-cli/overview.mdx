@@ -1,122 +1,66 @@
-# lomi. CLI
+import { Steps } from "nextra/components";
 
-The lomi. CLI helps you integrate lomi.'s payment services into your applications. It provides tools for:
+# **Get started with the lomi. CLI**
 
-- Project initialization and configuration
-- Payment operations management
-- Webhook endpoint configuration
-- API key management
-- Integration status monitoring
+The **lomi.** Command Line Interface (**CLI**) is your primary tool for interacting with **lomi.**, managing your projects, handling webhooks, and streamlining your development workflow directly from the terminal.
 
-## Installation
+## **Installation**
 
-Install the lomi. CLI using npm:
+<Steps>
 
-```bash copy
-npm install lomi.cli
+### **Prerequisites**
+
+Ensure you have **Node.js** (version 18 or higher recommended) and **npm** (or `yarn`/`pnpm`) installed on your system.
+
+### **Install globally**
+
+Using `npm`:
+```bash filename="Terminal"
+npm install -g lomi.
 ```
 
-## Authentication
-
-The CLI requires authentication to interact with the lomi. API. You can authenticate using:
-
-1. **Environment Variable**:
-```bash copy
-export LOMI_API_KEY=your_api_key_here
+Or using `yarn`:
+```bash filename="Terminal"
+yarn global add lomi.
 ```
 
-2. **Interactive Login**:
-```bash copy
-lomi login
+Or using `pnpm`:
+```bash filename="Terminal"
+pnpm add -g lomi.
 ```
 
-## Core Commands
+### **Verify installation**
 
-### `lomi init`
+Check if the installation was successful:
 
-Initializes a new lomi. project in your current directory:
-
-```bash copy
-lomi init
+```bash filename="Terminal"
+lomi. --version
 ```
 
-This command:
-- Creates a `lib/lomi.ts` file with client configuration
-- Sets up environment variables in `.env`
-- Installs the lomi. client package
-- Configures your API key
+</Steps>
 
-### `lomi dev`
+## **Core commands**
 
-Starts the development environment:
+Here's a summary of the main commands available in the **lomi. CLI**:
 
-```bash copy
-lomi dev
-```
+-   **`lomi. login`**: [Authenticate](./login) the CLI with your **lomi.** account via a browser-based flow. This is required for most commands that interact with the **lomi. API**. Stores a global **CLI Token**.
+-   **`lomi. init`**: [Initialize](./init) a **lomi.** integration in the current directory. Sets up example code for the **lomi. Node.js SDK**, creates a `.env` file, and installs dependencies.
+-   **`lomi. status`**: Check your current login status and verify connectivity to the **lomi. API** using the stored global **CLI Token**. (Mentioned in [Configuration](./configuration) and [Initialize](./init)).
+-   **`lomi. payments`**: [Manage](./payments) payment links (e.g., `lomi. payments create`). Requires login.
+-   **`lomi. webhook`**: Manage webhook endpoints (e.g., `lomi. webhook register`, `lomi. webhook list`). See [Webhook development](./webhook-development). Requires login.
+-   **`lomi. dev`**: Start a [local development server](./dev) to receive and inspect webhook events sent to your machine, simplifying webhook testing. Requires login.
 
-Features:
-- Local development server
-- Integration testing support
-- Environment configuration
+## **Global options**
 
-### `lomi status`
+These options can be used with any command:
 
-Displays your integration status:
+-   `-h, --help`: Display help information for the CLI or a specific command.
+-   `-v, --version`: Display the installed version of the **lomi. CLI**.
 
-```bash copy
-lomi status
-```
+## **Next steps**
 
-Shows:
-- API connectivity status
-- Account information
-- Integration health
+1.  **Authenticate**: Run [`lomi. login`](./login) first to enable API interactions.
+2.  **Set up a project**: Use [`lomi. init`](./init) inside your project folder to configure the SDK.
+3.  **Explore commands**: Dive deeper into each command's specific documentation page using the sidebar navigation.
 
-### `lomi payments`
-
-Manage payment operations:
-
-```bash copy
-# List payments
-lomi payments list
-
-# Get payment details
-lomi payments get <payment_id>
-```
-
-### `lomi webhook`
-
-Manage webhook endpoints:
-
-```bash copy
-# Register new webhook
-lomi webhook register
-
-# List webhooks
-lomi webhook list --merchant-id <merchant_id>
-```
-
-### `lomi api-key`
-
-Manage API keys:
-
-```bash copy
-# List keys
-lomi api-key list
-
-# Create key
-lomi api-key create
-```
-
-## Global Options
-
-- `--api-key`: Set API key
-- `--env`: Set environment (default: 'production')
-- `--json`: JSON output format
-
-## Next Steps
-
-- [Configuration](./configuration) - Configure the CLI
-- [Webhook Development](./webhook-development) - Set up webhooks
-
-For command details, use `lomi help [command]`. For support, contact [hello@lomi.africa](mailto:hello@lomi.africa).
+For detailed help on any command, use `lomi. help [command]`. For support, contact `hello@lomi.africa`.

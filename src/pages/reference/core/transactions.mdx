@@ -31,7 +31,7 @@ Retrieves a list of transactions for the authenticated merchant, with options fo
 
 **Example request (filtering for completed Wave transactions):**
 
-```
+```http filename="GET /transactions example request"
 GET /transactions?status=completed&provider=WAVE&limit=10
 Host: api.lomi.africa
 X-API-Key: your_api_key
@@ -39,7 +39,7 @@ X-API-Key: your_api_key
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /transactions response"
 {
   "success": true,
   "data": [
@@ -90,7 +90,7 @@ Retrieves the details of a specific transaction by its unique ID.
 
 **Example response (200 OK):**
 
-```json
+```json filename="GET /transactions/{id} response"
 {
   "success": true,
   "data": {

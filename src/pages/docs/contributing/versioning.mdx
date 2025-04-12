@@ -1,10 +1,10 @@
-# Versioning
+# **Versioning**
 
 We follow Semantic Versioning (SemVer) for all our packages and APIs.
 
-## Version format
+## **Version format**
 
-```bash
+```bash filename="SemVer Format"
 MAJOR.MINOR.PATCH
 # Example: 1.2.3
 ```
@@ -13,11 +13,11 @@ MAJOR.MINOR.PATCH
 - **MINOR**: New features (backward compatible)
 - **PATCH**: Bug fixes (backward compatible)
 
-## Version management
+## **Version management**
 
-### NPM version
+### **NPM version**
 
-```bash
+```bash filename="Terminal - npm version"
 # Patch release
 npm version patch
 # 1.2.3 -> 1.2.4
@@ -31,9 +31,9 @@ npm version major
 # 1.2.3 -> 2.0.0
 ```
 
-### Git tags
+### **Git tags**
 
-```bash
+```bash filename="Terminal - git tag"
 # Create annotated tag
 git tag -a v1.2.3 -m "Version 1.2.3"
 
@@ -41,10 +41,10 @@ git tag -a v1.2.3 -m "Version 1.2.3"
 git push origin --tags
 ```
 
-## Release process
+## **Release process**
 
 1. **Update version**
-   ```bash
+   ```bash filename="Terminal - Update Version"
    # Update package.json
    npm version minor
 
@@ -57,18 +57,18 @@ git push origin --tags
    ```
 
 2. **Create release**
-   ```bash
+   ```bash filename="Terminal - Create Release"
    # Create GitHub release
    gh release create v1.2.3 \
      --title "Version 1.2.3" \
      --notes-file CHANGELOG.md
    ```
 
-## API versioning
+## **API versioning**
 
-### URL versioning
+### **URL versioning**
 
-```bash
+```bash filename="API URL Versioning Example"
 # Current version
 https://api.lomi.africa/v1/checkout/sessions
 
@@ -76,7 +76,7 @@ https://api.lomi.africa/v1/checkout/sessions
 https://api.lomi.africa/v2/checkout/sessions
 ```
 
-### Version lifecycle
+### **Version lifecycle**
 
 1. **Active**
    - Latest version
@@ -93,7 +93,7 @@ https://api.lomi.africa/v2/checkout/sessions
    - Limited support
    - Migration required
 
-## Breaking changes
+## **Breaking changes**
 
 1. **Notification**
    - Advance notice (minimum 6 months)
@@ -110,11 +110,11 @@ https://api.lomi.africa/v2/checkout/sessions
    - Legacy version support
    - Transition period
 
-## Version control
+## **Version control**
 
-### Package files
+### **Package files**
 
-```json
+```json filename="package.json Example"
 {
   "name": "@lomi/sdk",
   "version": "1.2.3",
@@ -124,9 +124,9 @@ https://api.lomi.africa/v2/checkout/sessions
 }
 ```
 
-### Lock files
+### **Lock files**
 
-```bash
+```bash filename="Lockfile Examples"
 # NPM
 package-lock.json
 
@@ -134,7 +134,7 @@ package-lock.json
 yarn.lock
 ```
 
-## Best practices
+## **Best practices**
 
 1. **Version numbers**
    - Use semantic versioning
@@ -151,7 +151,7 @@ yarn.lock
    - Breaking changes
    - Upgrade guide
 
-## Next steps
+## **Next steps**
 
 - [Contributing guidelines](./contributing-guidelines)
 - [API reference](/api-reference)

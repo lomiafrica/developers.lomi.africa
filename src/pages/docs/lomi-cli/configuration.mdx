@@ -1,76 +1,89 @@
-# CLI Configuration
+import { Callout } from 'nextra/components';
 
-The lomi. CLI can be configured through various methods to suit your development workflow.
+# **CLI Configuration**
 
-## Configuration File
+The **lomi. CLI** can be configured through various methods to suit your development workflow, ranging from global authentication to project-specific SDK settings.
 
-Create a `lomi.config.json` in your project root:
+## **Configuration methods**
 
-```json copy
+You can provide configuration settings via several mechanisms:
+
+### **Configuration file (`lomi.config.json`)**
+
+Create a `lomi.config.json` in your project root for project-level CLI behavior settings (not SDK keys):
+
+```json filename="lomi.config.json"
 {
-  "environment": "development",
+  "environment": "development", // Default environment for commands like `dev`
   "webhook": {
     "url": "https://your-domain.com/webhook",
-    "secret": "your_webhook_secret",
+    "secret": "your_webhook_secret", // Note: Secrets here are often managed separately
     "events": ["payment.success", "payment.failed"]
   },
   "dev": {
     "port": 3000,
     "cors": true,
-    "webhook_url": "http://localhost:3000/webhook"
+    "webhook_url": "http://localhost:3000/webhook" // For `lomi. dev` forwarding
   }
 }
 ```
 
-## Environment Variables
+### **Environment variables**
 
-The CLI respects the following environment variables:
+The CLI also respects specific environment variables. These often overlap with SDK settings but apply to CLI command execution:
 
-```bash copy
-# Authentication
+```bash filename="Terminal"
+# Authentication (Primarily for SDK, but some CLI commands might check)
+# Note: `lomi. login` is the primary method for CLI auth.
 LOMI_API_KEY=your_api_key
 
-# Environment
+# Environment context for CLI commands
 LOMI_ENV=development|staging|production
 
-# Development
+# Settings for `lomi. dev` command
 LOMI_DEV_PORT=3000
 LOMI_WEBHOOK_URL=https://your-domain.com/webhook
 LOMI_WEBHOOK_SECRET=your_webhook_secret
 ```
 
-## Project-Level Configuration
+### **Project directory (`.lomi`)**
 
-For team settings, create a `.lomi` directory in your project:
+For more structured team settings, you can use a `.lomi` directory (though less common than `.env` for secrets):
 
-```bash
+```bash filename="Terminal"
 .lomi/
-  ├── config.json     # Project configuration
-  ├── credentials     # API keys and secrets
+  ├── config.json     # Project-specific CLI configuration
+  ├── credentials     # Potentially API keys (use `.env` recommended)
   └── webhooks/       # Webhook event samples
 ```
 
-## Configuration Precedence
+### **Command line arguments**
 
-Settings are loaded in the following order (later sources override earlier ones):
+Many commands accept flags that override other configuration settings (e.g., `lomi. dev --port 4000`).
 
-1. Default configuration
-2. Project config file (`lomi.config.json`)
-3. Environment variables
-4. Command line arguments
+## **Configuration precedence**
 
-## Environment-Specific Configuration
+Settings are loaded in the following order, with later sources overriding earlier ones:
 
-Create environment-specific configurations:
+1.  Default internal CLI configuration
+2.  Project config file (`lomi.config.json`)
+3.  Environment variables (e.g., `LOMI_ENV`)
+4.  Command line arguments (e.g., `lomi. dev --port 4000`)
 
-```json copy
+## **Environment-specific configuration**
+
+You can create environment-specific config files like `lomi.config.development.json` or `lomi.config.production.json` that are loaded based on the `LOMI_ENV` variable or `--env` flag.
+
+```json filename="lomi.config.development.json"
 // lomi.config.development.json
 {
   "webhook": {
     "url": "http://localhost:3000/webhook"
   }
 }
+```
 
+```json filename="lomi.config.production.json"
 // lomi.config.production.json
 {
   "webhook": {
@@ -79,32 +92,108 @@ Create environment-specific configurations:
 }
 ```
 
-## Secure Credentials
+## **Secure credentials management**
 
-The CLI automatically encrypts sensitive information:
+While `.env` is standard for SDK keys, the CLI *itself* is primarily authenticated via `lomi. login`. Avoid storing the main `LOMI_API_KEY` directly in `lomi.config.json`.
 
-```bash copy
-# Store a secure value
-lomi config set webhook.secret your_secret
+For potentially sensitive values within the CLI's own configuration (less common), you might use:
 
-# Use in your application
-lomi config get webhook.secret
+```bash filename="Terminal"
+# Store a secure value specific to CLI config (if needed)
+lomi. config set some_cli_setting some_value --secure
+
+# Retrieve it
+lomi. config get some_cli_setting
 ```
 
-## Team Configuration
+<Callout type="warning" emoji="⚠️" title="Security Distinction">
+  The **primary method** for securing SDK credentials (like `LOMI_API_KEY` and `LOMI_WEBHOOK_SECRET`) is using a `.env` file, managed via `lomi. init` and loaded by your application code. The `lomi. login` command handles secure **CLI authentication** using a separate token, whose status can be checked with `lomi. status`.
+</Callout>
 
-Share non-sensitive configuration with your team:
+## **Team configuration sharing**
 
-```bash copy
-# Export shareable configuration
-lomi config export --safe > lomi.config.team.json
+Share non-sensitive CLI configuration with your team:
 
-# Import team configuration
-lomi config import lomi.config.team.json
+```bash filename="Terminal"
+# Export shareable CLI configuration (excludes secrets)
+lomi. config export --safe > lomi.config.team.json
+
+# Import team CLI configuration
+lomi. config import lomi.config.team.json
 ```
 
-## Next Steps
+---
 
-- Learn about [Webhook Development](./webhook-development)
-- Explore our [Testing Guide](./testing)
-- Set up [CI/CD Integration](./ci-cd) 
+# **Configure CLI Authentication vs. SDK Keys**
+
+Configuring the **lomi.** tools involves two distinct but related parts:
+
+1.  **Authenticating the CLI**: Allowing the `lomi.` command itself to interact with the **lomi. API**.
+2.  **Setting up SDK Keys**: Providing API credentials for the **lomi. Node.js SDK** to use *within your application code*.
+
+## **CLI authentication (global via `lomi. login`)**
+
+Most **lomi. CLI** commands (like `payments`, `webhook`, `status`, `dev`) need permission to interact with the **lomi. API**. This authentication is managed globally using the [`lomi. login`](./login) command.
+
+```bash filename="Terminal"
+lomi. login
+```
+
+This command initiates a secure browser-based device authorization flow:
+1.  The CLI provides a unique code.
+2.  It opens your browser to a **lomi.** verification page.
+3.  You paste the code and log in to your **lomi.** account.
+4.  Upon successful authorization, the CLI securely receives and stores a **CLI Token** specific to your CLI session.
+
+This token is saved globally (typically in `~/.lomi/config.json`) and used automatically by subsequent CLI commands requiring API access.
+
+<Callout type="info" emoji="💡" title="CLI Token Purpose">
+  The `lomi. login` flow provides a secure way to authenticate the CLI for tasks like managing webhooks or checking status **without you manually handling API keys** for direct CLI usage.
+</Callout>
+
+### **Checking CLI authentication status (`lomi. status`)**
+
+You can verify if your CLI is authenticated using:
+
+```bash filename="Terminal"
+lomi. status
+```
+
+This command checks for the stored **CLI Token** and attempts to connect to the **lomi. API** using it, confirming if your CLI session is active.
+
+## **Project configuration (SDK Keys via `lomi. init` and `.env`)**
+
+When you initialize a project using [`lomi. init`](./init), it sets up configuration specifically for the **lomi. Node.js SDK** to use *within your application code*.
+
+```bash filename="Terminal"
+lomi. init
+```
+
+Key actions performed by `lomi. init`:
+
+1.  **Creates a `.env` file**: This file in your project root is the **recommended place** for your SDK credentials:
+    *   `LOMI_API_KEY`: Your **secret API key** used by the SDK. **Crucially, this is different from the CLI Token obtained via `lomi. login`.** You get this key from your **lomi. Merchant Portal** (Settings > API Keys).
+    *   `LOMI_WEBHOOK_SECRET`: Your **webhook signing secret**, used by your *application* to verify incoming webhook requests. You get this when creating a webhook endpoint in the **lomi. Merchant Portal** (Webhooks > Create Webhook).
+    *   `LOMI_API_URL`: The base URL for the **lomi. API** (defaults to production, can be set to sandbox).
+
+2.  **Generates example code**: Creates files (e.g., `lib/lomi./client.ts`, `examples/checkout.ts`, `examples/webhook.ts`) showing how your application should load these environment variables (e.g., using `dotenv`) and initialize the **lomi. SDK**.
+
+<Callout type="warning" emoji="⚠️" title="Key Distinction">
+  The `LOMI_API_KEY` in your `.env` file is used by the **SDK within your application code**. Most CLI commands (like `lomi. payments`, `lomi. webhook`) use the separate **CLI Token** obtained from `lomi. login` (check status with `lomi. status`). The `lomi. init` command might *prompt* for an API key during setup only to conveniently pre-fill the `.env` file for your SDK's use.
+</Callout>
+
+### **Essential environment variables for the SDK**
+
+The **lomi. Node.js SDK** (as configured by `lomi. init` examples) relies on these environment variables loaded from your `.env` file:
+
+-   `LOMI_API_KEY`: **Required.** Your secret API key for authenticating SDK requests from your application.
+-   `LOMI_WEBHOOK_SECRET`: **Required** if your application needs to verify webhook signatures.
+-   `LOMI_API_URL`: Optional. Defaults to the production **lomi. API**. Set to `https://sandbox.api.lomi.africa/v1` for the sandbox environment.
+
+Ensure your application code loads these variables (e.g., using `dotenv` or similar environment management tools) *before* initializing the **lomi. SDK** client.
+
+## **Next steps**
+
+- Learn about [Webhook development](./webhook-development)
+- Explore our [Testing Guide](./testing) (Link placeholder - needs creation)
+- Set up [CI/CD Integration](./ci-cd) (Link placeholder - needs creation) 
