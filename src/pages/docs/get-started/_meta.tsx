@@ -5,6 +5,7 @@ const meta: Meta = {
   "setup-payment-methods": "Select your payment methods",
   "api-keys": "Getting your keys",
   "transactions": "Process transactions",
+  "setup-webhooks": "Setting up webhooks",
 };
 
 export default meta;

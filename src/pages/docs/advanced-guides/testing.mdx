@@ -1,298 +1,328 @@
-# Testing Guide
+# **Testing guide**
 
-This guide covers best practices for testing your lomi integration, from local development to production readiness.
+This guide covers best practices for testing your lomi. integration, ensuring your payment flows work correctly in both sandbox and production environments.
 
-## Test Environment
+## **Test environment setup**
 
-### Setup
+### **1. Test API key**
 
-1. **Test API Key**
-   ```typescript
-   const lomi = new LomiSDK({
-     apiKey: process.env.LOMI_TEST_API_KEY,
-     environment: 'test'
-   });
-   ```
+Always use your **Test API Key** (`lomi_sk_test_...`) for development and testing. Obtain this key from your lomi. Dashboard under **Developers -> API Keys**. Configure your application to use this key, typically via an environment variable.
 
-2. **Test Configuration**
-   ```typescript
-   // test/config.ts
-   export const testConfig = {
-     merchantId: process.env.TEST_MERCHANT_ID,
-     providers: ['FREE_MONEY', 'ORANGE_MONEY'],
-     webhookUrl: 'https://example.com/webhooks',
-     amount: 1000,
-     currency: 'XOF'
-   };
-   ```
+```typescript filename="Configuring the SDK with test key"
+import { LomiSDK } from '@lomi/sdk'; // Your SDK package
 
-## Integration Tests
+const lomi = new LomiSDK({
+  apiKey: process.env.LOMI_TEST_API_KEY, // Use the TEST key from environment
+  baseUrl: 'https://sandbox.api.lomi.africa/v1' // Point to the sandbox URL
+});
+```
 
-### 1. Payment Flow
+### **2. Test webhook secret**
 
-```typescript
-import { expect } from 'chai';
+When testing webhooks locally or in a staging environment, create a separate webhook endpoint configuration in the lomi. Dashboard pointing to your test URL (e.g., an `ngrok` URL). Use the unique **Signing Secret** (`whsec_...`) generated for *that specific test endpoint* in your test environment configuration (`LOMI_TEST_WEBHOOK_SECRET`).
+
+### **3. Test configuration file**
+
+Consider centralizing test-specific configurations.
+
+```typescript filename="Example test configuration"
+// test/config.ts
+export const testConfig = {
+  merchantId: process.env.TEST_MERCHANT_ID, // Your specific Test Merchant ID
+  allowedProviders: ['WAVE', 'ORANGE'], // Providers enabled in your test account
+  testWebhookUrl: process.env.TEST_WEBHOOK_URL, // Your ngrok or test server URL
+  webhookSecret: process.env.LOMI_TEST_WEBHOOK_SECRET,
+  defaultAmount: 100, // Smallest valid amount for testing
+  defaultCurrency: 'XOF'
+};
+```
+
+## **Integration tests**
+
+Write automated tests that interact with the lomi. **sandbox** API.
+
+### **1. Payment flow tests**
+
+Test creating and retrieving core objects like Checkout Sessions or Payment Links.
+
+```typescript filename="Testing checkout session creation (Jest example)"
 import { LomiSDK } from '@lomi/sdk';
+import { testConfig } from '../config'; // Your test config
 
-describe('Payment Flow', () => {
-  const lomi = new LomiSDK({
-    apiKey: process.env.LOMI_TEST_API_KEY
+describe('Checkout Session Flow', () => {
+  let lomi: LomiSDK;
+
+  beforeAll(() => {
+    lomi = new LomiSDK({ apiKey: process.env.LOMI_TEST_API_KEY!, baseUrl: 'https://sandbox.api.lomi.africa/v1' });
   });
-  
-  it('should create a checkout session', async () => {
-    const session = await lomi.checkoutSessions.create({
-      merchant_id: testConfig.merchantId,
-      amount: testConfig.amount,
-      currency: testConfig.currency,
-      provider_codes: testConfig.providers,
-      metadata: {
-        orderId: 'test_order_123'
-      }
+
+  it('should create a checkout session successfully', async () => {
+    const sessionResponse = await lomi.checkoutSessions.create({
+      merchant_id: testConfig.merchantId!,
+      amount: testConfig.defaultAmount,
+      currency_code: testConfig.defaultCurrency,
+      allowed_providers: testConfig.allowedProviders,
+      success_url: 'https://example.com/success',
+      cancel_url: 'https://example.com/cancel',
+      metadata: { test_order_id: `int_${Date.now()}` }
     });
-    
-    expect(session.id).to.be.a('string');
-    expect(session.status).to.equal('pending');
+
+    expect(sessionResponse.data.checkout_session_id).toMatch(/^cs_test_/);
+    expect(sessionResponse.data.status).toBe('pending');
+    expect(sessionResponse.data.url).toContain('sandbox.checkout.lomi.africa');
   });
-  
-  it('should retrieve a session', async () => {
-    const session = await lomi.checkoutSessions.retrieve(
-      'cs_test_123'
-    );
-    
-    expect(session.status).to.be.oneOf([
-      'pending',
-      'succeeded',
-      'failed'
-    ]);
+
+  it('should retrieve an existing checkout session', async () => {
+    // Assume cs_test_known exists from a previous step or setup
+    const knownSessionId = 'cs_test_xxxxxxxxxxxx';
+    const session = await lomi.checkoutSessions.get(knownSessionId);
+
+    expect(session.data.checkout_session_id).toEqual(knownSessionId);
+    // Status could be pending, completed, expired, etc.
   });
 });
 ```
 
-### 2. Webhook Testing
+### **2. Webhook handler tests**
 
-```typescript
-import express from 'express';
+Test your webhook signature verification and event processing logic locally, without hitting the live lomi. API.
+
+```typescript filename="Testing webhook signature verification logic"
 import crypto from 'crypto';
+// Import your verifySignature function
+import { verifySignature } from '../../src/utils/security';
 
-describe('Webhook Handling', () => {
-  const app = express();
-  let server;
-  
-  before(() => {
-    app.post('/webhooks', 
-      express.raw({type: 'application/json'}),
-      handleWebhook
-    );
-    server = app.listen(3000);
-  });
-  
-  after(() => {
-    server.close();
-  });
-  
-  it('should verify webhook signatures', () => {
-    const payload = Buffer.from(JSON.stringify({
-      type: 'payment.succeeded',
-      data: {}
-    }));
-    
-    const signature = crypto
-      .createHmac('sha256', process.env.WEBHOOK_SECRET)
-      .update(payload)
+describe('Webhook Signature Verification', () => {
+  const testSecret = 'whsec_test_secret_string';
+  const testPayload = JSON.stringify({ id: 'evt_test', event: 'PAYMENT_SUCCEEDED', data: {} });
+  const payloadBuffer = Buffer.from(testPayload, 'utf8');
+
+  it('should return true for a valid signature', () => {
+    const expectedSignature = crypto
+      .createHmac('sha256', testSecret)
+      .update(payloadBuffer)
       .digest('hex');
-      
-    const isValid = verifySignature(
-      payload,
-      signature,
-      process.env.WEBHOOK_SECRET
-    );
-    
-    expect(isValid).to.be.true;
+
+    const isValid = verifySignature(payloadBuffer, expectedSignature, testSecret);
+    expect(isValid).toBe(true);
+  });
+
+  it('should return false for an invalid signature', () => {
+    const invalidSignature = 'invalid_signature_string';
+    const isValid = verifySignature(payloadBuffer, invalidSignature, testSecret);
+    expect(isValid).toBe(false);
+  });
+
+  it('should return false if the secret is wrong', () => {
+     const expectedSignature = crypto
+      .createHmac('sha256', testSecret)
+      .update(payloadBuffer)
+      .digest('hex');
+    const wrongSecret = 'whsec_wrong_secret';
+    const isValid = verifySignature(payloadBuffer, expectedSignature, wrongSecret);
+    expect(isValid).toBe(false);
   });
 });
 ```
 
-### 3. Error Handling
+### **3. Error handling tests**
 
-```typescript
-describe('Error Handling', () => {
-  it('should handle invalid requests', async () => {
+Test how your application handles specific API errors from lomi..
+
+```typescript filename="Testing API error handling (Jest example)"
+describe('API Error Handling', () => {
+  let lomi: LomiSDK;
+  beforeAll(() => { /* setup lomi instance */ });
+
+  it('should handle invalid request errors (400)', async () => {
     try {
       await lomi.checkoutSessions.create({
-        // Invalid request
-        amount: -1000
+        merchant_id: testConfig.merchantId!,
+        amount: -100, // Invalid amount
+        currency_code: 'XXX', // Invalid currency
+        allowed_providers: [], // Invalid providers
+        success_url: 'invalid-url', // Invalid URL
+        cancel_url: 'invalid-url'
       });
-      
-      throw new Error('Should have thrown');
-    } catch (error) {
-      expect(error.code).to.equal('invalid_request');
-      expect(error.message).to.include('amount');
+      fail('Request should have failed');
+    } catch (error: any) {
+      expect(error.statusCode).toBe(400);
+      expect(error.message).toContain('Validation failed'); // Or specific lomi. error message
+      // Optionally check error.details for specific field errors
     }
   });
-  
-  it('should handle authentication errors', async () => {
-    const invalidLomi = new LomiSDK({
-      apiKey: 'invalid_key'
-    });
-    
+
+  it('should handle authentication errors (401)', async () => {
+    const invalidLomi = new LomiSDK({ apiKey: 'lomi_sk_test_invalidkey', baseUrl: '...' });
     try {
-      await invalidLomi.checkoutSessions.create({
-        // Valid request
-        merchant_id: testConfig.merchantId,
-        amount: testConfig.amount,
-        currency: testConfig.currency,
-        provider_codes: testConfig.providers
-      });
-      
-      throw new Error('Should have thrown');
-    } catch (error) {
-      expect(error.code).to.equal('authentication_error');
+      await invalidLomi.providers.list();
+      fail('Request should have failed');
+    } catch (error: any) {
+      expect(error.statusCode).toBe(401);
+      expect(error.message).toContain('Invalid API key');
     }
   });
 });
 ```
 
-## End-to-End Testing
+## **End-to-end (E2E) testing**
 
-### 1. Setup Test Environment
+Simulate a full user journey involving payment.
 
-```typescript
-// test/setup.ts
-import { TestEnvironment } from './utils';
+### **1. Setup test environment**
 
-before(async () => {
-  const env = new TestEnvironment();
-  await env.setup();
-  
-  // Create test merchant
-  const merchant = await env.createMerchant();
-  process.env.TEST_MERCHANT_ID = merchant.id;
-  
-  // Setup webhook endpoint
-  await env.setupWebhook();
-});
+Use tools like Playwright or Cypress along with a testing framework. Your setup script should:
+-   Start your application.
+-   Start a webhook listener (e.g., using `ngrok` and a simple server, or a dedicated test helper).
+-   Ensure necessary test data exists in the lomi. sandbox (e.g., test merchant, products).
 
-after(async () => {
-  await env.cleanup();
+### **2. Simulate payment flow**
+
+Your E2E test script would typically:
+1.  Navigate through your application to initiate a payment.
+2.  Trigger the creation of a lomi. Checkout Session via your backend.
+3.  **(Challenge)** Interact with the lomi. Sandbox Checkout page. This is often difficult/flaky in automated E2E tests. Consider:
+    *   Using specific test phone numbers/methods provided by lomi. sandbox that automatically succeed or fail.
+    *   Having a dedicated API endpoint in your *test environment* that simulates the webhook callback lomi. would send upon completion (bypassing the actual sandbox UI interaction). This is often more reliable for automation.
+4.  Wait for and verify that your application receives the expected webhook (`PAYMENT_SUCCEEDED` or `CHECKOUT_COMPLETED`).
+5.  Verify that your application state updated correctly (e.g., order marked as paid, service provisioned).
+
+```typescript filename="Conceptual E2E test flow (using a webhook simulator)"
+describe('E2E Payment Flow', () => {
+  it('should complete payment and update order status', async () => {
+    // 1. User initiates checkout in the app UI (simulated via test actions)
+    const { orderId, lomiCheckoutSessionId } = await initiateCheckoutInApp();
+
+    // 2. Simulate successful payment webhook callback
+    // (Instead of UI interaction, call your test simulation endpoint)
+    await simulateLomiWebhook(lomiCheckoutSessionId, 'PAYMENT_SUCCEEDED');
+
+    // 3. Wait for app to process webhook
+    await waitForOrderStatusUpdate(orderId, 'PAID');
+
+    // 4. Assert final application state
+    const orderStatus = await getOrderStatusFromApp(orderId);
+    expect(orderStatus).toBe('PAID');
+  });
 });
 ```
 
-### 2. Complete Payment Flow
+## **Test utilities**
 
-```typescript
-describe('End-to-End Payment', () => {
-  it('should complete payment flow', async () => {
-    // 1. Create checkout session
-    const session = await lomi.checkoutSessions.create({
-      merchant_id: testConfig.merchantId,
-      amount: testConfig.amount,
-      currency: testConfig.currency,
-      provider_codes: ['FREE_MONEY'],
-      metadata: {
-        orderId: 'test_order_123'
+### **1. Webhook listener helper**
+
+Create a helper class to capture and wait for specific webhook events during tests.
+
+```typescript filename="Webhook event listener helper"
+import http from 'http';
+import express from 'express';
+
+interface RecordedEvent {
+  id: string;
+  type: string;
+  receivedAt: number;
+  payload: any;
+}
+
+export class TestWebhookListener {
+  private app = express();
+  private server: http.Server | null = null;
+  private receivedEvents: RecordedEvent[] = [];
+  private port = 9090; // Or choose dynamically
+
+  constructor() {
+    this.app.use(express.raw({ type: 'application/json' }));
+    this.app.post('/test-webhook', (req, res) => {
+      try {
+        // Basic validation - PRODUCTION needs full signature verification!
+        const payload = JSON.parse(req.body.toString());
+        console.log(`Test listener received event: ${payload.event}`);
+        this.receivedEvents.push({ id: payload.id, type: payload.event, receivedAt: Date.now(), payload });
+        res.status(200).json({ received: true });
+      } catch (e) {
+        console.error("Test listener error parsing body", e);
+        res.status(400).json({ error: "Invalid payload" });
       }
     });
-    
-    // 2. Simulate payment
-    await lomi.test.simulatePayment(session.id);
-    
-    // 3. Verify webhook received
-    const event = await waitForWebhook('payment.succeeded');
-    expect(event.data.id).to.equal(session.id);
-    
-    // 4. Verify final status
-    const updated = await lomi.checkoutSessions.retrieve(
-      session.id
-    );
-    expect(updated.status).to.equal('succeeded');
-  });
-});
-```
-
-## Test Utilities
-
-### 1. Webhook Helper
-
-```typescript
-// test/utils/webhook.ts
-export class WebhookHelper {
-  private events: WebhookEvent[] = [];
-  
-  handleWebhook(event: WebhookEvent) {
-    this.events.push(event);
   }
-  
-  async waitForEvent(type: string, timeout = 5000): Promise<WebhookEvent> {
+
+  start() {
+    this.server = this.app.listen(this.port);
+    console.log(`Test webhook listener started on port ${this.port}`);
+    return `http://localhost:${this.port}/test-webhook`; // URL to configure in lomi.
+  }
+
+  stop() {
+    this.server?.close();
+    console.log('Test webhook listener stopped.');
+  }
+
+  async waitForEvent(eventType: string, timeoutMs = 10000): Promise<RecordedEvent> {
     const start = Date.now();
-    
-    while (Date.now() - start < timeout) {
-      const event = this.events.find(e => e.type === type);
-      if (event) return event;
-      await new Promise(r => setTimeout(r, 100));
+    while (Date.now() - start < timeoutMs) {
+      const found = this.receivedEvents.find(e => e.type === eventType);
+      if (found) return found;
+      await new Promise(r => setTimeout(r, 200)); // Poll interval
     }
-    
-    throw new Error(`Timeout waiting for ${type}`);
+    throw new Error(`Timeout waiting for webhook event type: ${eventType}`);
   }
 }
 ```
 
-### 2. Test Data Generator
+### **2. Test data generator**
 
-```typescript
-// test/utils/data.ts
-export class TestData {
-  static generateOrder() {
+Generate consistent test data.
+
+```typescript filename="Test data generation utility"
+export class TestDataFactory {
+  static createCheckoutData(overrides: Partial<any> = {}) {
     return {
-      id: `order_${Date.now()}`,
-      amount: Math.floor(Math.random() * 10000) + 1000,
-      currency: 'XOF'
+      merchant_id: process.env.TEST_MERCHANT_ID!,
+      amount: 100,
+      currency_code: 'XOF',
+      allowed_providers: ['WAVE'],
+      success_url: 'https://example.com/success',
+      cancel_url: 'https://example.com/cancel',
+      metadata: { testId: `td_${Date.now()}` },
+      ...overrides,
     };
   }
-  
-  static generateCustomer() {
-    return {
-      name: `Test User ${Date.now()}`,
-      email: `test${Date.now()}@example.com`,
-      phone: '+22501234567'
-    };
-  }
+  // Add other data generation methods...
 }
 ```
 
-## CI/CD Integration
+## **CI/CD integration**
 
-### GitHub Actions Example
+Integrate automated tests into your CI/CD pipeline (e.g., GitHub Actions).
 
-```yaml
+```yaml filename="GitHub Actions testing workflow example"
 # .github/workflows/test.yml
-name: Tests
+name: Run Tests
 
 on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    
     steps:
-      - uses: actions/checkout@v2
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: '16'
-          
-      - name: Install dependencies
-        run: npm install
-        
-      - name: Run tests
+          node-version: '18'
+          cache: 'npm'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run Unit & Integration Tests
         run: npm test
         env:
           LOMI_TEST_API_KEY: ${{ secrets.LOMI_TEST_API_KEY }}
-          TEST_WEBHOOK_SECRET: ${{ secrets.TEST_WEBHOOK_SECRET }}
+          LOMI_TEST_WEBHOOK_SECRET: ${{ secrets.LOMI_TEST_WEBHOOK_SECRET }}
+          TEST_MERCHANT_ID: ${{ secrets.TEST_MERCHANT_ID }}
+          # Add other necessary test env vars
 ```
 
-## Next Steps
+## **Next steps**
 
-- [CI/CD Integration](./ci-cd)
-- [Error Handling](./error-handling)
-- [API Reference](/api-reference) 
+-   [CI/CD integration](./ci-cd)
+-   [Error handling](./error-handling)
+-   [API Reference](/api-reference) 

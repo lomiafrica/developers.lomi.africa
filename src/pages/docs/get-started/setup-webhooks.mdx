@@ -1,0 +1,236 @@
+# **Setting up webhooks**
+
+Webhooks allow your application to receive real-time notifications about events happening within your lomi. account, such as successful payments, new subscriptions, or failed transactions. Instead of constantly polling the LOMI_API for changes, you can configure lomi. to send HTTP POST requests to an endpoint you control whenever specific events occur.
+
+## **Why use webhooks?**
+
+-   **Real-time Updates:** Get notified instantly about important events.
+-   **Automation:** Trigger actions in your systems automatically (e.g., update customer records, provision services, send confirmation emails, update accounting software).
+-   **Efficiency:** Avoid unnecessary API polling, saving resources.
+-   **Improved Reliability:** Respond promptly to events like failed payments.
+
+## **Available webhook events**
+
+You can subscribe to notifications for the following events:
+
+-   `PAYMENT_CREATED`: A new payment attempt has been initiated.
+-   `PAYMENT_SUCCEEDED`: A payment was successfully completed.
+-   `PAYMENT_FAILED`: A payment attempt failed.
+-   `REFUND_CREATED`: A refund process has been initiated.
+-   `REFUND_COMPLETED`: A refund was successfully processed.
+-   `SUBSCRIPTION_CREATED`: A new subscription has been created.
+-   `SUBSCRIPTION_RENEWED`: A subscription has successfully renewed.
+-   `SUBSCRIPTION_CANCELED`: A subscription has been canceled.
+-   `CHECKOUT_COMPLETED`: A Lomi Checkout session was successfully completed (payment succeeded).
+-   `PROVIDER_STATUS_CHANGED`: A status change related to a provider occurred (less common, often related to underlying provider updates).
+
+## **1. Setting up your webhook endpoint**
+
+Before configuring a webhook in lomi., you need to create an endpoint (a URL) on your server that:
+
+1.  Is **publicly accessible** over HTTPS.
+2.  Can receive **HTTP POST requests** with a **JSON payload**.
+3.  Is prepared to handle incoming webhook data from lomi..
+
+For local development and testing, you can use tools like [ngrok](https://ngrok.com/) or [localtunnel](https://theboroer.github.io/localtunnel-www/) to expose your local server to the internet, or use online services like [Webhook.site](https://webhook.site/) or [Beeceptor](https://beeceptor.com/) for temporary endpoints.
+
+## **2. Configuring webhooks in lomi.**
+
+Once your endpoint is ready, configure it in your lomi. Merchant Dashboard (or via the LOMI_API):
+
+1.  Navigate to the **Developers -> Webhooks** section in your lomi. Dashboard.
+2.  Click "Add Endpoint" or "Create Webhook".
+3.  Enter your **Endpoint URL** (the publicly accessible HTTPS URL you prepared).
+4.  Select the **Events** you want to subscribe to for this endpoint. You can choose multiple events.
+5.  Click "Create Webhook".
+6.  **Crucially, copy the generated `Signing Secret`** (it starts with `whsec_`). This secret is unique to this webhook endpoint and is essential for verifying incoming requests. Store it securely on your server; you will need it to verify signatures. Refer to the [API Keys guide](/docs/get-started/api-keys) for managing secrets.
+
+## **3. Receiving webhooks**
+
+When a subscribed event occurs, lomi. will send an HTTP POST request to your configured endpoint URL with the following characteristics:
+
+-   **Method:** `POST`
+-   **Content-Type:** `application/json`
+-   **Headers:**
+    -   `X-Lomi-Event`: The type of event that triggered the webhook (e.g., `PAYMENT_SUCCEEDED`).
+    -   `X-Lomi-Signature`: The unique signature calculated by lomi. for this request. You MUST use this to verify the request's authenticity.
+    -   `User-Agent`: `Lomi-Webhook/1.0`
+-   **Body:** A JSON object containing the event details.
+
+### **Payload structure**
+
+The JSON payload will have the following structure:
+
+```json filename="Example webhook payload (PAYMENT_SUCCEEDED)"
+{
+  "id": "evt_randomlygenerateduuid",
+  "event": "PAYMENT_SUCCEEDED",
+  "timestamp": "2023-10-27T10:30:00Z",
+  "data": {
+    "transaction_id": "txn_abc123...",
+    "merchant_id": "mer_xyz789...",
+    "organization_id": "org_123abc...",
+    "customer_id": "cus_def456...",
+    // ... other transaction details ...
+    "status": "completed",
+    "gross_amount": 10000,
+    "currency_code": "XOF"
+  },
+  "lomi_environment": "live"
+}
+```
+
+## **4. Verifying signatures (security requirement)**
+
+**This is the most critical step.** Verifying the signature ensures that the webhook request genuinely originated from lomi. and wasn't tampered with during transit. **Do not process webhooks without verifying the signature.**
+
+lomi. generates the signature using a Hash-based Message Authentication Code (HMAC) with SHA256.
+
+**Verification steps:**
+
+1.  **Extract the Signature:** Get the value of the `X-Lomi-Signature` header from the incoming request.
+2.  **Get the Raw Payload:** You need the **raw request body** as a string, exactly as it was received, *before* any JSON parsing or modification. How you access this depends on your web framework (see examples below).
+3.  **Prepare the HMAC:** Using your securely stored `Signing Secret` (the `whsec_...` string obtained from lomi. for this endpoint) as the key, compute the HMAC SHA256 hash of the raw request body string.
+4.  **Compare:** Compare the hash you computed (in hexadecimal format) with the signature extracted from the header. Use a **timing-safe comparison** function to prevent timing attacks. If they match, the request is valid.
+
+### **Code examples for signature verification**
+
+Replace `'your-webhook-signing-secret'` with the actual secret for your endpoint (ideally retrieved from environment variables like `process.env.LOMI_WEBHOOK_SECRET`).
+
+**Node.js (with Express):**
+
+```javascript filename="Node.js (Express) webhook signature verification"
+const crypto = require('crypto');
+const express = require('express');
+
+// Store your secret securely (e.g., in environment variables)
+const LOMI_WEBHOOK_SECRET = process.env.LOMI_WEBHOOK_SECRET;
+
+// Middleware to get raw body
+app.use('/your-webhook-endpoint', express.raw({ type: 'application/json' }));
+
+app.post('/your-webhook-endpoint', (req, res) => {
+  if (!LOMI_WEBHOOK_SECRET) {
+      console.error('Webhook secret is not configured.');
+      return res.status(500).send('Webhook configuration error');
+  }
+
+  const receivedSignature = req.headers['x-lomi-signature'];
+  // req.body contains the raw buffer because of express.raw()
+  const rawBody = req.body;
+
+  if (!receivedSignature || !rawBody) {
+    return res.status(400).send('Missing signature or body');
+  }
+
+  try {
+    const expectedSignature = crypto
+      .createHmac('sha256', LOMI_WEBHOOK_SECRET)
+      .update(rawBody)
+      .digest('hex');
+
+    const isValid = crypto.timingSafeEqual(
+      Buffer.from(receivedSignature),
+      Buffer.from(expectedSignature)
+    );
+
+    if (!isValid) {
+      return res.status(400).send('Invalid signature');
+    }
+
+    // Signature verified
+    const event = JSON.parse(rawBody.toString());
+    // --- Process event data (event.data) --- 
+
+    res.status(200).json({ received: true });
+
+  } catch (error) {
+    console.error('Error verifying webhook:', error);
+    return res.status(400).send(`Webhook Error: ${error.message}`);
+  }
+});
+```
+
+**Python (with Flask):**
+
+```python filename="Python (Flask) webhook signature verification"
+import hmac
+import hashlib
+import json
+import os
+from flask import Flask, request, abort
+
+app = Flask(__name__)
+
+# Store your secret securely
+LOMI_WEBHOOK_SECRET = os.environ.get('LOMI_WEBHOOK_SECRET')
+
+@app.route('/your-webhook-endpoint', methods=['POST'])
+def webhook_listener():
+    if not LOMI_WEBHOOK_SECRET:
+        print('Webhook secret is not configured.')
+        abort(500)
+
+    received_signature = request.headers.get('X-Lomi-Signature')
+    raw_body = request.get_data() # Get raw body as bytes
+
+    if not received_signature:
+        abort(400)
+
+    try:
+        expected_signature = hmac.new(
+            LOMI_WEBHOOK_SECRET.encode('utf-8'), # Encode secret to bytes
+            raw_body,
+            hashlib.sha256
+        ).hexdigest()
+
+        if not hmac.compare_digest(received_signature, expected_signature):
+            abort(400)
+
+        # Signature verified
+        event = json.loads(raw_body.decode('utf-8'))
+        # --- Process event data (event['data']) --- 
+
+        return json.dumps({'received': True}), 200
+
+    except Exception as e:
+        print(f"Error processing webhook: {e}")
+        abort(400)
+```
+
+## **5. Responding to webhooks**
+
+Your endpoint MUST respond to the webhook request quickly with an HTTP status code in the `2xx` range (e.g., `200 OK`). This acknowledges receipt to lomi..
+
+-   **Respond Immediately:** Acknowledge the request *before* performing any complex logic or external API calls that might time out.
+-   **Defer Processing:** If processing the event takes significant time, use a background job queue (like Redis/Celery, BullMQ, Sidekiq) to handle the work asynchronously after sending the `200 OK` response.
+
+Failure to respond with a `2xx` status code within a reasonable timeframe (e.g., 10 seconds) will be considered a delivery failure by lomi..
+
+## **6. Retries**
+
+If lomi. doesn't receive a `2xx` response from your endpoint, it assumes the delivery failed and will automatically retry sending the webhook.
+
+-   Retries occur with an exponential backoff strategy (increasing delays between attempts).
+-   lomi. will attempt up to 3 retries after the initial failure.
+-   **Idempotency:** Because of retries (and potentially other network issues), your endpoint might receive the same event notification more than once. Design your event processing logic to be **idempotent**. This means processing the same event multiple times should not cause duplicate actions or errors. A common strategy is to check if you've already processed an event based on its unique `id` (`evt_...`) before taking action.
+
+## **7. Testing webhooks**
+
+You can test your endpoint integration using the "Test Webhook" feature in the lomi. Dashboard (**Developers -> Webhooks -> Select Endpoint -> Test**). This will send a test `PAYMENT_SUCCEEDED` event payload to your configured URL, allowing you to verify your endpoint's receiving and signature verification logic without performing a real transaction.
+
+## **8. Best practices summary**
+
+-   **Verify Signatures:** Always verify the `X-Lomi-Signature` using your signing secret and a timing-safe comparison.
+-   **Respond Quickly:** Send a `200 OK` response immediately upon receipt.
+-   **Process Asynchronously:** Defer complex logic to background jobs.
+-   **Handle Duplicates (Idempotency):** Design your system to gracefully handle receiving the same event multiple times. Check the event `id`.
+-   **Use HTTPS:** Ensure your endpoint uses HTTPS for secure communication.
+-   **Secure Your Secret:** Keep your webhook signing secret confidential. Do not commit it to version control. Use environment variables or a secrets manager (see [API Keys guide](/docs/get-started/api-keys)).
+
+## **9. Troubleshooting**
+
+-   **Check Delivery Logs:** The lomi. Dashboard (**Developers -> Webhooks -> Select Endpoint -> Logs**) shows the history of delivery attempts for your endpoint, including success/failure status codes and response bodies captured by lomi.. This is useful for diagnosing issues.
+-   **Signature Mismatches:** Usually caused by using the wrong secret, modifying the payload before verification, or not using the raw request body.
+-   **Timeouts:** Ensure your endpoint responds within 10 seconds. Move heavy processing to the background.
+-   **Firewall/Network Issues:** Ensure your server/firewall allows incoming POST requests from lomi.'s IP addresses (if IP filtering is used). 
