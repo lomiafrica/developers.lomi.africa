@@ -142,7 +142,6 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
             access_type: "offline",
-            prompt: "consent",
           },
         },
       });
@@ -246,11 +245,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
               {[1, 2, 3, 4, 5].map((index) => (
                 <div
                   key={index}
-                  className={`h-1.5 flex-1 rounded-full ${
-                    index <= passwordStrength.score
-                      ? "bg-green-500"
-                      : "bg-gray-200 dark:bg-gray-700"
-                  }`}
+                  className={`h-1.5 flex-1 rounded-full ${index <= passwordStrength.score
+                    ? "bg-green-500"
+                    : "bg-gray-200 dark:bg-gray-700"
+                    }`}
                 />
               ))}
             </div>
