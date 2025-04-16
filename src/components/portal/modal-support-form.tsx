@@ -78,7 +78,7 @@ const CustomSelect = ({ value, onChange, options }: CustomSelectProps) => {
         <span>
           {value
             ? options.find((opt: SelectOption) => opt.value === value)?.label ||
-              ""
+            ""
             : "Select a category"}
         </span>
         <ChevronDown
@@ -183,8 +183,8 @@ export default function ModalSupportForm({
 
       setMessage((prevMessage) =>
         prevMessage.startsWith("Issue description:") ||
-        !prevMessage ||
-        prevMessage.startsWith(messagePrefix)
+          !prevMessage ||
+          prevMessage.startsWith(messagePrefix)
           ? `${messagePrefix}Issue description: `
           : prevMessage,
       );
@@ -441,7 +441,7 @@ export default function ModalSupportForm({
           <DialogDescription className="text-sm text-muted-foreground">
             {contextData?.subject
               ? `Need help with ${contextData.subject}? Describe the issue below.`
-              : "Describe the issue you&apos;re facing or ask your question below."}
+              : "Describe the issue you are facing or ask your question below."}
           </DialogDescription>
         </DialogHeader>
 

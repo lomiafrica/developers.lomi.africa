@@ -1,6 +1,6 @@
 import { Callout } from 'nextra/components';
 
-# **Authenticate the CLI (`lomi. login`)**
+# **Authenticate**
 
 The `lomi. login` command authenticates the **lomi. CLI**, allowing it to securely interact with the **lomi. API** on your behalf using a dedicated **CLI Token**. This authentication is a prerequisite for most commands that require API access (like `status`, `payments`, `webhook`, and `dev`).
 
@@ -62,4 +62,4 @@ Use `lomi. init` in your project directory to set up SDK-specific API keys.
 -   **Code expired**: The `user_code` is time-sensitive. If it expires before you complete the authorization, simply run `lomi. login` again to get a new code.
 -   **Access denied**: If you deny the authorization request in the browser, the CLI login will fail. Run `lomi. login` again if this was unintentional.
 -   **Network errors**: Ensure you have a stable internet connection, as the CLI needs to communicate with the **lomi.** authentication service.
--   **Firewall issues**: If you are behind a strict firewall, ensure it allows HTTPS connections to `lomi.africa`. Check your firewall settings or contact your network administrator if you suspect issues. 
+-   **Firewall issues**: If you are behind a strict firewall, ensure it allows HTTPS connections to `lomi.africa`. Check your firewall settings or contact your network administrator if you suspect issues.

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -56,6 +56,7 @@ export const Navbar = () => {
   const [isDesktopMenuOpen, setIsDesktopMenuOpen] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [isCommandMenuOpen, setIsCommandMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setAuthLoading(true);
@@ -95,6 +96,21 @@ export const Navbar = () => {
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
   }, []);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    function handleClickOutside(event: MouseEvent) {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -465,12 +481,12 @@ export const Navbar = () => {
       </div>
 
       <div
+        ref={mobileMenuRef}
         className={cn(
           "fixed inset-x-0 top-[57px] z-20 bg-background border-b md:hidden",
           "transform transition-transform duration-300 ease-in-out",
           isMobileMenuOpen ? "translate-y-0" : "-translate-y-full",
         )}
-        onClick={() => setIsMobileMenuOpen(false)}
       >
         <div className="container py-4 space-y-4">
           <Button
