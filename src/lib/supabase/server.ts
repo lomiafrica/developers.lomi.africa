@@ -1,6 +1,9 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+// Determine if in production based on standard Node.js env or Vercel env
+const IS_PRODUCTION = process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
+
 export function createClient() {
   const cookieStore = cookies();
 
@@ -15,7 +18,14 @@ export function createClient() {
         },
         set(name: string, value: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value, ...options });
+            // Explicitly add domain and path for cross-subdomain SSO
+            cookieStore.set({
+              name,
+              value,
+              ...options,
+              domain: IS_PRODUCTION ? ".lomi.africa" : undefined,
+              path: "/",
+            });
           } catch (error) {
             // The `set` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
@@ -24,7 +34,14 @@ export function createClient() {
         },
         remove(name: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value: "", ...options });
+            // Explicitly add domain and path for cross-subdomain SSO
+            cookieStore.set({
+              name,
+              value: "",
+              ...options,
+              domain: IS_PRODUCTION ? ".lomi.africa" : undefined,
+              path: "/",
+            });
           } catch (error) {
             // The `delete` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
