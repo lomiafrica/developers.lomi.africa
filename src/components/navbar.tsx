@@ -9,8 +9,6 @@ import {
   LogOut,
   Loader2,
   Menu,
-  X,
-  Newspaper,
   Globe,
   LogIn,
   Search,
